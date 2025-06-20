@@ -1,0 +1,43 @@
+{
+  "name": "lofizone",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "clean": "find . -name 'node_modules' -type d -prune -exec rm -rf {} + && rm -rf yarn.lock",
+    "cn": "pnpm --filter @workspace/ui cn",
+    "cn:web": "pnpm --filter web cn",
+    "cn:frontend": "pnpm --filter frontend cn",
+    "db:push": "pnpm --filter @workspace/db db:push",
+    "db:reset": "pnpm --filter @workspace/db db:reset",
+    "db:studio": "pnpm --filter @workspace/db db:studio"
+  },
+  "dependencies": {
+    "turbo": "^2.5.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "@hookform/resolvers": "^5.0.1",
+    "zod": "^3.24.4",
+    "lucide-react": "^0.475.0",
+    "react-hook-form": "^7.56.3"
+  },
+  "devDependencies": {
+    "prettier": "^3.5.3",
+    "globals": "^16.0.0",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@types/node": "^22.15.17",
+    "@eslint/js": "^9.13.0",
+    "eslint": "^9.13.0",
+    "eslint-config-next": "15.1.4",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.30.1",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-tailwindcss": "^3.17.5"
+  },
+  "packageManager": "pnpm@10.4.1",
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "backend",
+  "version": "0.0.1",
+  "private": true,
+  "type": "commonjs",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "lint": "eslint . --ext .ts",
+    "db:seed": "tsx src/scripts/seed.ts"
+  },
+  "dependencies": {
+    "@workspace/db": "workspace:*",
+    "fs-jetpack": "^5.1.0",
+    "hono": "^4.7.9",
+    "@hono/node-server": "^1.14.1",
+    "ioredis": "^5.6.1",
+    "nanoid": "^5.1.5",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/ffprobe-static": "^2.0.3",
+    "@types/fluent-ffmpeg": "^2.1.27",
+    "@types/node": "^22.15.17",
+    "@types/yargs": "^17.0.33",
+    "dotenv": "^16.5.0",
+    "tsx": "^4.19.4"
+  }
+}
