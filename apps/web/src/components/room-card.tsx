@@ -6,6 +6,7 @@ import Wallpaper from '@/assets/images/wallpaper-2.webp';
 import { Button } from '@workspace/ui/components/button';
 import { ArrowRightIcon } from '@phosphor-icons/react';
 import { Badge } from '@workspace/ui/components/badge';
+import Link from 'next/link';
 
 export default function RoomCard() {
   return (
@@ -28,9 +29,11 @@ export default function RoomCard() {
           </div>
           <div className="flex-1"></div>
           <div className="flex justify-end">
-            <Button variant={'link'}>
-              <span>Join Room</span>
-              <ArrowRightIcon />
+            <Button variant={'link'} asChild>
+              <Link href={`/r/ROOM_ID`}>
+                <span>Join Room</span>
+                <ArrowRightIcon />
+              </Link>
             </Button>
           </div>
         </div>
