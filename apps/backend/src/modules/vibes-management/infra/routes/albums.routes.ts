@@ -2,14 +2,12 @@ import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
 import { AlbumsRepository } from '../repositories';
 import { generateId } from '@workspace/core';
 import { albumSchema } from '../../domain';
-import { s3mini } from 's3mini';
 import { env } from '@/env';
 import { fileToBuffer } from '@/shared/infra/file-to-buffer';
+import { s3Client } from '@/shared/clients/s3';
 
 export function getAlbumsRoutes() {
   const app = new OpenAPIHono();
-  const s3client = new s3mini(env.s3);
-
   app.openapi(
     createRoute({
       method: 'post',
@@ -44,7 +42,7 @@ export function getAlbumsRoutes() {
       const { artist, name, cover } = c.req.valid('form');
       const albumId = generateId('alb');
       const path = `${env.s3.bucket}/${albumId}/cover.${cover.name.split('.').pop()}`;
-      const { ok: uploadSuccessfully } = await s3client.putObject(
+      const { ok: uploadSuccessfully } = await s3Client.putObject(
         path,
         await fileToBuffer(cover),
         cover.type,
