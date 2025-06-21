@@ -12,6 +12,7 @@
   "dependencies": {
     "@phosphor-icons/react": "^2.1.8",
     "@workspace/db": "workspace:*",
+    "@workspace/auth": "workspace:*",
     "@workspace/ui": "workspace:*",
     "next": "15.3.2",
     "zustand": "^5.0.4"

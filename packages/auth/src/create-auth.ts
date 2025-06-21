@@ -1,4 +1,4 @@
-import { betterAuth } from 'better-auth';
+import { betterAuth, type BetterAuthOptions } from 'better-auth';
 import { nextCookies } from 'better-auth/next-js';
 import { bearer, jwt } from 'better-auth/plugins';
 import { generateId } from '@workspace/core';
@@ -9,13 +9,7 @@ interface AuthConfig {
   db: PrismaClient;
   secret: string;
   baseURL: string;
-  socialProviders: {
-    github: {
-      clientId: string;
-      clientSecret: string;
-      scope: string[];
-    };
-  };
+  socialProviders: BetterAuthOptions['socialProviders'];
 }
 
 export function createAuth(config: AuthConfig) {
@@ -23,13 +17,7 @@ export function createAuth(config: AuthConfig) {
     plugins: [nextCookies(), jwt(), bearer()],
     secret: config.secret,
     baseURL: config.baseURL,
-    socialProviders: {
-      github: {
-        clientId: config.socialProviders.github.clientId,
-        clientSecret: config.socialProviders.github.clientSecret,
-        scope: config.socialProviders.github.scope,
-      },
-    },
+    socialProviders: config.socialProviders,
     user: { modelName: 'User' },
     account: { modelName: 'Account' },
     verification: { modelName: 'Verification' },
