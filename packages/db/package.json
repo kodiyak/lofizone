@@ -4,12 +4,14 @@
   "private": true,
   "main": "src/index.ts",
   "scripts": {
-    "db:push": "pnpm dlx prisma db push",
-    "db:studio": "pnpm dlx prisma studio",
-    "db:reset": "pnpm dlx prisma db push --force-reset"
+    "db:push": "pnpm prisma db push",
+    "db:studio": "pnpm prisma studio",
+    "db:reset": "pnpm prisma db push --force-reset"
   },
   "dependencies": {
     "@prisma/client": "^6.7.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "prisma": "^6.7.0"
+  }
 }
