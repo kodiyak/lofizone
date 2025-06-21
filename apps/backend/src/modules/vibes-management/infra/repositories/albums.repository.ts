@@ -1,18 +1,12 @@
-import { MemoryRepository } from '@/shared/infra/memory.repository';
+import { db } from '@/shared/clients/db';
 import { albumSchema, type AlbumSchema } from '../../domain/album';
+import { PrismaRepository } from '@/shared/infra/prisma.repository';
 
-export class AlbumsRepository extends MemoryRepository<AlbumSchema> {
+export class AlbumsRepository extends PrismaRepository<AlbumSchema> {
   private static instance: AlbumsRepository;
 
-  async create(payload: AlbumSchema) {
-    const album = albumSchema.parse(payload);
-    this.items.push(album);
-
-    return album;
-  }
-
-  async findAll() {
-    return this.items;
+  private constructor() {
+    super(db, 'album', albumSchema);
   }
 
   static getInstance(): AlbumsRepository {

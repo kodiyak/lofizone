@@ -1,6 +1,6 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
 import { AlbumsRepository } from '../repositories';
-import { generateId } from '@workspace/core';
+import { generateAlbumId } from '@workspace/core';
 import { albumSchema } from '../../domain';
 import { env } from '@/env';
 import { fileToBuffer } from '@/shared/infra/file-to-buffer';
@@ -17,7 +17,7 @@ export function getAlbumsRoutes() {
           content: {
             'multipart/form-data': {
               schema: z.object({
-                artist: z.string().nonempty(),
+                artistId: z.string().nonempty(),
                 name: z.string().nonempty(),
                 cover: z.instanceof(File).describe('Cover image file'),
               }),
@@ -39,8 +39,8 @@ export function getAlbumsRoutes() {
       },
     }),
     async (c) => {
-      const { artist, name, cover } = c.req.valid('form');
-      const albumId = generateId('alb');
+      const { artistId, name, cover } = c.req.valid('form');
+      const albumId = generateAlbumId();
       const path = `${env.s3.bucket}/${albumId}/cover.${cover.name.split('.').pop()}`;
       const { ok: uploadSuccessfully } = await s3Client.putObject(
         path,
@@ -49,7 +49,7 @@ export function getAlbumsRoutes() {
       );
       const album = await AlbumsRepository.getInstance().create({
         id: albumId,
-        artist,
+        artistId,
         name,
         metadata: { cover: uploadSuccessfully ? path : null },
       });
@@ -74,7 +74,7 @@ export function getAlbumsRoutes() {
       },
     }),
     async (c) => {
-      const albums = await AlbumsRepository.getInstance().findAll();
+      const albums = await AlbumsRepository.getInstance().loadMany();
       return c.json(albums, 200);
     },
   );
