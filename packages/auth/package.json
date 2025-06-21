@@ -4,10 +4,12 @@
   "private": true,
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "scripts": {},
-  "dependencies": {
-    "@workspace/db": "workspace:*",
-    "@workspace/core": "workspace:*"
+  "scripts": {
+    "auth": "npx @better-auth/cli@latest",
+    "auth:generate": "npx dotenv-cli@latest -e ../../apps/web/.env -- npx @better-auth/cli@latest generate --output ../db/prisma/schema.prisma --config ../../apps/web/src/lib/clients/auth.ts"
   },
-  "devDependencies": {}
+  "dependencies": {
+    "@workspace/core": "workspace:*",
+    "@workspace/db": "workspace:*"
+  }
 }

@@ -1,6 +1,8 @@
+
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/.prisma"
+  provider   = "prisma-client-js"
+  output     = "../src/.prisma/generated"
+  engineType = "library"
 }
 
 datasource db {
@@ -8,93 +10,65 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Family {
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String
+  emailVerified Boolean
+  image         String?
+  createdAt     DateTime  @db.Timestamptz(3)
+  updatedAt     DateTime  @db.Timestamptz(3)
+  sessions      Session[]
+  accounts      Account[]
+
+  @@unique([email])
+}
+
+model Session {
   id        String   @id @default(uuid())
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @db.Timestamptz(3)
-  name      String?
-  members   Member[]
+  expiresAt DateTime @db.Timestamptz(3)
+  token     String
+  createdAt DateTime @db.Timestamptz(3)
+  updatedAt DateTime @db.Timestamptz(3)
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
 }
 
-model Member {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @db.Timestamptz(3)
-
-  name    String
-  phone   String  @unique
-  email   String? @unique
-  context Json?
-
-  family   Family    @relation(fields: [familyId], references: [id])
-  familyId String
-  messages Message[]
+model Account {
+  id                    String    @id @default(uuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime? @db.Timestamptz(3)
+  refreshTokenExpiresAt DateTime? @db.Timestamptz(3)
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @db.Timestamptz(3)
+  updatedAt             DateTime  @db.Timestamptz(3)
 }
 
-model Message {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @db.Timestamptz(3)
-
-  type       String
-  content    String?
-  caption    String?
-  member     Member      @relation(fields: [memberId], references: [id])
-  memberId   String
-  from       MessageFrom
-  externalId String      @unique
-  jid        Json
+model Verification {
+  id         String    @id @default(uuid())
+  identifier String
+  value      String
+  expiresAt  DateTime  @db.Timestamptz(3)
+  createdAt  DateTime? @db.Timestamptz(3)
+  updatedAt  DateTime? @db.Timestamptz(3)
 }
 
-enum MessageFrom {
-  ai
-  member
-}
+model Jwks {
+  id         String   @id @default(uuid())
+  publicKey  String
+  privateKey String
+  createdAt  DateTime @db.Timestamptz(3)
 
-model Book {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @db.Timestamptz(3)
-
-  name         String        @unique
-  abbreviation String        @unique
-  order        Int
-  language     String        @default("pt-BR")
-  testament    BookTestament
-  chapters     Chapter[]
-}
-
-enum BookTestament {
-  OT
-  NT
-}
-
-model Chapter {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @db.Timestamptz(3)
-
-  number   Int
-  language String  @default("pt-BR")
-  bookId   String
-  book     Book    @relation(fields: [bookId], references: [id])
-  verses   Verse[]
-
-  @@unique([bookId, number])
-}
-
-model Verse {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @db.Timestamptz(3)
-
-  number    Int
-  language  String  @default("pt-BR")
-  audio     String?
-  voice     String?
-  text      String
-  chapterId String
-  chapter   Chapter @relation(fields: [chapterId], references: [id])
-
-  @@unique([chapterId, number])
+  @@map("jwks")
 }
