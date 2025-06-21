@@ -5,6 +5,7 @@ import { cn } from '@workspace/ui/lib/utils';
 import Wallpaper from '@/assets/images/wallpaper.png';
 import Image from 'next/image';
 import NavTop from './components/nav-top';
+import type { CSSProperties } from 'react';
 
 const sans = Font_Sans({
   variable: '--font-sans',
@@ -33,10 +34,15 @@ export default function RootLayout({
           sans.variable,
           mono.variable,
         )}
+        style={
+          {
+            '--nav-top-height': 'calc(var(--spacing)* 16)',
+          } as CSSProperties
+        }
       >
         <NavTop />
-        <div className="flex flex-col pt-32 relative overflow-hidden">
-          <div className="absolute w-[50vw] right-0 top-0 -translate-y-1/5 translate-x-1/2">
+        <div className="flex flex-col pt-[calc(var(--nav-top-height)+1px)] relative overflow-hidden">
+          <div className="absolute -z-10 w-[50vw] right-0 top-0 -translate-y-1/5 translate-x-1/2">
             <div className="size-full absolute left-0 top-0 bg-gradient-to-b from-transparent to-background"></div>
             <div className="size-full absolute left-0 top-0 bg-gradient-to-l from-transparent to-background"></div>
             <Image
