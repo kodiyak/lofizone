@@ -11,6 +11,7 @@ export type TrackMetadata = z.infer<typeof trackMetadataSchema>;
 export const trackSchema = z.object({
   id: z.string(),
   name: z.string(),
+  albumId: z.string(),
   metadata: trackMetadataSchema,
 });
 export type TrackSchema = z.infer<typeof trackSchema>;
