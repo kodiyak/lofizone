@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const albumMetadataSchema = z.object({
-  cover: z.string(),
+  cover: z.string().nullish(),
 });
 export type AlbumMetadata = z.infer<typeof albumMetadataSchema>;
 
