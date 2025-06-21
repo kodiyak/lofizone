@@ -1,16 +1,17 @@
 import { createRoute, z, type OpenAPIHono, type RouteConfig } from '@hono/zod-openapi';
-import type { ZodObject } from 'zod';
+import type { ZodSchema } from 'zod';
 
 type BaseRouteConfig = Omit<RouteConfig, 'path' | 'responses' | 'request'>;
 
 type DefineRouteProps<
   P extends string,
   R extends BaseRouteConfig,
-  Input extends ZodObject<any>,
-  Output extends ZodObject<any>,
+  Input extends ZodSchema,
+  Output extends ZodSchema,
 > = R & {
   app: OpenAPIHono;
   schemas: {
+    scope: 'json' | 'form' | 'query' | 'param' | 'header' | 'cookie';
     input: Input;
     output: Output;
   };
@@ -21,24 +22,17 @@ type DefineRouteProps<
 export function defineRoute<
   P extends string,
   R extends BaseRouteConfig,
-  Input extends ZodObject<any>,
-  Output extends ZodObject<any>,
+  Input extends ZodSchema,
+  Output extends ZodSchema,
 >({
   app,
-  schemas: { input, output },
+  schemas: { input, output, scope },
   handler,
   ...routeConfig
 }: DefineRouteProps<P, R, Input, Output>) {
   const route = createRoute({
     ...routeConfig,
-    request:
-      routeConfig.method === 'post'
-        ? { body: { content: { 'application/json': { schema: input } } } }
-        : undefined,
-    parameters:
-      routeConfig.method !== 'post'
-        ? { query: { content: { 'application/json': { schema: input } } } }
-        : undefined,
+    request: { [scope]: { content: { 'application/json': { schema: input } } } },
     responses: {
       200: {
         description: 'Album created successfully',
@@ -49,9 +43,14 @@ export function defineRoute<
 
   // @ts-expect-error: Hono's `app.openapi` expects a function that returns a promise
   app.openapi(route, async (c) => {
-    const result: z.infer<Output> = output.parse(
-      await handler(input.parse(await c.req.valid('json' as any))),
-    );
+    if (scope === 'form') {
+      const resulttttt = await c.req.formData();
+      const r3 = await c.req.parseBody();
+      console.log({ resulttttt, r3 });
+    }
+    const payload = await c.req.valid(scope as any);
+    console.log({ payload, scope });
+    const result: z.infer<Output> = output.parse(await handler(payload));
     return c.json(result, 200);
   });
 }
