@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 export const artistMetadataSchema = z.object({
-  image: z.string().optional(),
-  description: z.string().optional(),
+  image: z.string().nullish(),
+  description: z.string().nullish(),
 });
 export type ArtistMetadata = z.infer<typeof artistMetadataSchema>;
 

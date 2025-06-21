@@ -10,16 +10,29 @@ export class PrismaRepository<T> {
   ) {}
 
   async create(data: z.infer<typeof this.schema>) {
-    const parsedData = this.schema.parse(data);
-    // @ts-expect-error: PrismaClient does not have a type for create
-    const result = this.prisma[this.modelName].create({ data: parsedData });
+    const parsedData = this.schema.safeParse(data);
 
-    console.log('Creating new record in', this.modelName, 'with data:', parsedData);
+    try {
+      if (parsedData.success === false) {
+        throw new Error(`Invalid Data`);
+      }
 
-    return (await this.find({ id: result.id }))!;
+      // @ts-expect-error: PrismaClient does not have a type for create
+      const result = await this.prisma[this.modelName].create({ data: parsedData.data });
+
+      return (await this.find({ id: result.id }))!;
+    } catch (error: any) {
+      throw new Error(
+        `Failed to Create [${this.modelName.toString()}]\n${JSON.stringify(parsedData.data)}\n${error.message}\n`,
+      );
+    }
   }
 
   async find({ id }: { id: string }) {
+    if (!id) {
+      throw new Error(`[${this.modelName.toString()}] ID is required to find a Record.`);
+    }
+
     // @ts-expect-error: PrismaClient does not have a type for findUnique
     const result = await this.prisma[this.modelName].findUnique({
       where: { id },

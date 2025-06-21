@@ -1,12 +1,12 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
-import { AlbumsRepository } from '../repositories';
-import { generateAlbumId } from '@workspace/core';
+import { ArtistsRepository } from '../repositories';
+import { generateArtistId } from '@workspace/core';
 import { albumSchema } from '../../domain';
 import { env } from '@/env';
 import { fileToBuffer } from '@/shared/infra/file-to-buffer';
 import { s3Client } from '@/shared/clients/s3';
 
-export function getAlbumsRoutes() {
+export function getArtistsRoutes() {
   const app = new OpenAPIHono();
   app.openapi(
     createRoute({
@@ -18,7 +18,8 @@ export function getAlbumsRoutes() {
             'multipart/form-data': {
               schema: z.object({
                 name: z.string().nonempty(),
-                cover: z.instanceof(File).describe('Cover image file'),
+                about: z.string().nullish(),
+                avatar: z.instanceof(File).describe('Artist avatar file'),
               }),
             },
           },
@@ -38,18 +39,18 @@ export function getAlbumsRoutes() {
       },
     }),
     async (c) => {
-      const { name, cover } = c.req.valid('form');
-      const albumId = generateAlbumId();
-      const path = `${env.s3.bucket}/${albumId}/cover.${cover.name.split('.').pop()}`;
+      const { name, avatar, about } = c.req.valid('form');
+      const artistId = generateArtistId();
+      const path = `${env.s3.bucket}/${artistId}/cover.${avatar.name.split('.').pop()}`;
       const { ok: uploadSuccessfully } = await s3Client.putObject(
         path,
-        await fileToBuffer(cover),
-        cover.type,
+        await fileToBuffer(avatar),
+        avatar.type,
       );
-      const album = await AlbumsRepository.getInstance().create({
-        id: albumId,
+      const album = await ArtistsRepository.getInstance().create({
+        id: artistId,
         name,
-        metadata: { cover: uploadSuccessfully ? path : null },
+        metadata: { image: uploadSuccessfully ? path : null, description: about },
       });
 
       return c.json({ id: album.id }, 200);
@@ -65,14 +66,14 @@ export function getAlbumsRoutes() {
           description: 'List of albums',
           content: {
             'application/json': {
-              schema: z.array(albumSchema),
+              schema: albumSchema.array(),
             },
           },
         },
       },
     }),
     async (c) => {
-      const albums = await AlbumsRepository.getInstance().loadMany();
+      const albums = await ArtistsRepository.getInstance().loadMany();
       return c.json(albums, 200);
     },
   );

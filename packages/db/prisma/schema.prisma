@@ -82,8 +82,8 @@ model Album {
   artists   Artist[]
   tracks    Track[]
   metadata  Json
-  createdAt DateTime @db.Timestamptz(3)
-  updatedAt DateTime @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
 }
 
 model Track {
@@ -94,8 +94,8 @@ model Track {
   album     Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
   duration  Int // duration in seconds
   metadata  Json
-  createdAt DateTime @db.Timestamptz(3)
-  updatedAt DateTime @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
 }
 
 model Artist {
@@ -104,8 +104,8 @@ model Artist {
   albums    Album[]
   tracks    Track[]
   metadata  Json
-  createdAt DateTime @db.Timestamptz(3)
-  updatedAt DateTime @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
 }
 
 model Room {
@@ -114,8 +114,8 @@ model Room {
   ownerId   String
   owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   metadata  Json
-  createdAt DateTime @db.Timestamptz(3)
-  updatedAt DateTime @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
   @@unique([name, ownerId])
 }

@@ -8,7 +8,6 @@ export type AlbumMetadata = z.infer<typeof albumMetadataSchema>;
 export const albumSchema = z.object({
   id: z.string(),
   name: z.string(),
-  artistId: z.string(),
   metadata: albumMetadataSchema,
 });
 export type AlbumSchema = z.infer<typeof albumSchema>;
