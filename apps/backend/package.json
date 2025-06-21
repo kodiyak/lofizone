@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.14.1",
-    "@workspace/db": "workspace:*",
+    "@hono/zod-openapi": "^0.19.8",
+    "@hono/zod-validator": "^0.7.0",
     "@workspace/core": "workspace:*",
+    "@workspace/db": "workspace:*",
     "discord.js": "^14.20.0",
     "fs-jetpack": "^5.1.0",
     "hono": "^4.7.9",

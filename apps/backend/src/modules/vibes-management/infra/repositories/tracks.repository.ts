@@ -1,4 +1,4 @@
-import { MemoryRepository } from '@/shared/memory.repository';
+import { MemoryRepository } from '@/shared/infra/memory.repository';
 import { trackSchema, type TrackSchema } from '../../domain/track';
 
 export class TracksRepository extends MemoryRepository<TrackSchema> {

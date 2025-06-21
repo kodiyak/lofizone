@@ -1,9 +1,17 @@
 import { serve } from '@hono/node-server';
-import { Hono } from 'hono';
 import { env } from './env';
+import { getVibesManagementRoutes } from './modules/vibes-management';
+import { OpenAPIHono } from '@hono/zod-openapi';
 
-const app = new Hono();
-import('./modules/bots');
+const app = new OpenAPIHono();
+app.route('/', getVibesManagementRoutes());
+app.doc(`/doc`, {
+  openapi: '3.0.0',
+  info: {
+    version: '1.0.0',
+    title: 'My API',
+  },
+});
 
 serve(
   {

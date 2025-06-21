@@ -1,4 +1,4 @@
-import { MemoryRepository } from '@/shared/memory.repository';
+import { MemoryRepository } from '@/shared/infra/memory.repository';
 import { roomSchema, type RoomSchema } from '../../domain/room';
 
 export class RoomsRepository extends MemoryRepository<RoomSchema> {
