@@ -17,6 +17,10 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
       set({ socket: null });
     }
 
+    await fetch(`/api/server/rooms/${roomId}`)
+      .then((res) => res.json())
+      .then((room) => set({ room }));
+
     const socket = new WebSocket(
       `ws://localhost:3000/rooms/${roomId}/ws`,
       'ws',

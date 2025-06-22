@@ -31,6 +31,58 @@ export function getRoomsRoutes() {
     },
   );
 
+  // show room
+  app.openapi(
+    createRoute({
+      method: 'get',
+      path: '/:roomId',
+      responses: {
+        200: {
+          description: 'Room details',
+          content: {
+            'application/json': {
+              schema: z.any(),
+            },
+          },
+        },
+        404: {
+          description: 'Room not found',
+          content: {
+            'application/json': {
+              schema: z.object({
+                error: z.string(),
+              }),
+            },
+          },
+        },
+        400: {
+          description: 'Bad Request',
+          content: {
+            'application/json': {
+              schema: z.object({
+                error: z.string(),
+              }),
+            },
+          },
+        },
+      },
+    }),
+    async (c) => {
+      const roomId = c.req.param('roomId');
+      if (!roomId) {
+        return c.json({ error: 'Room ID is required' }, 400);
+      }
+
+      const service = RoomsService.getInstance();
+      const room = service.tracker.getRoom(roomId);
+      if (!room) {
+        return c.json({ error: 'Room not found' }, 404);
+      }
+
+      return c.json(room.toJSON(), 200);
+    },
+  );
+
   // room members
   app.openapi(
     createRoute({

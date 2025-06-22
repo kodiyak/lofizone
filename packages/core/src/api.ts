@@ -10,4 +10,11 @@ export namespace Api {
     host: boolean;
     role: 'admin' | 'member';
   }
+
+  export interface Track {
+    id: string;
+    title: string;
+    albumId: string;
+    metadata: any;
+  }
 }
