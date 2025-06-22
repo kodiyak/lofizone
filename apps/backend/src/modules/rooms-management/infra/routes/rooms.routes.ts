@@ -1,6 +1,9 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
 import { RoomsService } from '../services';
 import { authMiddleware } from '@/modules/authentication';
+import { db } from '@/shared/clients/db';
+import { parseArrayToSchema } from '@/shared/infra/parse-array-to-schema';
+import { trackSchema } from '@/modules/vibes-management';
 
 export function getRoomsRoutes() {
   const app = new OpenAPIHono();
@@ -77,6 +80,65 @@ export function getRoomsRoutes() {
       }
 
       return c.json(members, 200);
+    },
+  );
+
+  // room playlist
+  app.openapi(
+    createRoute({
+      method: 'get',
+      path: '/:roomId/playlist',
+      responses: {
+        200: {
+          description: 'Room playlist',
+          content: {
+            'application/json': {
+              schema: z.array(z.any()),
+            },
+          },
+        },
+        400: {
+          description: 'Bad Request',
+          content: {
+            'application/json': {
+              schema: z.object({
+                error: z.string(),
+              }),
+            },
+          },
+        },
+        404: {
+          description: 'Room not found',
+          content: {
+            'application/json': {
+              schema: z.object({
+                error: z.string(),
+              }),
+            },
+          },
+        },
+      },
+    }),
+    async (c) => {
+      const roomId = c.req.param('roomId');
+      if (!roomId) {
+        return c.json({ error: 'Room ID is required' }, 400);
+      }
+
+      const service = RoomsService.getInstance();
+      const room = service.tracker.getRoom(roomId);
+      if (!room) {
+        return c.json({ error: 'Room not found' }, 404);
+      }
+
+      const playlist = await db.playlist.findFirstOrThrow({
+        where: { ownerId: room.ownerId },
+        include: {
+          tracks: true,
+        },
+      });
+
+      return c.json(parseArrayToSchema(playlist.tracks, trackSchema), 200);
     },
   );
 
