@@ -30,7 +30,7 @@ export default function RoomCard({ roomId }: RoomCardProps) {
 
   return (
     <>
-      <div className="container max-w-2xl mx-auto min-h-screen">
+      <div className="container max-w-2xl mx-auto min-h-screen py-32">
         <div className="flex flex-col p-6 gap-6 backdrop-blur-lg z-30 rounded-2xl border">
           <div className="flex justify-between">
             <Button className="rounded-full" variant={'ghost'} asChild>
@@ -63,10 +63,7 @@ export default function RoomCard({ roomId }: RoomCardProps) {
               <CardContent className="gap-2">
                 <RoomMembers />
               </CardContent>
-              <Separator />
-              <CardContent>
-                {session?.data ? <RoomPlaylist /> : <RoomDiscordJoin />}
-              </CardContent>
+              {session?.data ? <RoomPlaylist /> : <RoomDiscordJoin />}
               <CardFooter className="justify-end">
                 <Button variant={'outline'} onClick={() => connect(roomId)}>
                   <RefreshCwIcon />

@@ -22,8 +22,6 @@ export default function RoomTrack() {
   );
   const progress = (currentTime / duration) * 100 || 0;
 
-  if (!track) return null;
-
   return (
     <>
       <div className="relative rounded-2xl border overflow-hidden z-10">
@@ -34,24 +32,8 @@ export default function RoomTrack() {
             <div className="flex flex-col flex-1">
               <span className="text-lg">Playlist Name</span>
               <span className="text-xs text-muted-foreground">
-                Shinobu - Lofi Beats
+                {track?.title || 'No track playing'}
               </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Button size={'icon'} variant={'outline'}>
-                <SkipBackIcon />
-              </Button>
-              <Button
-                size={'icon'}
-                variant={'outline'}
-                data-state={isPlaying ? 'open' : 'closed'}
-                onClick={() => (isPlaying ? pause() : resume())}
-              >
-                {isPlaying ? <PauseIcon /> : <PlayIcon />}
-              </Button>
-              <Button size={'icon'} variant={'outline'}>
-                <SkipForwardIcon />
-              </Button>
             </div>
           </div>
           <div className="px-4 py-2">

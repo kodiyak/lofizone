@@ -40,6 +40,10 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
       currentAudio.pause();
       currentAudio.src = '';
     }
+    if (!track.metadata.audio) {
+      console.warn('Track does not have audio metadata:', track);
+      return;
+    }
     const audio = new Audio(track.metadata.audio);
     set((prev) => ({ audioState: { ...prev.audioState, isPlaying: false } }));
 
@@ -68,6 +72,8 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
         audioState: { ...prev.audioState, isPlaying: false, currentTime: 0 },
       }));
     });
+
+    audio.play();
 
     set({ audio, track });
   },

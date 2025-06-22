@@ -15,6 +15,12 @@ export namespace Api {
     id: string;
     title: string;
     albumId: string;
-    metadata: any;
+    metadata: {
+      audio?: string | null;
+      background?: {
+        type: 'image' | 'video';
+        url: string;
+      };
+    };
   }
 }

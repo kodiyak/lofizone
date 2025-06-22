@@ -7,6 +7,11 @@ import {
   SkipBackIcon,
   SkipForwardIcon,
 } from '@phosphor-icons/react';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@workspace/ui/components/avatar';
 import { Button } from '@workspace/ui/components/button';
 import React from 'react';
 
@@ -24,7 +29,15 @@ export default function NavTrackPlayer() {
       <div className="flex flex-col w-full gap-1">
         <div className="flex items-center gap-1.5">
           <div className="flex flex-1 justify-start items-center gap-2.5">
-            <div className="size-5 rounded-sm bg-muted"></div>
+            {track?.metadata?.background?.url && (
+              <Avatar className="size-5 rounded-sm bg-transparent">
+                <AvatarImage
+                  src={track.metadata.background.url}
+                  alt={track.title}
+                />
+                <AvatarFallback className="rounded-sm bg-muted animate-pulse" />
+              </Avatar>
+            )}
             <span className="text-[11px] font-mono text-center">
               {track?.title || 'No track playing'}
             </span>
