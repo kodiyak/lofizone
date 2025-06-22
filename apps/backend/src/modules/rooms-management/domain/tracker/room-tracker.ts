@@ -1,4 +1,7 @@
+import { EventEmitter } from '@/shared/infra/event-emitter';
 import { RoomMemberTracker } from './room-member-tracker';
+import { z } from 'zod';
+import { MemberNotFoundError } from '../errors';
 
 export interface RoomTrackerProps {
   roomId: string;
@@ -8,8 +11,23 @@ export interface RoomTrackerProps {
   cover?: string | null;
 }
 
+const RoomTrackerEvents = z.object({
+  member_joined: z.object({
+    memberId: z.string(),
+    host: z.boolean(),
+  }),
+  member_left: z.object({
+    memberId: z.string(),
+  }),
+  track_changed: z.object({
+    memberId: z.string(),
+    trackId: z.string().nullable(),
+  }),
+});
+
 export class RoomTracker {
   private readonly members: RoomMemberTracker[] = [];
+  public readonly events = new EventEmitter(RoomTrackerEvents);
 
   constructor(private readonly props: RoomTrackerProps) {}
 
@@ -39,16 +57,38 @@ export class RoomTracker {
     }
 
     this.members.push(member);
+    this.events.emit('member_joined', {
+      memberId: member.memberId,
+      host: member.host,
+    });
+
+    const streamedTrackEvents = [
+      member.events.buildListener('track_changed', (data) => {
+        this.events.emit('track_changed', {
+          memberId: member.memberId,
+          trackId: data.trackId,
+        });
+      }),
+    ];
+
+    member.events.buildListener('member_left', ({ off: offMemberLeft }) => {
+      const memberId = member.memberId;
+      const memberIndex = this.members.findIndex((m) => m.memberId === memberId);
+      if (memberIndex === -1) {
+        throw new MemberNotFoundError(memberId);
+      }
+
+      this.members.splice(memberIndex, 1);
+      this.events.emit('member_left', { memberId });
+      streamedTrackEvents.forEach((e) => e.off());
+      offMemberLeft();
+    });
+
     return member;
   }
 
-  public leave(memberId: string) {
-    const memberIndex = this.members.findIndex((m) => m.memberId === memberId);
-    if (memberIndex === -1) {
-      throw new Error(`Member with ID ${memberId} is not in the room.`);
-    }
-
-    this.members.splice(memberIndex, 1);
+  public getMember(memberId: string): RoomMemberTracker | undefined {
+    return this.members.find((member) => member.memberId === memberId);
   }
 
   public getMembers(): RoomMemberTracker[] {
