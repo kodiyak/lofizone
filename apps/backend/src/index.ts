@@ -3,12 +3,14 @@ import { serve } from '@hono/node-server';
 import { cors } from 'hono/cors';
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { getVibesManagementRoutes } from './modules/vibes-management';
-import { getRoomsManagementRoutes, RoomsTracker } from './modules/rooms-management';
+import { getRoomsManagementRoutes, RoomsService } from './modules/rooms-management';
+import { createNodeWebSocket } from '@hono/node-ws';
 
 async function main() {
-  await RoomsTracker.init(); // Initialize the RoomsTracker
+  await RoomsService.init(); // Initialize the RoomsService
 
   const app = new OpenAPIHono();
+  const ws = createNodeWebSocket({ app });
   app.use(
     '*',
     cors({
@@ -26,7 +28,7 @@ async function main() {
     }),
   );
   app.route('/', getVibesManagementRoutes());
-  app.route('/', getRoomsManagementRoutes());
+  app.route('/', getRoomsManagementRoutes(ws));
   app.doc(`/doc`, {
     openapi: '3.0.0',
     info: {

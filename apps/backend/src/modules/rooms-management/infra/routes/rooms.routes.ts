@@ -1,9 +1,9 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
-import { RoomsTracker } from '../tracker';
+import { RoomsService } from '../services';
 import { authMiddleware } from '@/modules/authentication';
-import { cors } from 'hono/cors';
+import type { NodeWebSocket } from '@hono/node-ws';
 
-export function getRoomsRoutes() {
+export function getRoomsRoutes(socket: NodeWebSocket) {
   const app = new OpenAPIHono();
   app.use('*', authMiddleware);
 
@@ -23,8 +23,8 @@ export function getRoomsRoutes() {
       },
     }),
     async (c) => {
-      const tracker = RoomsTracker.getInstance();
-      const rooms = tracker.getAllRooms();
+      const service = RoomsService.getInstance();
+      const rooms = service.getAllRooms();
       return c.json(rooms, 200);
     },
   );
