@@ -13,16 +13,27 @@ import {
   AvatarImage,
 } from '@workspace/ui/components/avatar';
 import { Button } from '@workspace/ui/components/button';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { SliderPlayer } from '@workspace/ui/components/slider';
 
 export default function NavTrackPlayer() {
   const track = useRoomStore((state) => state.track);
   const pause = useRoomStore((state) => state.pause);
   const resume = useRoomStore((state) => state.resume);
+  const seek = useRoomStore((state) => state.seek);
   const { currentTime, duration, isPlaying } = useRoomStore(
     (state) => state.audioState,
   );
-  const progress = duration ? (currentTime / duration) * 100 : 0;
+
+  const [isDragging, setDragging] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    if (!isDragging) {
+      const newProgress = duration ? (currentTime / duration) * 100 : 0;
+      setProgress(newProgress);
+    }
+  }, [currentTime, duration]);
 
   return (
     <>
@@ -60,12 +71,20 @@ export default function NavTrackPlayer() {
             <SkipForwardIcon />
           </Button>
         </div>
-        <div className="h-1 w-full bg-muted rounded-full flex items-center px-0.5">
-          <div
-            className="h-0.5 bg-primary rounded-full"
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
+        <SliderPlayer
+          value={progress !== undefined ? [progress] : []}
+          min={0}
+          max={100}
+          onValueChange={([v]) => {
+            setDragging(true);
+            setProgress(v);
+          }}
+          onValueCommit={([v]) => {
+            setDragging(false);
+            const newTime = (v / 100) * duration;
+            seek(newTime);
+          }}
+        />
       </div>
     </>
   );

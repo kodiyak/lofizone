@@ -21,7 +21,6 @@ import {
 } from '@workspace/ui/components/menubar';
 import Image from 'next/image';
 import Logo from '@/assets/images/logo-square.png';
-import { Music4Icon } from 'lucide-react';
 import NavTrackPlayer from './nav-track-player';
 
 export default function NavTop() {
@@ -37,7 +36,7 @@ export default function NavTop() {
                 src={Logo}
                 alt={'Logo'}
                 width={50}
-                className="size-7 rounded-sm"
+                className="size-7 rounded-lg border border-border/50"
               />
             </Link>
           </div>

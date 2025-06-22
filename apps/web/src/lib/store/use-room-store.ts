@@ -11,6 +11,7 @@ interface RoomStore {
   track: Api.Track | null;
   playTrack: (track: Api.Track) => Promise<void>;
   resume: () => void;
+  seek: (time: number) => void;
   pause: () => void;
 
   // Audio
@@ -84,6 +85,10 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
   pause: () => {
     const { audio } = get();
     audio?.pause();
+  },
+  seek: (time: number) => {
+    const { audio } = get();
+    if (audio) audio.currentTime = time;
   },
   connect: async (roomId: string) => {
     const { socket: currentSocket } = get();
