@@ -59,12 +59,19 @@ async function createAlbum(artistId: string, cover: string) {
 async function createTrack(artistId: string, albumId: string, track: string) {
   const trackId = generateTrackId();
   const trackPath = [env.s3.bucket, 'tracks', trackId, 'audio.mp3'].join('/');
+  const backgroundPath = [env.s3.bucket, 'tracks', trackId, 'background.webp'].join('/');
   return db.track.create({
     data: {
       id: trackId,
       title: `Track ${trackId}`,
       duration: 180, // Example duration in seconds
       metadata: {
+        background: {
+          type: 'image',
+          url: await s3Client
+            .putObject(backgroundPath, readFileSync(temp('avatar.webp')), 'image/webp')
+            .then((res) => res.url),
+        },
         audio: await s3Client
           .putObject(trackPath, readFileSync(temp('tracks', track)), 'audio/mpeg')
           .then((res) => res.url),

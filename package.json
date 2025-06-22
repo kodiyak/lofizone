@@ -8,6 +8,7 @@
     "cn": "pnpm --filter @workspace/ui cn",
     "db:push": "pnpm --filter @workspace/db db:push",
     "db:reset": "pnpm --filter @workspace/db db:reset",
+    "db:seed": "pnpm --filter backend db:seed",
     "db:studio": "pnpm --filter @workspace/db db:studio",
     "auth:generate": "pnpm --filter @workspace/auth auth:generate"
   },
