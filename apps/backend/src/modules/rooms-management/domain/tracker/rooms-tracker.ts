@@ -1,5 +1,4 @@
 import { RoomTracker, type RoomTrackerProps } from '../../domain/tracker/room-tracker';
-import { RoomsRepository } from '../../infra';
 
 export class RoomsTracker {
   private static instance: RoomsTracker;
@@ -11,20 +10,6 @@ export class RoomsTracker {
       RoomsTracker.instance = new RoomsTracker();
     }
     return RoomsTracker.instance;
-  }
-
-  static async init(): Promise<void> {
-    const tracker = this.getInstance();
-    const rooms = await RoomsRepository.getInstance().loadMany();
-
-    rooms.forEach((room) => {
-      tracker.addRoom({
-        roomId: room.id,
-        name: room.name || undefined,
-        playlistId: room.playlistId || null,
-        cover: room.metadata?.cover,
-      });
-    });
   }
 
   public addRoom(props: RoomTrackerProps): RoomTracker {
