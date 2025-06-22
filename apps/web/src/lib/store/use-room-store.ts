@@ -105,7 +105,28 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     }
     function onMessage(event: MessageEvent) {
       try {
-        console.log(event);
+        const payload = JSON.parse(event.data);
+        const handlers = {
+          member_joined: (data: Api.RoomMember) => {
+            set((state) => ({
+              members: [...state.members, data],
+            }));
+          },
+          member_left: (data: Api.RoomMember) => {
+            set((state) => ({
+              members: state.members.filter(
+                (m) => m.memberId !== data.memberId,
+              ),
+            }));
+          },
+        };
+        const handler = (handlers as any)[payload.event];
+        if (!handler) {
+          console.warn('No handler for message type:', payload.event);
+          return;
+        }
+        handler(payload.data);
+        console.log(payload);
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);
       }

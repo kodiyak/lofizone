@@ -7,7 +7,6 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@workspace/ui/components/avatar';
-import { Button } from '@workspace/ui/components/button';
 import {
   Command,
   CommandEmpty,
@@ -15,7 +14,6 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
 } from '@workspace/ui/components/command';
 import React from 'react';
 
@@ -31,7 +29,7 @@ export default function RoomPlaylist() {
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
           <CommandGroup heading="Tracks">
-            {tracks.map((track, t) => (
+            {tracks.map((track) => (
               <CommandItem
                 onSelect={() => {
                   playTrack(track);
@@ -65,44 +63,12 @@ export default function RoomPlaylist() {
               </CommandItem>
             ))}
           </CommandGroup>
-          <CommandSeparator />
+          {/* <CommandSeparator />
           <CommandGroup heading="Playlists">
             <CommandItem>Profile</CommandItem>
-          </CommandGroup>
+          </CommandGroup> */}
         </CommandList>
       </Command>
-    </>
-  );
-
-  return (
-    <>
-      <div className="flex flex-col gap-1">
-        {tracks.map((track, t) => (
-          <Button
-            variant={'outline'}
-            className="h-auto"
-            key={track.id}
-            disabled={trackId === track.id}
-            onClick={() => playTrack(track)}
-          >
-            {track?.metadata?.background?.url && (
-              <Avatar className="size-8 rounded-sm bg-transparent">
-                <AvatarImage
-                  src={track.metadata.background.url}
-                  alt={track.title}
-                />
-                <AvatarFallback className="rounded-sm bg-muted animate-pulse" />
-              </Avatar>
-            )}
-            <span className="flex-1 text-left">{track.title}</span>
-            {trackId === track.id ? (
-              <StopIcon className="fill-foreground" />
-            ) : (
-              <PlayIcon />
-            )}
-          </Button>
-        ))}
-      </div>
     </>
   );
 }

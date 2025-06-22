@@ -8,7 +8,7 @@ export namespace Api {
   export interface RoomMember {
     memberId: string;
     host: boolean;
-    role: 'admin' | 'member';
+    muted?: boolean;
   }
 
   export interface Track {
