@@ -12,7 +12,9 @@ interface AuthConfig {
   socialProviders: BetterAuthOptions['socialProviders'];
 }
 
-export function createAuth(config: AuthConfig) {
+type CreateAuthOutput = ReturnType<typeof betterAuth>;
+
+export function createAuth(config: AuthConfig): CreateAuthOutput {
   return betterAuth({
     plugins: [nextCookies(), jwt(), bearer()],
     secret: config.secret,

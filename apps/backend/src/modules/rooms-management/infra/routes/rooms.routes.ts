@@ -1,8 +1,10 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
 import { RoomsTracker } from '../tracker';
+import { authMiddleware } from '@/modules/authentication';
 
 export function getRoomsRoutes() {
   const app = new OpenAPIHono();
+  app.use('*', authMiddleware);
 
   app.openapi(
     createRoute({
