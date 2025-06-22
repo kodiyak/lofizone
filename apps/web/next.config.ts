@@ -2,6 +2,9 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   transpilePackages: ['@workspace/ui'],
+  images: {
+    remotePatterns: [new URL('https://s3.us-east-005.backblazeb2.com/**')],
+  },
   experimental: {
     reactCompiler: false,
   },

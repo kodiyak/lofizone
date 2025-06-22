@@ -48,7 +48,9 @@ export default function RoomTrack() {
           </div>
         </div>
         <Image
-          src={Wallpaper}
+          src={track?.metadata.background?.url || Wallpaper}
+          width={1080}
+          height={1080}
           alt={'Lofi'}
           className="w-full h-[32vh] object-cover object-center"
         />
