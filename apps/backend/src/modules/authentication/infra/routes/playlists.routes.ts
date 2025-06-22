@@ -4,6 +4,7 @@ import { authMiddleware } from '../middlewares';
 import type { auth } from '@/shared/clients/auth';
 import { parseArrayToSchema } from '@/shared/infra/parse-array-to-schema';
 import { playlistSchema } from '../../domain';
+import { trackSchema } from '@/modules/vibes-management';
 
 export function getPlaylistsRoutes() {
   const app = new OpenAPIHono<{ Variables: { session: typeof auth.$Infer.Session } }>();
@@ -36,6 +37,54 @@ export function getPlaylistsRoutes() {
         ),
         200,
       );
+    },
+  );
+
+  //  playlist tracks
+  app.openapi(
+    createRoute({
+      method: 'get',
+      path: '/:playlistId/tracks',
+      responses: {
+        200: {
+          description: 'List of tracks in the playlist',
+          content: {
+            'application/json': {
+              schema: z.array(z.any()),
+            },
+          },
+        },
+        404: {
+          description: 'Playlist not found',
+          content: {
+            'application/json': {
+              schema: z.object({
+                error: z.string(),
+              }),
+            },
+          },
+        },
+      },
+    }),
+    async (c) => {
+      const { playlistId } = c.req.param();
+      const session = c.get('session');
+
+      const playlist = await db.playlist.findFirst({
+        where: {
+          id: playlistId,
+          ownerId: session.user.id,
+        },
+        include: {
+          tracks: true,
+        },
+      });
+
+      if (!playlist) {
+        return c.json({ error: 'Playlist not found' }, 404);
+      }
+
+      return c.json(parseArrayToSchema(playlist.tracks, trackSchema), 200);
     },
   );
 
