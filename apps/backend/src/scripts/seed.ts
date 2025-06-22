@@ -7,6 +7,7 @@ import {
   generateAlbumId,
   generateArtistId,
   generatePlaylistId,
+  generateRoomId,
   generateTrackId,
 } from '@workspace/core';
 import { readFileSync } from 'fs';
@@ -103,10 +104,30 @@ async function seedPlaylists() {
   }
 }
 
+async function seedRooms() {
+  const users = await db.user.findMany({
+    select: { id: true },
+  });
+
+  for (const user of users) {
+    await db.room.create({
+      data: {
+        id: generateRoomId(),
+        name: `Room for ${user.id}`,
+        owner: { connect: { id: user.id } },
+        metadata: { cover: null },
+      },
+    });
+  }
+}
+
 async function main() {
   await cleanup();
   await seedTracks();
   await seedPlaylists();
+  await seedRooms();
+  console.log('Database seeded successfully!');
+  console.log('You can now start the server with `npm run dev`');
 }
 
 main().catch((err) => {
