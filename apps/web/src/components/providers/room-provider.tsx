@@ -19,17 +19,5 @@ export default function RoomProvider({
     }
   }, [roomId]);
 
-  return (
-    <>
-      <Button
-        onClick={() => {
-          connect(roomId);
-        }}
-        variant={'outline'}
-      >
-        Reconnect
-      </Button>
-      {children}
-    </>
-  );
+  return <>{children}</>;
 }

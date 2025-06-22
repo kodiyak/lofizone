@@ -37,7 +37,7 @@ export default function RootLayout({
         )}
         style={
           {
-            '--nav-top-height': 'calc(var(--spacing)* 16)',
+            '--nav-top-height': 'calc(var(--spacing)* 10)',
           } as CSSProperties
         }
       >

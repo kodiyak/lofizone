@@ -8,15 +8,17 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
+  CardFooter,
 } from '@workspace/ui/components/card';
 import { Separator } from '@workspace/ui/components/separator';
-import { ArrowLeftIcon } from 'lucide-react';
+import { ArrowLeftIcon, RefreshCwIcon } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 import { authClient } from '@/lib/authClient';
 import RoomDiscordJoin from './room-discord-join';
 import RoomPlaylist from '@/app/(public)/r/[roomId]/components/room-playlist';
 import RoomTrack from './room-track';
+import { useRoomStore } from '@/lib/store/use-room-store';
 
 interface RoomCardProps {
   roomId: string;
@@ -24,6 +26,7 @@ interface RoomCardProps {
 
 export default function RoomCard({ roomId }: RoomCardProps) {
   const session = authClient.useSession();
+  const connect = useRoomStore((state) => state.connect);
 
   return (
     <>
@@ -64,6 +67,12 @@ export default function RoomCard({ roomId }: RoomCardProps) {
               <CardContent>
                 {session?.data ? <RoomPlaylist /> : <RoomDiscordJoin />}
               </CardContent>
+              <CardFooter className="justify-end">
+                <Button variant={'outline'} onClick={() => connect(roomId)}>
+                  <RefreshCwIcon />
+                  <span>Reconnect</span>
+                </Button>
+              </CardFooter>
             </Card>
           </div>
         </div>
