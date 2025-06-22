@@ -1,7 +1,6 @@
 'use client';
 
 import RoomMembers from '@/app/(public)/r/[roomId]/components/room-members';
-import Wallpaper from '@/assets/images/wallpaper-2.webp';
 import { Button } from '@workspace/ui/components/button';
 import {
   Card,
@@ -10,16 +9,8 @@ import {
   CardDescription,
   CardContent,
 } from '@workspace/ui/components/card';
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from '@workspace/ui/components/select';
 import { Separator } from '@workspace/ui/components/separator';
 import { ArrowLeftIcon } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 import { authClient } from '@/lib/authClient';
@@ -56,57 +47,7 @@ export default function RoomCard({ roomId }: RoomCardProps) {
             </div>
           </div>
           <div className="flex-1">
-            <div className="relative rounded-2xl border overflow-hidden z-10">
-              <div className="absolute left-0 top-0 size-full bg-gradient-to-b from-transparent to-background flex flex-col z-10" />
-              <div className="absolute left-0 top-0 size-full bg-gradient-to-br from-transparent to-background flex flex-col z-20">
-                <div className="flex-1"></div>
-                <div className="flex items-center gap-4 p-4 font-mono">
-                  <div className="flex flex-col flex-1">
-                    <span className="text-lg">Playlist Name</span>
-                    <span className="text-xs text-muted-foreground">
-                      Shinobu - Lofi Beats
-                    </span>
-                  </div>
-                  <Select value={'en-US'}>
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Country..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {[
-                        {
-                          label: 'USA',
-                          value: 'en-US',
-                          flag: 'us',
-                        },
-                        {
-                          label: 'Brazil',
-                          value: 'pt-BR',
-                          flag: 'br',
-                        },
-                      ].map((lang) => (
-                        <SelectItem
-                          key={lang.value}
-                          value={lang.value}
-                          className="flex items-center gap-2"
-                        >
-                          <img
-                            className="size-4 rounded-sm"
-                            src={`https://flagcdn.com/w20/${lang.flag}.png`}
-                            alt={lang.label}
-                          />
-                          {lang.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <Image
-                src={Wallpaper}
-                alt={'Lofi'}
-                className="w-full h-[32vh] object-cover object-center"
-              />
-            </div>
+            <RoomTrack />
           </div>
           <div className="flex-1">
             <Card>
@@ -120,9 +61,6 @@ export default function RoomCard({ roomId }: RoomCardProps) {
                 <RoomMembers />
               </CardContent>
               <Separator />
-              <CardContent>
-                <RoomTrack />
-              </CardContent>
               <CardContent>
                 {session?.data ? <RoomPlaylist /> : <RoomDiscordJoin />}
               </CardContent>

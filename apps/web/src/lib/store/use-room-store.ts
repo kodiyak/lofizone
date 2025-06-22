@@ -41,43 +41,43 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
       currentAudio.src = '';
     }
     const audio = new Audio(track.metadata.audio);
-    const { audioState } = get();
+    set((prev) => ({ audioState: { ...prev.audioState, isPlaying: false } }));
 
     audio.addEventListener('play', () => {
-      set({ audioState: { ...audioState, isPlaying: true } });
+      set((prev) => ({ audioState: { ...prev.audioState, isPlaying: true } }));
     });
 
     audio.addEventListener('pause', () => {
-      set({ audioState: { ...audioState, isPlaying: false } });
+      set((prev) => ({ audioState: { ...prev.audioState, isPlaying: false } }));
     });
 
     audio.addEventListener('timeupdate', () => {
-      set({ audioState: { ...audioState, currentTime: audio.currentTime } });
+      set((prev) => ({
+        audioState: { ...prev.audioState, currentTime: audio.currentTime },
+      }));
     });
 
     audio.addEventListener('loadedmetadata', () => {
-      set({ audioState: { ...audioState, duration: audio.duration } });
+      set((prev) => ({
+        audioState: { ...prev.audioState, duration: audio.duration },
+      }));
     });
 
     audio.addEventListener('ended', () => {
-      set({ audioState: { ...audioState, isPlaying: false, currentTime: 0 } });
+      set((prev) => ({
+        audioState: { ...prev.audioState, isPlaying: false, currentTime: 0 },
+      }));
     });
 
     set({ audio, track });
   },
   resume: () => {
-    const { audio, audioState } = get();
-    if (audio && !audioState.isPlaying) {
-      audio.play();
-      set({ audioState: { ...audioState, isPlaying: true } });
-    }
+    const { audio } = get();
+    audio?.play();
   },
   pause: () => {
-    const { audio, audioState } = get();
-    if (audio && audioState.isPlaying) {
-      audio.pause();
-      set({ audioState: { ...audioState, isPlaying: false } });
-    }
+    const { audio } = get();
+    audio?.pause();
   },
   connect: async (roomId: string) => {
     const { socket: currentSocket } = get();
