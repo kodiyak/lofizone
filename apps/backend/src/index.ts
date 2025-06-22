@@ -11,6 +11,16 @@ async function main() {
 
   const app = new OpenAPIHono();
   const ws = createNodeWebSocket({ app });
+
+  app.route('/', getVibesManagementRoutes());
+  app.route('/', getRoomsManagementRoutes(ws));
+  app.doc(`/doc`, {
+    openapi: '3.0.0',
+    info: {
+      version: '1.0.0',
+      title: 'My API',
+    },
+  });
   app.use(
     '*',
     cors({
@@ -27,17 +37,8 @@ async function main() {
       credentials: true,
     }),
   );
-  app.route('/', getVibesManagementRoutes());
-  app.route('/', getRoomsManagementRoutes(ws));
-  app.doc(`/doc`, {
-    openapi: '3.0.0',
-    info: {
-      version: '1.0.0',
-      title: 'My API',
-    },
-  });
 
-  serve(
+  const server = serve(
     {
       fetch: app.fetch,
       port: Number(env.port),
@@ -48,6 +49,8 @@ async function main() {
       console.log(env);
     },
   );
+
+  ws.injectWebSocket(server);
 }
 
 main().catch((err) => {

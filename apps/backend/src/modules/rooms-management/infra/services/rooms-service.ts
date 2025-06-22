@@ -1,7 +1,11 @@
 import type { WSContext } from 'hono/ws';
-import { RoomTracker, type RoomTrackerProps } from '../../domain/tracker/room-tracker';
+import { RoomTracker } from '../../domain/tracker/room-tracker';
 import { RoomsRepository } from '../repositories';
 import { RoomsTracker } from '../../domain';
+import WebSocket from 'ws';
+import type { auth } from '@/shared/clients/auth';
+
+type RoomSession = typeof auth.$Infer.Session.session;
 
 export class RoomsService {
   private static instance: RoomsService;
@@ -40,12 +44,17 @@ export class RoomsService {
     return this.tracker.getAllRooms();
   }
 
-  handleJoin(ws: WSContext<WebSocket>, roomId: string, memberId: string) {
-    const room = this.rooms.get(roomId);
-
+  handleJoin(ws: WSContext<WebSocket>, session: RoomSession, roomId: string) {
+    const room = this.tracker.getRoom(roomId);
     if (!room) {
       console.error(`Room ${roomId} not found`);
       return;
     }
+
+    console.log({
+      roomId,
+      ws,
+      session,
+    });
   }
 }

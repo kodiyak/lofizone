@@ -6,8 +6,6 @@ export const authMiddleware: Handler = async (c, next) => {
     headers: c.req.raw.headers,
   });
 
-  console.log('Session retrieved:', { session, headers: c.req.raw.headers });
-
   if (!session) {
     console.error('Unauthorized access attempt detected');
     return c.json(

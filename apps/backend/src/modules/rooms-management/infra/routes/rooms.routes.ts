@@ -1,9 +1,8 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
 import { RoomsService } from '../services';
 import { authMiddleware } from '@/modules/authentication';
-import type { NodeWebSocket } from '@hono/node-ws';
 
-export function getRoomsRoutes(socket: NodeWebSocket) {
+export function getRoomsRoutes() {
   const app = new OpenAPIHono();
   app.use('*', authMiddleware);
 
