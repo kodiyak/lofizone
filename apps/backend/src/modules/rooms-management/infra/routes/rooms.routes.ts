@@ -28,5 +28,57 @@ export function getRoomsRoutes() {
     },
   );
 
+  // room members
+  app.openapi(
+    createRoute({
+      method: 'get',
+      path: '/:roomId/members',
+      responses: {
+        200: {
+          description: 'List of room members',
+          content: {
+            'application/json': {
+              schema: z.array(z.any()),
+            },
+          },
+        },
+        400: {
+          description: 'Bad Request',
+          content: {
+            'application/json': {
+              schema: z.object({
+                error: z.string(),
+              }),
+            },
+          },
+        },
+        404: {
+          description: 'Room not found',
+          content: {
+            'application/json': {
+              schema: z.object({
+                error: z.string(),
+              }),
+            },
+          },
+        },
+      },
+    }),
+    async (c) => {
+      const roomId = c.req.param('roomId');
+      if (!roomId) {
+        return c.json({ error: 'Room ID is required' }, 400);
+      }
+
+      const service = RoomsService.getInstance();
+      const members = service.getRoomMembers(roomId);
+      if (!members) {
+        return c.json({ error: 'Room not found' }, 404);
+      }
+
+      return c.json(members, 200);
+    },
+  );
+
   return app;
 }

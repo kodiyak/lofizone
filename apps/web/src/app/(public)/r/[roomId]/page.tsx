@@ -12,11 +12,6 @@ import {
 } from '@workspace/ui/components/card';
 import { DiscordIcon } from '@workspace/ui/components/icons';
 import { ArrowLeftIcon } from 'lucide-react';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@workspace/ui/components/avatar';
 import { Separator } from '@workspace/ui/components/separator';
 import Link from 'next/link';
 import {
@@ -27,6 +22,7 @@ import {
   SelectValue,
 } from '@workspace/ui/components/select';
 import RoomProvider from '@/components/providers/room-provider';
+import RoomMembers from '@/components/room-members';
 
 interface Props {
   params: Promise<{ roomId: string }>;
@@ -115,17 +111,6 @@ export default async function Page({ params }: Props) {
             </div>
           </div>
           <div className="flex-1">
-            {/* <div className="flex flex-col p-4 bg-background border rounded-xl">
-            <h1 className="text-2xl font-bold mb-4">Welcome to the Room</h1>
-            <p className="text-muted-foreground mb-4">
-              Join us for a relaxing session of lofi music and chill vibes.
-            </p>
-            <div className="flex justify-end">
-              <Button className="w-full rounded-full" size={'lg'}>
-                Join Room
-              </Button>
-            </div>
-          </div> */}
             <Card>
               <CardHeader>
                 <CardTitle>Welcome to the Room</CardTitle>
@@ -134,26 +119,7 @@ export default async function Page({ params }: Props) {
                 </CardDescription>
               </CardHeader>
               <CardContent className="gap-2">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <Button
-                    className="justify-start h-auto gap-3 py-2"
-                    variant={'outline'}
-                    key={i}
-                  >
-                    <Avatar className="bg-muted border size-12">
-                      <AvatarImage
-                        src={`https://api.dicebear.com/9.x/lorelei/svg?seed=User${i + 1}`}
-                      />
-                      <AvatarFallback>U</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 text-left flex flex-col">
-                      <span className="font-semibold">User {i + 1}</span>
-                      <span className="text-muted-foreground text-xs">
-                        Listening to lofi
-                      </span>
-                    </div>
-                  </Button>
-                ))}
+                <RoomMembers roomId={roomId} />
               </CardContent>
               <Separator />
               <CardFooter>

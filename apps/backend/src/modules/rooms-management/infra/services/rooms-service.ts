@@ -9,7 +9,6 @@ type RoomSession = typeof auth.$Infer.Session.session;
 
 export class RoomsService {
   private static instance: RoomsService;
-  private rooms = new Map<string, RoomTracker>();
   private wsClient = new Map<WSContext<WebSocket>, { memberId: string; roomId: string }>();
 
   private static get tracker() {
@@ -42,6 +41,10 @@ export class RoomsService {
 
   getAllRooms() {
     return this.tracker.getAllRooms();
+  }
+
+  getRoomMembers(roomId: string) {
+    return this.tracker.getRoom(roomId)?.getMembers() || [];
   }
 
   handleJoin(ws: WSContext<WebSocket>, session: RoomSession, roomId: string) {

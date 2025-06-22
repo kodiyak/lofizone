@@ -4,4 +4,10 @@ export namespace Api {
     name: string;
     ownerId: string;
   }
+
+  export interface RoomMember {
+    memberId: string;
+    host: boolean;
+    role: 'admin' | 'member';
+  }
 }
