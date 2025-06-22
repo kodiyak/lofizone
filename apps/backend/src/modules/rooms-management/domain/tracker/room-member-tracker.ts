@@ -15,7 +15,7 @@ const RoomMemberTrackerEvents = z.object({
 });
 
 export class RoomMemberTracker {
-  public readonly events = new EventEmitter(RoomMemberTrackerEvents);
+  public readonly events = new EventEmitter(RoomMemberTrackerEvents, 'RoomMemberTracker');
 
   constructor(private readonly props: RoomMemberTrackerProps) {}
 

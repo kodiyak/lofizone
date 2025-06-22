@@ -5,6 +5,7 @@ import { MemberNotFoundError } from '../errors';
 
 export interface RoomTrackerProps {
   roomId: string;
+  ownerId: string;
   playlistId?: string | null;
   trackId?: string | null;
   name?: string;
@@ -27,12 +28,16 @@ const RoomTrackerEvents = z.object({
 
 export class RoomTracker {
   private readonly members: RoomMemberTracker[] = [];
-  public readonly events = new EventEmitter(RoomTrackerEvents);
+  public readonly events = new EventEmitter(RoomTrackerEvents, 'RoomTracker');
 
   constructor(private readonly props: RoomTrackerProps) {}
 
   get roomId() {
     return this.props.roomId;
+  }
+
+  get ownerId() {
+    return this.props.ownerId;
   }
 
   get playlistId() {
@@ -53,7 +58,8 @@ export class RoomTracker {
 
   public join(member: RoomMemberTracker) {
     if (this.members.some((m) => m.memberId === member.memberId)) {
-      throw new Error(`Member with ID ${member.memberId} is already in the room.`);
+      console.warn(`Member with ID ${member.memberId} is already in the room.`);
+      return this.getMember(member.memberId)!;
     }
 
     this.members.push(member);
@@ -98,6 +104,7 @@ export class RoomTracker {
   toJSON() {
     return {
       roomId: this.roomId,
+      ownerId: this.ownerId,
       playlistId: this.playlistId,
       trackId: this.trackId,
       name: this.name,

@@ -10,6 +10,7 @@ export const roomSchema = z.object({
   name: z.string(),
   playlistId: z.string().nullish(),
   trackId: z.string().nullish(),
+  ownerId: z.string(),
   metadata: roomMetadataSchema,
 });
 export type RoomSchema = z.infer<typeof roomSchema>;

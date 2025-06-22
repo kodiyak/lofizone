@@ -4,7 +4,10 @@ import type { z, ZodSchema } from 'zod';
 export class EventEmitter<T extends ZodSchema, O extends z.infer<T>> {
   private readonly emitter = new BaseEmitter();
 
-  constructor(private readonly schema: T) {}
+  constructor(
+    private readonly schema: T,
+    private readonly name: string,
+  ) {}
 
   public on<K extends keyof O>(event: K, listener: (data: O[K]) => void) {
     this.emitter.on(event as any, listener);
@@ -21,8 +24,12 @@ export class EventEmitter<T extends ZodSchema, O extends z.infer<T>> {
   }
 
   public emit<K extends keyof O>(event: K, data: O[K]) {
-    if (!this.schema.safeParse({ [event]: data }).success) {
-      throw new Error(`Invalid data for event ${String(event)}`);
+    const parsedData = this.schema.safeParse({ [event]: data });
+    if (parsedData!.success) {
+      console.error(
+        `Invalid data for event ${String(event)} from ${this.name} with data ${JSON.stringify(data)}\n${parsedData.error}`,
+      );
+      return;
     }
     this.emitter.emit(event as any, data);
   }

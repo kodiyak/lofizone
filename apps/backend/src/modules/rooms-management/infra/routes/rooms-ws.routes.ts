@@ -10,27 +10,25 @@ export function getRoomsWsRoutes({ upgradeWebSocket }: NodeWebSocket) {
     '/:roomId/ws',
     upgradeWebSocket((c) => {
       const roomId = c.req.param('roomId');
-      console.log(`WebSocket connection request for room ${roomId}`);
       return {
         onOpen: async (evt, ws) => {
           const session = await auth.api.getSession({
             headers: c.req.raw.headers,
           });
-          console.log(`WebSocket opened for room ${roomId}`, session);
           if (!session) {
             console.error(`No session found for room ${roomId}`);
             ws.close(1008, 'Unauthorized');
             return;
           }
 
-          RoomsService.getInstance().handleJoin(ws, session.session, roomId);
+          RoomsService.getInstance().handleJoin(ws, session, roomId);
         },
         onMessage: (evt, ws) => {
           const message = JSON.parse(evt.data.toString());
         },
         onClose: (evt, ws) => {
           console.log(`WebSocket closed for room ${roomId}`);
-          // roomService.handleLeave(ws, roomId);
+          RoomsService.getInstance().handleLeave(ws);
         },
         onError: (evt, ws) => {
           console.error(`WebSocket error for room ${roomId}:`, evt);
