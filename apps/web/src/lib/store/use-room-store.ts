@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { backendClient } from '../clients/backend';
 
 interface RoomStore {
+  isConnected: boolean;
   room: Api.Room | null;
   members: Api.RoomMember[];
   tracks: Api.Track[];
@@ -24,6 +25,7 @@ interface RoomStore {
 }
 
 export const useRoomStore = create<RoomStore>((set, get) => ({
+  isConnected: false,
   room: null,
   socket: null,
   track: null,
@@ -142,6 +144,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
       socket.removeEventListener('close', onClose);
       socket.removeEventListener('error', onError);
       socket.removeEventListener('open', onOpen);
+      set({ isConnected: false });
     }
     function onError(error: Event) {
       console.error(
@@ -154,6 +157,6 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     socket.addEventListener('open', onOpen);
     socket.addEventListener('error', onError);
 
-    set({ socket });
+    set({ socket, isConnected: true });
   },
 }));

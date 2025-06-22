@@ -17,6 +17,7 @@ import React, { useEffect, useState } from 'react';
 import { SliderPlayer } from '@workspace/ui/components/slider';
 
 export default function NavTrackPlayer() {
+  const isConnected = useRoomStore((state) => state.isConnected);
   const track = useRoomStore((state) => state.track);
   const pause = useRoomStore((state) => state.pause);
   const resume = useRoomStore((state) => state.resume);
@@ -34,6 +35,16 @@ export default function NavTrackPlayer() {
       setProgress(newProgress);
     }
   }, [currentTime, duration]);
+
+  if (!isConnected) {
+    return (
+      <>
+        <Button variant={'outline'} size={'sm'} className="w-full">
+          Explore Rooms
+        </Button>
+      </>
+    );
+  }
 
   return (
     <>
