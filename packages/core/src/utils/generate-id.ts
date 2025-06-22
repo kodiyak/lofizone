@@ -11,6 +11,9 @@ function generateArtistId(): string {
 function generateAlbumId(): string {
   return generateId('alb');
 }
+function generatePlaylistId(): string {
+  return generateId('pl');
+}
 
 function generateTrackId(): string {
   return generateId('trk');
@@ -26,4 +29,5 @@ export {
   generateAlbumId,
   generateTrackId,
   generateRoomId,
+  generatePlaylistId,
 };

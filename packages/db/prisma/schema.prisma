@@ -10,16 +10,17 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid())
+  id            String     @id @default(uuid())
   name          String
   email         String
   emailVerified Boolean
   image         String?
-  createdAt     DateTime  @db.Timestamptz(3)
-  updatedAt     DateTime  @db.Timestamptz(3)
+  createdAt     DateTime   @db.Timestamptz(3)
+  updatedAt     DateTime   @db.Timestamptz(3)
   sessions      Session[]
   accounts      Account[]
   Room          Room[]
+  Playlist      Playlist[]
 
   @@unique([email])
 }
@@ -78,7 +79,6 @@ model Jwks {
 model Album {
   id        String   @id @default(uuid())
   title     String
-  artistId  String
   artists   Artist[]
   tracks    Track[]
   metadata  Json
@@ -87,15 +87,17 @@ model Album {
 }
 
 model Track {
-  id        String   @id @default(uuid())
-  title     String
-  artists   Artist[]
-  albumId   String
-  album     Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
-  duration  Int // duration in seconds
-  metadata  Json
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  id         String    @id @default(uuid())
+  title      String
+  artists    Artist[]
+  albumId    String
+  album      Album     @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  duration   Int // duration in seconds
+  metadata   Json
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime  @updatedAt @db.Timestamptz(3)
+  Playlist   Playlist? @relation(fields: [playlistId], references: [id])
+  playlistId String?
 }
 
 model Artist {
@@ -109,13 +111,28 @@ model Artist {
 }
 
 model Room {
+  id         String    @id @default(uuid())
+  name       String
+  ownerId    String
+  owner      User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  metadata   Json
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime  @updatedAt @db.Timestamptz(3)
+  playlist   Playlist? @relation(fields: [playlistId], references: [id])
+  playlistId String?
+
+  @@unique([name, ownerId])
+}
+
+model Playlist {
   id        String   @id @default(uuid())
   name      String
+  slug      String   @unique
   ownerId   String
   owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  tracks    Track[]
   metadata  Json
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
-
-  @@unique([name, ownerId])
+  rooms     Room[]
 }
