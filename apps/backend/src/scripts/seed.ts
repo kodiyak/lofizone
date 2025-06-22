@@ -110,14 +110,16 @@ async function seedRooms() {
   });
 
   for (const user of users) {
-    await db.room.create({
-      data: {
-        id: generateRoomId(),
-        name: `Room for ${user.id}`,
-        owner: { connect: { id: user.id } },
-        metadata: { cover: null },
-      },
-    });
+    for (const r of Array.from({ length: 20 }).map((_, i) => i + 1)) {
+      await db.room.create({
+        data: {
+          id: generateRoomId(),
+          name: `(${r}) Room for ${user.id}`,
+          owner: { connect: { id: user.id } },
+          metadata: { cover: null },
+        },
+      });
+    }
   }
 }
 
