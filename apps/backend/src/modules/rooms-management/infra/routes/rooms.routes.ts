@@ -1,6 +1,7 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
 import { RoomsTracker } from '../tracker';
 import { authMiddleware } from '@/modules/authentication';
+import { cors } from 'hono/cors';
 
 export function getRoomsRoutes() {
   const app = new OpenAPIHono();

@@ -9,7 +9,22 @@ async function main() {
   await RoomsTracker.init(); // Initialize the RoomsTracker
 
   const app = new OpenAPIHono();
-  app.use('*', cors());
+  app.use(
+    '*',
+    cors({
+      origin: ['http://localhost:4000'],
+      allowHeaders: [
+        'X-Custom-Header',
+        'Upgrade-Insecure-Requests',
+        'Content-Type',
+        'Authorization',
+      ],
+      allowMethods: ['POST', 'GET', 'PATCH', 'PUT', 'OPTIONS'],
+      exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
+      maxAge: 600,
+      credentials: true,
+    }),
+  );
   app.route('/', getVibesManagementRoutes());
   app.route('/', getRoomsManagementRoutes());
   app.doc(`/doc`, {

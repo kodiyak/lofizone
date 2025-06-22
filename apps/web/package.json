@@ -11,19 +11,21 @@
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.8",
-    "@workspace/db": "workspace:*",
+    "@tanstack/react-query": "^5.81.2",
     "@workspace/auth": "workspace:*",
+    "@workspace/db": "workspace:*",
     "@workspace/ui": "workspace:*",
+    "add": "^2.0.6",
     "next": "15.3.2",
     "zustand": "^5.0.4"
   },
   "devDependencies": {
-    "@workspace/core": "workspace:*",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@workspace/core": "workspace:*",
     "eslint-config-next": "15.3.2"
   }
 }
