@@ -1,7 +1,7 @@
 import type { WSContext } from 'hono/ws';
-import { RoomTracker } from '../../domain/tracker/room-tracker';
-import { RoomsRepository } from '../repositories';
-import { RoomsTracker } from '../../domain';
+import { RoomTracker } from '../../domain/tracker/room-tracker.js';
+import { RoomsRepository } from '../repositories/index.js';
+import { RoomsTracker } from '../../domain/index.js';
 import WebSocket from 'ws';
 import type { auth } from '@/shared/clients/auth';
 
