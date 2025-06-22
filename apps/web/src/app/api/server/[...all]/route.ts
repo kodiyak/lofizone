@@ -1,7 +1,4 @@
-async function handler(req: Request, { params }: any) {
-  const p = await params;
-  console.log('Request parameters:', p);
-
+async function handler(req: Request) {
   const url = new URL(req.url);
   const nextUrl = new URL(
     url.pathname.replace('/api/server', ''),

@@ -2,14 +2,20 @@ import type { Api } from '@workspace/core';
 import { create } from 'zustand';
 
 interface RoomStore {
-  room?: Api.Room;
+  room: Api.Room | null;
   socket: WebSocket | null;
   connect: (roomId: string) => Promise<void>;
+  track: Api.Track | null;
+  setTrack: (track: Api.Track) => void;
 }
 
 export const useRoomStore = create<RoomStore>((set, get) => ({
-  room: undefined,
+  room: null,
   socket: null,
+  track: null,
+  setTrack: (track) => {
+    set({ track });
+  },
   connect: async (roomId: string) => {
     const { socket: currentSocket } = get();
     if (currentSocket && currentSocket.readyState === WebSocket.OPEN) {

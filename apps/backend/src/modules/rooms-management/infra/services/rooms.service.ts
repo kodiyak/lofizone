@@ -1,8 +1,10 @@
 import type { WSContext } from 'hono/ws';
 import { RoomsRepository } from '../repositories';
-import { RoomMemberTracker, RoomsTracker } from '../../domain';
+import { RoomMemberTracker, roomSchema, RoomsTracker } from '../../domain';
 import WebSocket from 'ws';
 import type { auth } from '@/shared/clients/auth';
+import { db } from '@/shared/clients/db';
+import { parseArrayToSchema } from '@/shared/infra/parse-array-to-schema';
 
 type RoomSession = typeof auth.$Infer.Session;
 
@@ -26,7 +28,7 @@ export class RoomsService {
   }
 
   static async init(): Promise<void> {
-    const rooms = await RoomsRepository.getInstance().loadMany();
+    const rooms = parseArrayToSchema(await db.room.findMany({}), roomSchema);
 
     rooms.forEach((room) => {
       this.tracker.addRoom({
@@ -61,6 +63,17 @@ export class RoomsService {
 
     this.wsClient.set(ws, { session, roomId });
 
+    const send = (event: string) => {
+      return (data: any) => {
+        ws.send(JSON.stringify({ event, data }));
+      };
+    };
+    const pipes = [
+      room.events.buildListener('track_changed', send('track_changed')),
+      room.events.buildListener('member_joined', send('member_joined')),
+      room.events.buildListener('member_left', send('member_left')),
+    ];
+
     const member = room.join(
       RoomMemberTracker.create({
         memberId: session.user.id,
@@ -68,16 +81,6 @@ export class RoomsService {
         trackId: null,
       }),
     );
-
-    const send = (data: any) => {
-      ws.send(JSON.stringify(data));
-    };
-    const pipes = [
-      room.events.buildListener('track_changed', send),
-      room.events.buildListener('member_joined', send),
-      room.events.buildListener('member_left', send),
-    ];
-
     member.events.buildListener('member_left', ({ off: offMemberLeft }) => {
       const client = this.wsClient.get(ws);
       if (!client) {

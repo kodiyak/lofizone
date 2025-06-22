@@ -31,6 +31,7 @@ export class EventEmitter<T extends ZodSchema, O extends z.infer<T>> {
       );
       return;
     }
+    console.log(`[${this.name}][${event.toString()}]`, data);
     this.emitter.emit(event as any, data);
   }
 

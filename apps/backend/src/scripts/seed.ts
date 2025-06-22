@@ -37,11 +37,15 @@ async function createArtist() {
 async function createAlbum(artistId: string, cover: string) {
   const albumId = generateAlbumId();
   const coverPath = [env.s3.bucket, 'albums', albumId, 'cover.webp'].join('/');
-  await s3Client.putObject(coverPath, readFileSync(temp(cover)), 'image/webp');
+
   const payload: AlbumSchema = {
     id: albumId,
     title: 'Chill Vibes',
-    metadata: { cover: coverPath },
+    metadata: {
+      cover: await s3Client
+        .putObject(coverPath, readFileSync(temp(cover)), 'image/webp')
+        .then((res) => res.url),
+    },
   };
 
   return db.album.create({
@@ -55,14 +59,16 @@ async function createAlbum(artistId: string, cover: string) {
 async function createTrack(artistId: string, albumId: string, track: string) {
   const trackId = generateTrackId();
   const trackPath = [env.s3.bucket, 'tracks', trackId, 'audio.mp3'].join('/');
-  await s3Client.putObject(trackPath, readFileSync(temp('tracks', track)), 'audio/mpeg');
-
   return db.track.create({
     data: {
       id: trackId,
       title: `Track ${trackId}`,
       duration: 180, // Example duration in seconds
-      metadata: { audio: trackPath },
+      metadata: {
+        audio: await s3Client
+          .putObject(trackPath, readFileSync(temp('tracks', track)), 'audio/mpeg')
+          .then((res) => res.url),
+      },
       artists: { connect: { id: artistId } },
       album: { connect: { id: albumId } },
     },
