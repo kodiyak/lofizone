@@ -2,10 +2,10 @@ import { PrismaClient } from '@workspace/db';
 import type { z } from 'zod';
 import { parseArrayToSchema } from './parse-array-to-schema';
 
-export class PrismaRepository<T> {
+export class PrismaRepository<T, K extends keyof PrismaClient> {
   constructor(
     protected readonly prisma: PrismaClient,
-    protected readonly modelName: keyof PrismaClient,
+    protected readonly modelName: K,
     protected readonly schema: z.ZodSchema<T>,
   ) {}
 

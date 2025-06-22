@@ -2,9 +2,11 @@ import { env } from './env';
 import { serve } from '@hono/node-server';
 import { cors } from 'hono/cors';
 import { OpenAPIHono } from '@hono/zod-openapi';
+import { createNodeWebSocket } from '@hono/node-ws';
+
 import { getVibesManagementRoutes } from './modules/vibes-management';
 import { getRoomsManagementRoutes, RoomsService } from './modules/rooms-management';
-import { createNodeWebSocket } from '@hono/node-ws';
+import { getAuthRoutes } from './modules/authentication';
 
 async function main() {
   await RoomsService.init(); // Initialize the RoomsService
@@ -14,6 +16,7 @@ async function main() {
 
   app.route('/', getVibesManagementRoutes());
   app.route('/', getRoomsManagementRoutes(ws));
+  app.route('/', getAuthRoutes());
   app.doc(`/doc`, {
     openapi: '3.0.0',
     info: {
