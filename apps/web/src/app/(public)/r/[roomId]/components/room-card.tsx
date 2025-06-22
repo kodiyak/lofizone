@@ -1,6 +1,6 @@
 'use client';
 
-import RoomMembers from '@/components/room-members';
+import RoomMembers from '@/app/(public)/r/[roomId]/components/room-members';
 import Wallpaper from '@/assets/images/wallpaper-2.webp';
 import { Button } from '@workspace/ui/components/button';
 import {
@@ -9,9 +9,7 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-  CardFooter,
 } from '@workspace/ui/components/card';
-import { DiscordIcon } from '@workspace/ui/components/icons';
 import {
   Select,
   SelectTrigger,
@@ -26,7 +24,8 @@ import Link from 'next/link';
 import React from 'react';
 import { authClient } from '@/lib/authClient';
 import RoomDiscordJoin from './room-discord-join';
-import RoomPlaylist from '@/components/room-playlist';
+import RoomPlaylist from '@/app/(public)/r/[roomId]/components/room-playlist';
+import RoomTrack from './room-track';
 
 interface RoomCardProps {
   roomId: string;
@@ -118,15 +117,14 @@ export default function RoomCard({ roomId }: RoomCardProps) {
                 </CardDescription>
               </CardHeader>
               <CardContent className="gap-2">
-                <RoomMembers roomId={roomId} />
+                <RoomMembers />
               </CardContent>
               <Separator />
               <CardContent>
-                {session?.data ? (
-                  <RoomPlaylist roomId={roomId} />
-                ) : (
-                  <RoomDiscordJoin />
-                )}
+                <RoomTrack />
+              </CardContent>
+              <CardContent>
+                {session?.data ? <RoomPlaylist /> : <RoomDiscordJoin />}
               </CardContent>
             </Card>
           </div>

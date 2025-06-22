@@ -1,20 +1,83 @@
 import type { Api } from '@workspace/core';
 import { create } from 'zustand';
+import { backendClient } from '../clients/backend';
 
 interface RoomStore {
   room: Api.Room | null;
+  members: Api.RoomMember[];
+  tracks: Api.Track[];
   socket: WebSocket | null;
   connect: (roomId: string) => Promise<void>;
   track: Api.Track | null;
-  setTrack: (track: Api.Track) => void;
+  playTrack: (track: Api.Track) => Promise<void>;
+  resume: () => void;
+  pause: () => void;
+
+  // Audio
+  audio: HTMLAudioElement | null;
+  audioState: {
+    isPlaying: boolean;
+    currentTime: number;
+    duration: number;
+  };
 }
 
 export const useRoomStore = create<RoomStore>((set, get) => ({
   room: null,
   socket: null,
   track: null,
-  setTrack: (track) => {
-    set({ track });
+  audio: null,
+  members: [],
+  tracks: [],
+  audioState: {
+    isPlaying: false,
+    currentTime: 0,
+    duration: 0,
+  },
+  playTrack: async (track) => {
+    const { audio: currentAudio } = get();
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.src = '';
+    }
+    const audio = new Audio(track.metadata.audio);
+    const { audioState } = get();
+
+    audio.addEventListener('play', () => {
+      set({ audioState: { ...audioState, isPlaying: true } });
+    });
+
+    audio.addEventListener('pause', () => {
+      set({ audioState: { ...audioState, isPlaying: false } });
+    });
+
+    audio.addEventListener('timeupdate', () => {
+      set({ audioState: { ...audioState, currentTime: audio.currentTime } });
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+      set({ audioState: { ...audioState, duration: audio.duration } });
+    });
+
+    audio.addEventListener('ended', () => {
+      set({ audioState: { ...audioState, isPlaying: false, currentTime: 0 } });
+    });
+
+    set({ audio, track });
+  },
+  resume: () => {
+    const { audio, audioState } = get();
+    if (audio && !audioState.isPlaying) {
+      audio.play();
+      set({ audioState: { ...audioState, isPlaying: true } });
+    }
+  },
+  pause: () => {
+    const { audio, audioState } = get();
+    if (audio && audioState.isPlaying) {
+      audio.pause();
+      set({ audioState: { ...audioState, isPlaying: false } });
+    }
   },
   connect: async (roomId: string) => {
     const { socket: currentSocket } = get();
@@ -23,14 +86,12 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
       set({ socket: null });
     }
 
-    await fetch(`/api/server/rooms/${roomId}`)
-      .then((res) => res.json())
-      .then((room) => set({ room }));
-
-    const socket = new WebSocket(
-      `ws://localhost:3000/rooms/${roomId}/ws`,
-      'ws',
-    );
+    await Promise.all([
+      backendClient.getRoom(roomId).then((room) => set({ room })),
+      backendClient.getRoomMembers(roomId).then((members) => set({ members })),
+      backendClient.getRoomTracks(roomId).then((tracks) => set({ tracks })),
+    ]);
+    const socket = new WebSocket(backendClient.getRoomWsUrl(roomId));
 
     function onOpen(event: Event) {
       socket.addEventListener('message', onMessage);
@@ -42,7 +103,6 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);
       }
-      set({ socket });
     }
     function onClose() {
       console.log('WebSocket connection closed');

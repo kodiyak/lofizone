@@ -1,20 +1,13 @@
 'use client';
 
-import { useBackendAPI } from '@/lib/hooks/useBackendAPI';
 import { useRoomStore } from '@/lib/store/use-room-store';
 import { PlayIcon, StopIcon } from '@phosphor-icons/react';
-import { Api } from '@workspace/core';
 import { Button } from '@workspace/ui/components/button';
 import React from 'react';
 
-interface RoomPlaylistProps {
-  roomId: string;
-}
-
-export default function RoomPlaylist({ roomId }: RoomPlaylistProps) {
-  const { data } = useBackendAPI<Api.Track[]>(`/rooms/${roomId}/playlist`);
-  const tracks = data || [];
-  const setTrack = useRoomStore((state) => state.setTrack);
+export default function RoomPlaylist() {
+  const tracks = useRoomStore((state) => state.tracks);
+  const playTrack = useRoomStore((state) => state.playTrack);
   const trackId = useRoomStore((state) => state.track?.id);
 
   return (
@@ -25,7 +18,7 @@ export default function RoomPlaylist({ roomId }: RoomPlaylistProps) {
             variant={'outline'}
             key={track.id}
             disabled={trackId === track.id}
-            onClick={() => setTrack(track)}
+            onClick={() => playTrack(track)}
           >
             {trackId === track.id ? (
               <StopIcon className="fill-foreground" />

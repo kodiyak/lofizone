@@ -135,14 +135,13 @@ export function getRoomsRoutes() {
     },
   );
 
-  // room playlist
   app.openapi(
     createRoute({
       method: 'get',
-      path: '/:roomId/playlist',
+      path: '/:roomId/tracks',
       responses: {
         200: {
-          description: 'Room playlist',
+          description: 'Room Tracks',
           content: {
             'application/json': {
               schema: z.array(z.any()),

@@ -1,7 +1,6 @@
 'use client';
 
-import { useBackendAPI } from '@/lib/hooks/useBackendAPI';
-import type { Api } from '@workspace/core';
+import { useRoomStore } from '@/lib/store/use-room-store';
 import {
   Avatar,
   AvatarFallback,
@@ -14,9 +13,8 @@ interface RoomMembersProps {
   roomId: string;
 }
 
-export default function RoomMembers({ roomId }: RoomMembersProps) {
-  const { data } = useBackendAPI<Api.RoomMember[]>(`/rooms/${roomId}/members`);
-  const members = data ?? [];
+export default function RoomMembers() {
+  const members = useRoomStore((state) => state.members);
 
   return (
     <>
