@@ -1,7 +1,12 @@
 'use client';
 
 import { authClient } from '@/lib/authClient';
-import { MonitorIcon, SignInIcon, SignOutIcon } from '@phosphor-icons/react';
+import {
+  MonitorIcon,
+  PlaylistIcon,
+  SignInIcon,
+  SignOutIcon,
+} from '@phosphor-icons/react';
 import {
   Avatar,
   AvatarFallback,
@@ -22,12 +27,16 @@ import {
 import Image from 'next/image';
 import Logo from '@/assets/images/logo-square.png';
 import NavTrackPlayer from './nav-track-player';
+import CreatePlaylist from '@/components/create-playlist';
+import { useDisclosure } from '@workspace/ui/hooks/use-disclosure';
 
 export default function NavTop() {
   const { data: session, isPending } = authClient.useSession();
+  const createPlaylist = useDisclosure();
 
   return (
     <>
+      {session && <CreatePlaylist {...createPlaylist} />}
       <div className="fixed w-full z-50 left-0 top-0 h-[var(--nav-top-height)] border-b border-border/50 bg-background/10 backdrop-blur-xs">
         <Menubar className="rounded-none bg-transparent border-0 container mx-auto h-full px-0">
           <div className="flex-1">
@@ -76,6 +85,12 @@ export default function NavTop() {
                           <MonitorIcon />
                         </MenubarShortcut>
                       </Link>
+                    </MenubarItem>
+                    <MenubarItem onSelect={createPlaylist.onOpen}>
+                      Create Playlist
+                      <MenubarShortcut>
+                        <PlaylistIcon />
+                      </MenubarShortcut>
                     </MenubarItem>
                     <MenubarSeparator />
                     <MenubarItem

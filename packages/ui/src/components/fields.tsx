@@ -75,11 +75,6 @@ const FieldWrap = React.forwardRef<HTMLDivElement, FieldWrapProps>(
                     {label}
                   </span>
                 )}
-                {description && (
-                  <FormDescription className="text-sm font-normal leading-3">
-                    {description}
-                  </FormDescription>
-                )}
               </div>
               {actions}
             </FormLabel>
@@ -92,8 +87,13 @@ const FieldWrap = React.forwardRef<HTMLDivElement, FieldWrapProps>(
           )}
           {orientation === 'vertical' && (
             <>
-              <FormControl className="mt-1">{children}</FormControl>
+              <FormControl className="mt-2">{children}</FormControl>
               <FormMessage />
+              {description && (
+                <FormDescription className="text-xs mt-1.5 px-2 font-normal leading-3">
+                  {description}
+                </FormDescription>
+              )}
             </>
           )}
         </FormItem>

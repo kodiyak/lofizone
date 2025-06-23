@@ -37,4 +37,13 @@ export namespace Api {
   export interface CreateRoomRequest {
     name: string;
   }
+
+  export interface CreatePlaylistRequest {
+    name: string;
+  }
+
+  export interface UploadTrackRequest {
+    title: string;
+    track: File;
+  }
 }

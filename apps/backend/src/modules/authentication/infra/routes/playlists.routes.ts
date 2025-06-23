@@ -4,6 +4,7 @@ import { authMiddleware } from '../middlewares';
 import { parseArrayToSchema } from '@/shared/infra/parse-array-to-schema';
 import { playlistSchema } from '../../domain';
 import { trackSchema } from '@/modules/vibes-management';
+import { generatePlaylistId } from '@workspace/core';
 
 export function getPlaylistsRoutes() {
   const app = new OpenAPIHono<{ Variables: { userId: string } }>();
@@ -125,6 +126,80 @@ export function getPlaylistsRoutes() {
       }
 
       return c.json(playlistSchema.parse(playlist), 200);
+    },
+  );
+
+  // create playlist
+  app.openapi(
+    createRoute({
+      method: 'post',
+      path: '/',
+      request: {
+        body: {
+          content: {
+            'application/json': {
+              schema: z.object({
+                name: z.string().min(1, 'Playlist name is required'),
+              }),
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'Playlist created successfully',
+          content: {
+            'application/json': {
+              schema: playlistSchema,
+            },
+          },
+        },
+        400: {
+          description: 'Bad Request',
+          content: {
+            'application/json': {
+              schema: z.object({
+                error: z.string(),
+              }),
+            },
+          },
+        },
+        401: {
+          description: 'Unauthorized',
+          content: {
+            'application/json': {
+              schema: z.object({
+                error: z.string(),
+              }),
+            },
+          },
+        },
+      },
+    }),
+    async (c) => {
+      const userId = c.get('userId');
+      const body = c.req.valid('json');
+
+      if (!userId) {
+        return c.json({ error: 'Unauthorized' }, 401);
+      }
+
+      if (!body || !body.name) {
+        return c.json({ error: 'Playlist name is required' }, 400);
+      }
+
+      const playlistId = generatePlaylistId();
+      const playlist = await db.playlist.create({
+        data: {
+          id: playlistId,
+          slug: playlistId,
+          name: body.name,
+          metadata: { cover: null },
+          owner: { connect: { id: userId } },
+        },
+      });
+
+      return c.json(playlistSchema.parse(playlist), 201);
     },
   );
 

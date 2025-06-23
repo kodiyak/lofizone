@@ -7,7 +7,8 @@ import { cn } from '@workspace/ui/lib/utils';
 const buttonVariants = cva(
   cn(
     'inline-flex font-sans items-center cursor-default justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all',
-    'disabled:pointer-events-none disabled:opacity-50 shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
+    'disabled:bg-accent disabled:from-accent disabled:to-accent disabled:opacity-50 disabled:text-muted-foreground/50 disabled:cursor-not-allowed',
+    'shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
     '[&_svg]:pointer-events-none [&_svg]:shrink-0',
   ),
   {
@@ -15,13 +16,12 @@ const buttonVariants = cva(
       variant: {
         default: 'bg-foreground text-background hover:bg-foreground/90',
         primary: 'bg-primary text-primary-foreground hover:bg-primary/90',
-        brand: 'bg-gradient-to-r from-primary to-secondary text-white',
         destructive:
           'bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
         outline:
           'border bg-background text-muted-foreground hover:bg-muted/50 hover:text-foreground',
         secondary:
-          'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+          'border bg-background bg-gradient-to-b from-accent/10 to-background text-muted-foreground hover:text-foreground',
         ghost:
           'text-muted-foreground hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/30',
         'ghost-purple':
@@ -42,7 +42,7 @@ const buttonVariants = cva(
         ),
       },
       size: {
-        default: `h-9 px-4 py-2 has-[>svg]:px-3 [&_svg:not([class*='size-'])]:size-5`,
+        default: `h-12 rounded-2xl px-4 py-2 has-[>svg]:px-3 [&_svg:not([class*='size-'])]:size-5`,
         sm: `h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 [&_svg:not([class*='size-'])]:size-4`,
         xs: `h-6 text-sm rounded-md gap-1.5 px-3.5 has-[>svg]:px-2.5 [&_svg:not([class*='size-'])]:size-4`,
         xxs: `h-8 text-xs rounded gap-1 p-0 h-auto [&_svg:not([class*='size-'])]:size-3`,
