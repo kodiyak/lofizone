@@ -1,32 +1,21 @@
 'use client';
 
-import RoomMembers from '@/app/(public)/r/[roomId]/components/room-members';
 import { Button } from '@workspace/ui/components/button';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from '@workspace/ui/components/card';
-import { Separator } from '@workspace/ui/components/separator';
-import { ArrowLeftIcon, RefreshCwIcon } from 'lucide-react';
+import { ArrowLeftIcon } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
-import { authClient } from '@/lib/authClient';
-import RoomDiscordJoin from './room-discord-join';
-import RoomPlaylist from '@/app/(public)/r/[roomId]/components/room-playlist';
 import RoomTrack from './room-track';
 import { useRoomStore } from '@/lib/store/use-room-store';
+import RoomConnectedCard from './room-connected-card';
+import RoomConnectCard from './room-connect-card';
 
 interface RoomCardProps {
   roomId: string;
 }
 
 export default function RoomCard({ roomId }: RoomCardProps) {
-  const session = authClient.useSession();
-  const connect = useRoomStore((state) => state.connect);
+  const isConnected = useRoomStore((state) => state.isConnected);
+  const connectedRoomId = useRoomStore((state) => state.room?.roomId);
 
   return (
     <>
@@ -53,24 +42,11 @@ export default function RoomCard({ roomId }: RoomCardProps) {
             <RoomTrack />
           </div>
           <div className="flex-1">
-            <Card>
-              <CardHeader>
-                <CardTitle>Welcome to the Room</CardTitle>
-                <CardDescription>
-                  Join us for a relaxing session of lofi music and chill vibes.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="gap-2">
-                <RoomMembers />
-              </CardContent>
-              {session?.data ? <RoomPlaylist /> : <RoomDiscordJoin />}
-              <CardFooter className="justify-end">
-                <Button variant={'outline'} onClick={() => connect(roomId)}>
-                  <RefreshCwIcon />
-                  <span>Reconnect</span>
-                </Button>
-              </CardFooter>
-            </Card>
+            {isConnected && connectedRoomId === roomId ? (
+              <RoomConnectedCard />
+            ) : (
+              <RoomConnectCard roomId={roomId} />
+            )}
           </div>
         </div>
       </div>

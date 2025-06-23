@@ -7,7 +7,7 @@ import { trackSchema } from '@/modules/vibes-management';
 
 export function getRoomsRoutes() {
   const app = new OpenAPIHono();
-  app.use('*', authMiddleware);
+  // app.use('*', authMiddleware);
 
   app.openapi(
     createRoute({
