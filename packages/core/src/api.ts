@@ -1,6 +1,7 @@
 export namespace Api {
   export interface Room {
     roomId: string;
+    playlistId: string | null;
     name: string;
     ownerId: string;
   }
@@ -21,6 +22,15 @@ export namespace Api {
         type: 'image' | 'video';
         url: string;
       };
+    };
+  }
+
+  export interface Playlist {
+    id: string;
+    title: string;
+    ownerId: string;
+    metadata: {
+      cover: string | null;
     };
   }
 

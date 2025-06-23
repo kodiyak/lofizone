@@ -8,12 +8,15 @@ import RoomTrack from './room-track';
 import { useRoomStore } from '@/lib/store/use-room-store';
 import RoomConnectedCard from './room-connected-card';
 import RoomConnectCard from './room-connect-card';
+import { useBackendAPI } from '@/lib/hooks/useBackendAPI';
+import type { Api } from '@workspace/core';
 
 interface RoomCardProps {
   roomId: string;
 }
 
 export default function RoomCard({ roomId }: RoomCardProps) {
+  const { data: room } = useBackendAPI<Api.Room>(`/rooms/${roomId}`);
   const isConnected = useRoomStore((state) => state.isConnected);
   const connectedRoomId = useRoomStore((state) => state.room?.roomId);
 
@@ -38,16 +41,20 @@ export default function RoomCard({ roomId }: RoomCardProps) {
               </span>
             </div>
           </div>
-          <div className="flex-1">
-            <RoomTrack />
-          </div>
-          <div className="flex-1">
-            {isConnected && connectedRoomId === roomId ? (
-              <RoomConnectedCard />
-            ) : (
-              <RoomConnectCard roomId={roomId} />
-            )}
-          </div>
+          {connectedRoomId === roomId && (
+            <div className="flex-1">
+              <RoomTrack />
+            </div>
+          )}
+          {room && (
+            <div className="flex-1">
+              {isConnected && connectedRoomId === roomId ? (
+                <RoomConnectedCard room={room} />
+              ) : (
+                <RoomConnectCard roomId={roomId} />
+              )}
+            </div>
+          )}
         </div>
       </div>
     </>

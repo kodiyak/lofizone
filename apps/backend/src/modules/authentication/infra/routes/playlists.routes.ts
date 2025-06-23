@@ -1,13 +1,12 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
 import { db } from '@/shared/clients/db';
 import { authMiddleware } from '../middlewares';
-import type { auth } from '@/shared/clients/auth';
 import { parseArrayToSchema } from '@/shared/infra/parse-array-to-schema';
 import { playlistSchema } from '../../domain';
 import { trackSchema } from '@/modules/vibes-management';
 
 export function getPlaylistsRoutes() {
-  const app = new OpenAPIHono<{ Variables: { session: typeof auth.$Infer.Session } }>();
+  const app = new OpenAPIHono<{ Variables: { userId: string } }>();
   app.use('*', authMiddleware);
 
   app.openapi(
@@ -23,14 +22,30 @@ export function getPlaylistsRoutes() {
             },
           },
         },
+        401: {
+          description: 'Unauthorized',
+          content: {
+            'application/json': {
+              schema: z.object({
+                error: z.string(),
+              }),
+            },
+          },
+        },
       },
     }),
     async (c) => {
+      const userId = c.get('userId');
+
+      if (!userId) {
+        return c.json({ error: 'Unauthorized' }, 401);
+      }
+
       return c.json(
         parseArrayToSchema(
           await db.playlist.findMany({
             where: {
-              ownerId: c.get('session').user.id,
+              ownerId: userId,
             },
           }),
           playlistSchema,
@@ -54,6 +69,26 @@ export function getPlaylistsRoutes() {
             },
           },
         },
+        400: {
+          description: 'Bad Request',
+          content: {
+            'application/json': {
+              schema: z.object({
+                error: z.string(),
+              }),
+            },
+          },
+        },
+        401: {
+          description: 'Unauthorized',
+          content: {
+            'application/json': {
+              schema: z.object({
+                error: z.string(),
+              }),
+            },
+          },
+        },
         404: {
           description: 'Playlist not found',
           content: {
@@ -68,12 +103,20 @@ export function getPlaylistsRoutes() {
     }),
     async (c) => {
       const { playlistId } = c.req.param();
-      const session = c.get('session');
+      const userId = c.get('userId');
+
+      if (!playlistId) {
+        return c.json({ error: 'Playlist ID is required' }, 400);
+      }
+
+      if (!userId) {
+        return c.json({ error: 'Unauthorized' }, 401);
+      }
 
       const playlist = await db.playlist.findFirst({
         where: {
           id: playlistId,
-          ownerId: session.user.id,
+          ownerId: userId,
         },
         include: {
           tracks: true,

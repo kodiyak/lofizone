@@ -242,8 +242,12 @@ export function getRoomsRoutes() {
         return c.json({ error: 'Room not found' }, 404);
       }
 
-      const playlist = await db.playlist.findFirstOrThrow({
-        where: { ownerId: room.ownerId },
+      if (!room.playlistId) {
+        return c.json([], 200);
+      }
+
+      const playlist = await db.playlist.findUniqueOrThrow({
+        where: { id: room.playlistId },
         include: {
           tracks: true,
         },

@@ -63,10 +63,6 @@ export default function RoomPlaylist() {
               </CommandItem>
             ))}
           </CommandGroup>
-          {/* <CommandSeparator />
-          <CommandGroup heading="Playlists">
-            <CommandItem>Profile</CommandItem>
-          </CommandGroup> */}
         </CommandList>
       </Command>
     </>
