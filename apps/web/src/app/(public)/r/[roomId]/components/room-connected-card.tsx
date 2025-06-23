@@ -21,12 +21,12 @@ interface RoomConnectedCardProps {
 export default function RoomConnectedCard({
   room: pageRoom,
 }: RoomConnectedCardProps) {
-  const session = authClient.useSession();
+  const { data: session } = authClient.useSession();
   const room = useRoomStore((state) => state.room);
 
   return (
     <>
-      <Card>
+      <Card className="pb-0">
         <CardHeader>
           <CardTitle>Welcome to the Room</CardTitle>
           <CardDescription>
@@ -35,9 +35,10 @@ export default function RoomConnectedCard({
         </CardHeader>
         <CardContent className="gap-2">
           <RoomMembers />
+          {!session && <RoomDiscordJoin />}
         </CardContent>
         {room?.playlistId ? (
-          <>{session?.data ? <RoomPlaylist /> : <RoomDiscordJoin />}</>
+          <RoomPlaylist />
         ) : (
           <>{room && <RoomPlaylists room={room} />}</>
         )}

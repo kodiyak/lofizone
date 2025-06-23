@@ -28,7 +28,7 @@ export const authMiddleware: Handler = async (c, next) => {
   } else {
     const authToken = c.req.header('Authorization')?.replace('Bearer ', '');
     if (authToken) {
-      const payload = await validateToken(authToken);
+      const payload = await validateToken(authToken).catch((err) => err.payload);
       if (payload && payload.id) {
         c.set('userId', payload.id);
       }

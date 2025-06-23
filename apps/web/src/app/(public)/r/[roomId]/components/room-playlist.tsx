@@ -15,6 +15,7 @@ import {
   CommandItem,
   CommandList,
 } from '@workspace/ui/components/command';
+import { cn } from '@workspace/ui/lib/utils';
 import React from 'react';
 
 export default function RoomPlaylist() {
@@ -29,14 +30,15 @@ export default function RoomPlaylist() {
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
           <CommandGroup heading="Tracks">
-            {tracks.map((track) => (
+            {tracks.map((track, t) => (
               <CommandItem
                 onSelect={() => {
                   playTrack(track);
                 }}
-                disabled={trackId === track.id}
-                key={track.id}
+                key={t}
                 value={track.id}
+                disabled={trackId === track.id}
+                className={cn('rounded-lg', track.id === trackId && 'bg-muted')}
               >
                 {track?.metadata?.background?.url && (
                   <Avatar className="size-8 rounded-sm bg-transparent">
@@ -55,7 +57,7 @@ export default function RoomPlaylist() {
                 </div>
                 <div className="opacity-50 fill-muted-foreground text-muted-foreground">
                   {trackId === track.id ? (
-                    <StopIcon weight="fill" />
+                    <PlayIcon weight="fill" />
                   ) : (
                     <PlayIcon />
                   )}
