@@ -6,8 +6,11 @@ export const env = {
   discordToken: process.env.DISCORD_BOT_TOKEN || '',
   discordClientId: process.env.DISCORD_CLIENT_ID || '',
   discordClientSecret: process.env.DISCORD_CLIENT_SECRET || '',
-  serverUrl: process.env.SERVER_URL || 'http://localhost:3000',
+  serverUrl: process.env.SERVER_URL!,
   authSecret: process.env.AUTH_SECRET!,
+  authUrl: process.env.AUTH_URL!,
+  authIssuer: process.env.AUTH_URL!,
+  authAudience: process.env.AUTH_URL!,
   s3: {
     bucket: process.env.S3_BUCKET!,
     region: process.env.S3_REGION!,

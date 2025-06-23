@@ -1,5 +1,4 @@
 import { betterAuth, type BetterAuthOptions } from 'better-auth';
-import { nextCookies } from 'better-auth/next-js';
 import { bearer, jwt } from 'better-auth/plugins';
 import { generateId } from '@workspace/core';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
@@ -15,8 +14,8 @@ interface AuthConfig {
 type CreateAuthOutput = ReturnType<typeof betterAuth>;
 
 export function createAuth(config: AuthConfig): CreateAuthOutput {
-  return betterAuth({
-    plugins: [nextCookies(), jwt(), bearer()],
+  const options: BetterAuthOptions = {
+    plugins: [jwt(), bearer()],
     secret: config.secret,
     baseURL: config.baseURL,
     socialProviders: config.socialProviders,
@@ -30,10 +29,11 @@ export function createAuth(config: AuthConfig): CreateAuthOutput {
           return generateId(model.slice(0, 2));
         },
       },
-      crossSubDomainCookies: { enabled: true },
     },
     database: prismaAdapter(config.db, {
       provider: 'postgresql',
     }),
-  });
+  };
+
+  return betterAuth(options);
 }

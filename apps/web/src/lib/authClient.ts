@@ -1,5 +1,11 @@
 import { createAuthClient } from 'better-auth/react';
+import { backendClient } from './clients/backend';
 
 export const authClient = createAuthClient({
-  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || 'http://localhost:3000',
+  fetchOptions: {
+    auth: {
+      type: 'Bearer',
+      token: () => backendClient.getToken(),
+    },
+  },
 });

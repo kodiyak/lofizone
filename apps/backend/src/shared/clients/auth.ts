@@ -4,8 +4,8 @@ import { db } from './db';
 
 export const auth = createAuth({
   db,
-  baseURL: env.serverUrl,
   secret: env.authSecret,
+  baseURL: env.serverUrl,
   socialProviders: {
     discord: {
       clientId: env.discordClientId,

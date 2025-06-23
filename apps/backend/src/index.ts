@@ -12,8 +12,19 @@ async function main() {
   await RoomsService.init(); // Initialize the RoomsService
 
   const app = new OpenAPIHono();
-  const ws = createNodeWebSocket({ app });
+  app.use(
+    '*',
+    cors({
+      origin: 'http://localhost:4000',
+      allowHeaders: ['Upgrade-Insecure-Requests', 'Content-Type', 'Authorization'],
+      allowMethods: ['POST', 'GET', 'PATCH', 'PUT', 'OPTIONS'],
+      exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
+      maxAge: 600,
+      credentials: true,
+    }),
+  );
 
+  const ws = createNodeWebSocket({ app });
   app.route('/', getVibesManagementRoutes());
   app.route('/', getRoomsManagementRoutes(ws));
   app.route('/', getAuthRoutes());
@@ -24,22 +35,6 @@ async function main() {
       title: 'My API',
     },
   });
-  app.use(
-    '*',
-    cors({
-      origin: ['http://localhost:4000'],
-      allowHeaders: [
-        'X-Custom-Header',
-        'Upgrade-Insecure-Requests',
-        'Content-Type',
-        'Authorization',
-      ],
-      allowMethods: ['POST', 'GET', 'PATCH', 'PUT', 'OPTIONS'],
-      exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
-      maxAge: 600,
-      credentials: true,
-    }),
-  );
 
   const server = serve(
     {

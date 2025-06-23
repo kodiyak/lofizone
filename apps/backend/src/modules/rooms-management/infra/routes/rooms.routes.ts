@@ -4,11 +4,15 @@ import { authMiddleware } from '@/modules/authentication';
 import { db } from '@/shared/clients/db';
 import { parseArrayToSchema } from '@/shared/infra/parse-array-to-schema';
 import { trackSchema } from '@/modules/vibes-management';
+import { roomSchema } from '../../domain';
 
 export function getRoomsRoutes() {
-  const app = new OpenAPIHono();
-  // app.use('*', authMiddleware);
+  const app = new OpenAPIHono<{
+    Variables: { userId: string };
+  }>();
+  app.use('*', authMiddleware);
 
+  /** [LIST] Rooms */
   app.openapi(
     createRoute({
       method: 'get',
@@ -31,7 +35,66 @@ export function getRoomsRoutes() {
     },
   );
 
-  // show room
+  /** [CREATE] Room */
+  app.openapi(
+    createRoute({
+      method: 'post',
+      path: '/',
+      request: {
+        body: {
+          content: {
+            'application/json': {
+              schema: z.object({ name: z.string().nonempty() }),
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'Room created successfully',
+          content: {
+            'application/json': { schema: z.any() },
+          },
+        },
+        400: {
+          description: 'Bad Request',
+          content: {
+            'application/json': {
+              schema: z.object({ error: z.string() }),
+            },
+          },
+        },
+        401: {
+          description: 'Unauthorized',
+          content: {
+            'application/json': {
+              schema: z.object({ error: z.string() }),
+            },
+          },
+        },
+      },
+    }),
+    async (c) => {
+      const { name } = c.req.valid('json');
+      const userId = c.get('userId');
+
+      if (!userId) {
+        return c.json({ error: 'Unauthorized' }, 401);
+      }
+
+      const room = await db.room.create({
+        data: {
+          name,
+          metadata: {},
+          owner: { connect: { id: userId } },
+        },
+      });
+
+      return c.json(roomSchema.parse(room), 201);
+    },
+  );
+
+  /** [SHOW] Room */
   app.openapi(
     createRoute({
       method: 'get',
@@ -40,18 +103,14 @@ export function getRoomsRoutes() {
         200: {
           description: 'Room details',
           content: {
-            'application/json': {
-              schema: z.any(),
-            },
+            'application/json': { schema: z.any() },
           },
         },
         404: {
           description: 'Room not found',
           content: {
             'application/json': {
-              schema: z.object({
-                error: z.string(),
-              }),
+              schema: z.object({ error: z.string() }),
             },
           },
         },
@@ -59,9 +118,7 @@ export function getRoomsRoutes() {
           description: 'Bad Request',
           content: {
             'application/json': {
-              schema: z.object({
-                error: z.string(),
-              }),
+              schema: z.object({ error: z.string() }),
             },
           },
         },
@@ -83,7 +140,7 @@ export function getRoomsRoutes() {
     },
   );
 
-  // room members
+  /** [GET][MEMBERS] Room */
   app.openapi(
     createRoute({
       method: 'get',
@@ -92,18 +149,14 @@ export function getRoomsRoutes() {
         200: {
           description: 'List of room members',
           content: {
-            'application/json': {
-              schema: z.array(z.any()),
-            },
+            'application/json': { schema: z.array(z.any()) },
           },
         },
         400: {
           description: 'Bad Request',
           content: {
             'application/json': {
-              schema: z.object({
-                error: z.string(),
-              }),
+              schema: z.object({ error: z.string() }),
             },
           },
         },
@@ -111,9 +164,7 @@ export function getRoomsRoutes() {
           description: 'Room not found',
           content: {
             'application/json': {
-              schema: z.object({
-                error: z.string(),
-              }),
+              schema: z.object({ error: z.string() }),
             },
           },
         },
@@ -135,6 +186,7 @@ export function getRoomsRoutes() {
     },
   );
 
+  /** [GET][TRACKS] Room */
   app.openapi(
     createRoute({
       method: 'get',

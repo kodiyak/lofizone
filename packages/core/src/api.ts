@@ -23,4 +23,8 @@ export namespace Api {
       };
     };
   }
+
+  export interface CreateRoomRequest {
+    name: string;
+  }
 }

@@ -16,8 +16,8 @@ import {
   SelectValue,
 } from './select';
 import type { ButtonProps } from './button';
-import { cn } from '@/lib/utils';
 import type { SelectContentProps } from '@radix-ui/react-select';
+import { cn } from '../lib/utils';
 
 export type IFieldOptionValue = string;
 export interface IFieldOption {
@@ -63,15 +63,17 @@ const FieldWrap = React.forwardRef<HTMLDivElement, FieldWrapProps>(
           {(!!label || !!description) && (
             <FormLabel
               className={cn(
-                'flex select-none items-center gap-2',
+                'flex select-none items-center gap-1',
                 orientation === 'horizontal' && 'flex-1',
                 orientation === 'vertical' && '',
               )}
             >
               {left}
-              <div className="flex flex-1 flex-col gap-1">
+              <div className="flex flex-1 flex-col gap-0.5">
                 {label && (
-                  <span className="text-sm font-semibold">{label}</span>
+                  <span className="text-[11px] uppercase text-muted-foreground font-normal tracking-widest">
+                    {label}
+                  </span>
                 )}
                 {description && (
                   <FormDescription className="text-sm font-normal leading-3">
@@ -109,6 +111,8 @@ export interface InputFieldProps {
   placeholder?: string;
   readOnly?: boolean;
   disabled?: boolean;
+  autoFocus?: boolean;
+  autoComplete?: HTMLProps<HTMLInputElement>['autoComplete'];
   type?: HTMLProps<HTMLInputElement>['type'];
 }
 const InputField = forwardRef<HTMLInputElement, InputFieldProps>(

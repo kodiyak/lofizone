@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 async function handler(req: Request) {
   const url = new URL(req.url);
   const nextUrl = new URL(
@@ -5,20 +7,33 @@ async function handler(req: Request) {
     process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:3000',
   );
   console.log(`{ ${req.method}, ${nextUrl.toString()} }`);
-  return fetch(nextUrl, {
-    method: req.method,
-    headers: {
-      ...Object.fromEntries(req.headers.entries()),
-      'Content-Type': 'application/json',
-    },
-    body: req.method !== 'GET' && req.method !== 'HEAD' ? req.body : null,
-  }).then((response) => {
-    return new Response(response.body, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: response.headers,
-    });
-  });
+  return axios
+    .request({
+      method: req.method.toLowerCase() as string,
+      url: nextUrl.toString(),
+      headers: {
+        ...Object.fromEntries(req.headers.entries()),
+      },
+      data: new FormData(req.body),
+      responseType: 'stream',
+    })
+    .then((r) => r.data);
+
+  // return fetch(nextUrl, {
+  //   method: req.method,
+
+  //   headers: {
+  //     ...Object.fromEntries(req.headers.entries()),
+  //     'Content-Type': 'application/json',
+  //   },
+  //   body: req.method !== 'GET' && req.method !== 'HEAD' ? req.body : null,
+  // }).then((response) => {
+  //   return new Response(response.body, {
+  //     status: response.status,
+  //     statusText: response.statusText,
+  //     headers: response.headers,
+  //   });
+  // });
 }
 
 export {

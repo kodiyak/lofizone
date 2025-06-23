@@ -1,7 +1,7 @@
 'use client';
 
 import { authClient } from '@/lib/authClient';
-import { SignInIcon, SignOutIcon } from '@phosphor-icons/react';
+import { MonitorIcon, SignInIcon, SignOutIcon } from '@phosphor-icons/react';
 import {
   Avatar,
   AvatarFallback,
@@ -69,12 +69,14 @@ export default function NavTop() {
                     <span>{session?.user?.name}</span>
                   </MenubarTrigger>
                   <MenubarContent align={'end'}>
-                    <MenubarItem>
-                      New Tab <MenubarShortcut>⌘T</MenubarShortcut>
+                    <MenubarItem asChild>
+                      <Link href={'/create-room'}>
+                        Create Room
+                        <MenubarShortcut>
+                          <MonitorIcon />
+                        </MenubarShortcut>
+                      </Link>
                     </MenubarItem>
-                    <MenubarItem>New Window</MenubarItem>
-                    <MenubarSeparator />
-                    <MenubarItem>Share</MenubarItem>
                     <MenubarSeparator />
                     <MenubarItem
                       onClick={() => {

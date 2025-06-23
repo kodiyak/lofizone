@@ -1,14 +1,24 @@
 import type { Api } from '@workspace/core';
+import axios from 'axios';
 
-export const backendClient = {
+function getToken() {
+  return localStorage.getItem('auth_token') || undefined;
+}
+
+const client = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+const backendClient = {
   getRoom: async (roomId: string) =>
-    fetch(`/api/server/rooms/${roomId}`).then(
-      (res) => res.json() as Promise<Api.Room>,
-    ),
+    client.get<Api.Room>(`/rooms/${roomId}`).then((r) => r.data),
   getRoomWsUrl: (roomId: string) => {
     const url = new URL(
       `/rooms/${roomId}/ws`,
-      process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000',
+      process.env.NEXT_PUBLIC_BACKEND_API_URL,
     );
 
     return url
@@ -17,11 +27,21 @@ export const backendClient = {
       .replace('https://', 'wss://');
   },
   getRoomMembers: async (roomId: string) =>
-    fetch(`/api/server/rooms/${roomId}/members`).then(
-      (res) => res.json() as Promise<Api.RoomMember[]>,
-    ),
+    client
+      .get<Api.RoomMember[]>(`/rooms/${roomId}/members`)
+      .then((r) => r.data),
   getRoomTracks: async (roomId: string) =>
-    fetch(`/api/server/rooms/${roomId}/tracks`).then(
-      (res) => res.json() as Promise<Api.Track[]>,
-    ),
+    client.get<Api.Track[]>(`/rooms/${roomId}/tracks`).then((r) => r.data),
+  createRoom: async (data: Api.CreateRoomRequest) => {
+    return client.post<Api.Room>('/rooms', data).then((r) => r.data);
+  },
+  setToken: (token: string) => {
+    console.log('Setting token:', token);
+    localStorage.setItem('auth_token', token);
+    client.defaults.headers.common['Authorization'] = `${token}`;
+  },
+  getToken,
+  client,
 };
+
+export { backendClient };

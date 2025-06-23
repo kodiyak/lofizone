@@ -15,6 +15,7 @@ import {
 import { Button } from '@workspace/ui/components/button';
 import React, { useEffect, useState } from 'react';
 import { SliderPlayer } from '@workspace/ui/components/slider';
+import Link from 'next/link';
 
 export default function NavTrackPlayer() {
   const isConnected = useRoomStore((state) => state.isConnected);
@@ -39,8 +40,13 @@ export default function NavTrackPlayer() {
   if (!isConnected) {
     return (
       <>
-        <Button variant={'outline'} size={'sm'} className="w-full">
-          Explore Rooms
+        <Button
+          variant={'outline'}
+          size={'sm'}
+          className="w-full h-7 mt-0.5 text-xs border-border/50 bg-background/50 backdrop-blur-sm"
+          asChild
+        >
+          <Link href={'/'}>Explore Rooms</Link>
         </Button>
       </>
     );

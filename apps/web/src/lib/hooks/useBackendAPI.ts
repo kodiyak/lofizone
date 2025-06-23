@@ -1,26 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
+import { backendClient } from '../clients/backend';
 
 export function useBackendAPI<T>(url: string, options?: RequestInit) {
   const query = useQuery({
     queryKey: [url, options],
     queryFn: async () => {
-      return fetch(['/api/server', url].join(''), {
-        ...options,
-        headers: {
-          'Content-Type': 'application/json',
-          ...options?.headers,
-        },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          return response.json() as Promise<T>;
+      return backendClient
+        .client(url, {
+          method: options?.method,
+          headers: {
+            'Content-Type': 'application/json',
+          },
         })
-        .catch((error) => {
-          console.error('Error fetching data:', error);
-          throw error;
-        });
+        .then((res) => res.data as T);
     },
   });
 
