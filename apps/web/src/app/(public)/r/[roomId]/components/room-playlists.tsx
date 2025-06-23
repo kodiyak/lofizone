@@ -1,19 +1,14 @@
 import { useBackendAPI } from '@/lib/hooks/useBackendAPI';
 import { useRoomStore } from '@/lib/store/use-room-store';
-import { StopIcon } from '@phosphor-icons/react';
+import { PlaylistIcon, StopIcon } from '@phosphor-icons/react';
 import { Api } from '@workspace/core';
 import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from '@workspace/ui/components/avatar';
-import {
   Command,
-  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
+  CommandSeparator,
 } from '@workspace/ui/components/command';
 import { PlayIcon } from 'lucide-react';
 import React from 'react';
@@ -31,9 +26,10 @@ export default function RoomPlaylists({ room }: RoomPlaylistsProps) {
     <>
       <Command className="rounded-none bg-transparent">
         <CommandInput placeholder={'Search playlists...'} />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Tracks">
+        <CommandList className="h-full">
+          <CommandGroup
+            heading={playlists.length > 0 ? 'Playlists' : 'No Playlists.'}
+          >
             {playlists.map((playlist) => (
               <CommandItem
                 onSelect={() => {
@@ -58,6 +54,17 @@ export default function RoomPlaylists({ room }: RoomPlaylistsProps) {
                 </div>
               </CommandItem>
             ))}
+          </CommandGroup>
+          <CommandSeparator />
+          <CommandGroup heading="Actions">
+            <CommandItem
+              onSelect={() => {
+                // Add your action here
+              }}
+            >
+              <PlaylistIcon />
+              <span className="flex-1 text-left">New Playlist</span>
+            </CommandItem>
           </CommandGroup>
         </CommandList>
       </Command>

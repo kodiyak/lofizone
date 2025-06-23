@@ -27,7 +27,7 @@ export default function RoomConnectedCard() {
 
   return (
     <>
-      <Card className="pb-0">
+      <Card className="pb-0 overflow-hidden">
         <CardHeader>
           <CardTitle>Welcome to the Room</CardTitle>
           <CardDescription>
@@ -54,7 +54,10 @@ export default function RoomConnectedCard() {
           <TabsContent value="playlists">
             {room && <RoomPlaylists room={room} />}
           </TabsContent>
-          <TabsContent value="password" className="px-1 pb-1">
+          <TabsContent
+            value="password"
+            className="px-1 min-h-[336px] overflow-y-auto pb-1"
+          >
             <RoomMembers />
           </TabsContent>
         </Tabs>

@@ -82,38 +82,45 @@ async function createTrack(artistId: string, albumId: string, track: string) {
   });
 }
 
-async function seedTracks() {
+async function seedTracks(size: number) {
   const artist = await createArtist();
   const tracks = ['track-01.mp3', 'track-02.mp3', 'track-03.mp3'];
-  for (const t in tracks) {
-    const track = tracks[t];
-    const cover = `cover-0${parseInt(t) + 1}.webp`;
-    const album = await createAlbum(artist.id, cover);
-    await createTrack(artist.id, album.id, track);
+
+  for (const i in Array.from({ length: size })) {
+    for (const t in tracks) {
+      const index = Number(Number(i) + Number(t));
+      console.log(`Seeding track ${index + 1} for artist ${artist.id}`);
+      const track = tracks[t];
+      const cover = `cover-0${parseInt(t) + 1}.webp`;
+      const album = await createAlbum(artist.id, cover);
+      await createTrack(artist.id, album.id, track);
+    }
   }
 }
 
-async function seedPlaylists() {
+async function seedPlaylists(size: number) {
   const users = await db.user.findMany({
     select: { id: true },
   });
 
   for (const user of users) {
-    await db.playlist.create({
-      data: {
-        id: generatePlaylistId(),
-        name: `Playlist for ${user.id}`,
-        owner: { connect: { id: user.id } },
-        slug: `playlist-${user.id}`,
-        metadata: { cover: null },
-        tracks: {
-          connect: await db.track.findMany({
-            take: 5, // Example to connect 5 random tracks
-            select: { id: true },
-          }),
+    for (const i in Array.from({ length: size })) {
+      await db.playlist.create({
+        data: {
+          id: generatePlaylistId(),
+          name: `(${i}) Playlist for ${user.id}`,
+          owner: { connect: { id: user.id } },
+          slug: `playlist-${user.id}-${i}`,
+          metadata: { cover: null },
+          tracks: {
+            connect: await db.track.findMany({
+              take: 10, // Example to connect 5 random tracks
+              select: { id: true },
+            }),
+          },
         },
-      },
-    });
+      });
+    }
   }
 }
 
@@ -123,23 +130,21 @@ async function seedRooms() {
   });
 
   for (const user of users) {
-    for (const r of Array.from({ length: 20 }).map((_, i) => i + 1)) {
-      await db.room.create({
-        data: {
-          id: generateRoomId(),
-          name: `(${r}) Room for ${user.id}`,
-          owner: { connect: { id: user.id } },
-          metadata: { cover: null },
-        },
-      });
-    }
+    await db.room.create({
+      data: {
+        id: generateRoomId(),
+        name: `Room for ${user.id}`,
+        owner: { connect: { id: user.id } },
+        metadata: { cover: null },
+      },
+    });
   }
 }
 
 async function main() {
   await cleanup();
-  await seedTracks();
-  await seedPlaylists();
+  await seedTracks(2);
+  await seedPlaylists(10);
   await seedRooms();
   console.log('Database seeded successfully!');
   console.log('You can now start the server with `npm run dev`');
