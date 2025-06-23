@@ -13,14 +13,15 @@ import { authClient } from '@/lib/authClient';
 import type { Api } from '@workspace/core';
 import RoomPlaylists from './room-playlists';
 import { useRoomStore } from '@/lib/store/use-room-store';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@workspace/ui/components/tabs';
+import { Separator } from '@workspace/ui/components/separator';
 
-interface RoomConnectedCardProps {
-  room: Api.Room;
-}
-
-export default function RoomConnectedCard({
-  room: pageRoom,
-}: RoomConnectedCardProps) {
+export default function RoomConnectedCard() {
   const { data: session } = authClient.useSession();
   const room = useRoomStore((state) => state.room);
 
@@ -33,15 +34,30 @@ export default function RoomConnectedCard({
             Join us for a relaxing session of lofi music and chill vibes.
           </CardDescription>
         </CardHeader>
-        <CardContent className="gap-2">
-          <RoomMembers />
-          {!session && <RoomDiscordJoin />}
-        </CardContent>
-        {room?.playlistId ? (
-          <RoomPlaylist />
-        ) : (
-          <>{room && <RoomPlaylists room={room} />}</>
+        {!session && (
+          <>
+            <CardContent className="gap-2">{<RoomDiscordJoin />}</CardContent>
+            <Separator className="-mt-2 -mb-4" />
+          </>
         )}
+        <Tabs defaultValue={!room || room?.playlistId ? 'tracks' : 'playlists'}>
+          <TabsList className="px-6">
+            <TabsTrigger value="tracks" disabled={!room?.playlistId}>
+              Tracks
+            </TabsTrigger>
+            <TabsTrigger value="playlists">Playlists</TabsTrigger>
+            <TabsTrigger value="password">Participants</TabsTrigger>
+          </TabsList>
+          <TabsContent value="tracks">
+            <RoomPlaylist />
+          </TabsContent>
+          <TabsContent value="playlists">
+            {room && <RoomPlaylists room={room} />}
+          </TabsContent>
+          <TabsContent value="password" className="px-1 pb-1">
+            <RoomMembers />
+          </TabsContent>
+        </Tabs>
       </Card>
     </>
   );

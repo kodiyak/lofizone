@@ -10,9 +10,6 @@ import RoomConnectedCard from './room-connected-card';
 import RoomConnectCard from './room-connect-card';
 import { useBackendAPI } from '@/lib/hooks/useBackendAPI';
 import type { Api } from '@workspace/core';
-import RoomDiscordJoin from './room-discord-join';
-import { authClient } from '@/lib/authClient';
-import { CardContent } from '@workspace/ui/components/card';
 
 interface RoomCardProps {
   roomId: string;
@@ -22,7 +19,6 @@ export default function RoomCard({ roomId }: RoomCardProps) {
   const { data: room } = useBackendAPI<Api.Room>(`/rooms/${roomId}`);
   const isConnected = useRoomStore((state) => state.isConnected);
   const connectedRoomId = useRoomStore((state) => state.room?.roomId);
-  const { data: session } = authClient.useSession();
 
   return (
     <>
@@ -45,6 +41,7 @@ export default function RoomCard({ roomId }: RoomCardProps) {
               </span>
             </div>
           </div>
+
           {connectedRoomId === roomId && (
             <div className="flex-1">
               <RoomTrack />
@@ -53,7 +50,7 @@ export default function RoomCard({ roomId }: RoomCardProps) {
           {room && (
             <div className="flex-1">
               {isConnected && connectedRoomId === roomId ? (
-                <RoomConnectedCard room={room} />
+                <RoomConnectedCard />
               ) : (
                 <RoomConnectCard roomId={roomId} />
               )}

@@ -55,6 +55,79 @@ export function getPlaylistsRoutes() {
     },
   );
 
+  // show playlist
+  app.openapi(
+    createRoute({
+      method: 'get',
+      path: '/:playlistId',
+      responses: {
+        200: {
+          description: 'Playlist details',
+          content: {
+            'application/json': {
+              schema: playlistSchema,
+            },
+          },
+        },
+        400: {
+          description: 'Bad Request',
+          content: {
+            'application/json': {
+              schema: z.object({
+                error: z.string(),
+              }),
+            },
+          },
+        },
+        401: {
+          description: 'Unauthorized',
+          content: {
+            'application/json': {
+              schema: z.object({
+                error: z.string(),
+              }),
+            },
+          },
+        },
+        404: {
+          description: 'Playlist not found',
+          content: {
+            'application/json': {
+              schema: z.object({
+                error: z.string(),
+              }),
+            },
+          },
+        },
+      },
+    }),
+    async (c) => {
+      const { playlistId } = c.req.param();
+      const userId = c.get('userId');
+
+      if (!playlistId) {
+        return c.json({ error: 'Playlist ID is required' }, 400);
+      }
+
+      if (!userId) {
+        return c.json({ error: 'Unauthorized' }, 401);
+      }
+
+      const playlist = await db.playlist.findFirst({
+        where: {
+          id: playlistId,
+          ownerId: userId,
+        },
+      });
+
+      if (!playlist) {
+        return c.json({ error: 'Playlist not found' }, 404);
+      }
+
+      return c.json(playlistSchema.parse(playlist), 200);
+    },
+  );
+
   //  playlist tracks
   app.openapi(
     createRoute({
