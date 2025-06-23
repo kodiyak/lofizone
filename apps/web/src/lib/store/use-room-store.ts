@@ -135,6 +135,12 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
               ),
             }));
           },
+          playlist_changed: async () => {
+            const { room } = get();
+            if (!room) return;
+            const tracks = await backendClient.getRoomTracks(room.roomId);
+            set({ tracks });
+          },
         };
         const handler = (handlers as any)[payload.event];
         if (!handler) {

@@ -30,7 +30,7 @@ export default function RoomPlaylists({ room }: RoomPlaylistsProps) {
   return (
     <>
       <Command className="rounded-none bg-transparent">
-        <CommandInput placeholder={'Search tracks or playlists...'} />
+        <CommandInput placeholder={'Search playlists...'} />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
           <CommandGroup heading="Tracks">

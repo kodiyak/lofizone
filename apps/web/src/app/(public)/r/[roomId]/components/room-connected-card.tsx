@@ -12,13 +12,17 @@ import RoomPlaylist from './room-playlist';
 import { authClient } from '@/lib/authClient';
 import type { Api } from '@workspace/core';
 import RoomPlaylists from './room-playlists';
+import { useRoomStore } from '@/lib/store/use-room-store';
 
 interface RoomConnectedCardProps {
   room: Api.Room;
 }
 
-export default function RoomConnectedCard({ room }: RoomConnectedCardProps) {
+export default function RoomConnectedCard({
+  room: pageRoom,
+}: RoomConnectedCardProps) {
   const session = authClient.useSession();
+  const room = useRoomStore((state) => state.room);
 
   return (
     <>
@@ -32,10 +36,10 @@ export default function RoomConnectedCard({ room }: RoomConnectedCardProps) {
         <CardContent className="gap-2">
           <RoomMembers />
         </CardContent>
-        {room.playlistId ? (
+        {room?.playlistId ? (
           <>{session?.data ? <RoomPlaylist /> : <RoomDiscordJoin />}</>
         ) : (
-          <RoomPlaylists room={room} />
+          <>{room && <RoomPlaylists room={room} />}</>
         )}
       </Card>
     </>
