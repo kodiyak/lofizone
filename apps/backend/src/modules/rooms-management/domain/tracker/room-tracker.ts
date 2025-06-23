@@ -24,6 +24,10 @@ const RoomTrackerEvents = z.object({
     memberId: z.string(),
     trackId: z.string().nullable(),
   }),
+  playlist_changed: z.object({
+    memberId: z.string(),
+    playlistId: z.string().nullable(),
+  }),
 });
 
 export class RoomTracker {
@@ -75,6 +79,12 @@ export class RoomTracker {
           trackId: data.trackId,
         });
       }),
+      member.events.buildListener('playlist_changed', (data) => {
+        this.events.emit('playlist_changed', {
+          memberId: member.memberId,
+          playlistId: data.playlistId,
+        });
+      }),
     ];
 
     member.events.buildListener('member_left', ({ off: offMemberLeft }) => {
@@ -91,6 +101,16 @@ export class RoomTracker {
     });
 
     return member;
+  }
+
+  updatePlaylist(playlistId: string | null) {
+    if (this.playlistId === playlistId) return;
+
+    this.props.playlistId = playlistId;
+    this.events.emit('playlist_changed', {
+      memberId: this.ownerId,
+      playlistId,
+    });
   }
 
   public getMember(memberId: string): RoomMemberTracker | undefined {

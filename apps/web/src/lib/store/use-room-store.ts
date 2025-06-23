@@ -11,6 +11,7 @@ interface RoomStore {
   connect: (roomId: string) => Promise<void>;
   track: Api.Track | null;
   playTrack: (track: Api.Track) => Promise<void>;
+  updatePlaylist: (playlistId: string) => void;
   resume: () => void;
   seek: (time: number) => void;
   pause: () => void;
@@ -91,6 +92,14 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
   seek: (time: number) => {
     const { audio } = get();
     if (audio) audio.currentTime = time;
+  },
+  updatePlaylist: async (playlistId: string) => {
+    const { room } = get();
+    if (!room) return;
+    await backendClient.updateRoom(room.roomId, {
+      playlistId,
+    });
+    set({ room: { ...room, playlistId } });
   },
   connect: async (roomId: string) => {
     const { socket: currentSocket } = get();

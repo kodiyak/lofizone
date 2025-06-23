@@ -148,6 +148,72 @@ export function getRoomsRoutes() {
     },
   );
 
+  /** [PUT] */
+  app.openapi(
+    createRoute({
+      method: 'put',
+      path: '/:roomId',
+      request: {
+        body: {
+          content: {
+            'application/json': {
+              schema: z.object({
+                name: z.string().optional(),
+                playlistId: z.string().optional(),
+              }),
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'Room updated successfully',
+          content: {
+            'application/json': { schema: z.any() },
+          },
+        },
+        400: {
+          description: 'Bad Request',
+          content: {
+            'application/json': {
+              schema: z.object({ error: z.string() }),
+            },
+          },
+        },
+        404: {
+          description: 'Room not found',
+          content: {
+            'application/json': {
+              schema: z.object({ error: z.string() }),
+            },
+          },
+        },
+      },
+    }),
+    async (c) => {
+      const roomId = c.req.param('roomId');
+      const { name, playlistId } = c.req.valid('json');
+      if (!roomId) {
+        return c.json({ error: 'Room ID is required' }, 400);
+      }
+
+      const service = RoomsService.getInstance();
+      const room = service.tracker.getRoom(roomId);
+      if (!room) {
+        return c.json({ error: 'Room not found' }, 404);
+      }
+
+      if (playlistId !== undefined) room.updatePlaylist(playlistId);
+
+      const updatedRoom = await db.room.update({
+        where: { id: roomId },
+        data: { name, playlistId },
+      });
+
+      return c.json(roomSchema.parse(updatedRoom), 200);
+    },
+  );
+
   /** [GET][MEMBERS] Room */
   app.openapi(
     createRoute({

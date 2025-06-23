@@ -12,6 +12,9 @@ const RoomMemberTrackerEvents = z.object({
   track_changed: z.object({
     trackId: z.string().nullable(),
   }),
+  playlist_changed: z.object({
+    playlistId: z.string().nullable(),
+  }),
   member_left: z.object({}),
 });
 

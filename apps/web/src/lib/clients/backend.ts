@@ -35,6 +35,15 @@ const backendClient = {
   createRoom: async (data: Api.CreateRoomRequest) => {
     return client.post<Api.Room>('/rooms', data).then((r) => r.data);
   },
+  updateRoom: async (
+    roomId: string,
+    data: Partial<{
+      playlistId: string | null;
+      name: string;
+    }>,
+  ) => {
+    return client.put<Api.Room>(`/rooms/${roomId}`, data).then((r) => r.data);
+  },
   setToken: (token: string) => {
     console.log('Setting token:', token);
     localStorage.setItem('auth_token', token);

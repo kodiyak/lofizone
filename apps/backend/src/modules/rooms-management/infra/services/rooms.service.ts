@@ -73,6 +73,7 @@ export class RoomsService {
       room.events.buildListener('track_changed', send('track_changed')),
       room.events.buildListener('member_joined', send('member_joined')),
       room.events.buildListener('member_left', send('member_left')),
+      room.events.buildListener('playlist_changed', send('playlist_changed')),
     ];
 
     const member = room.join(

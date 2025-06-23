@@ -1,4 +1,5 @@
 import { useBackendAPI } from '@/lib/hooks/useBackendAPI';
+import { useRoomStore } from '@/lib/store/use-room-store';
 import { StopIcon } from '@phosphor-icons/react';
 import { Api } from '@workspace/core';
 import {
@@ -24,6 +25,7 @@ interface RoomPlaylistsProps {
 export default function RoomPlaylists({ room }: RoomPlaylistsProps) {
   const { playlistId } = room;
   const { data: playlists = [] } = useBackendAPI<Api.Playlist[]>(`/playlists`);
+  const updatePlaylist = useRoomStore((state) => state.updatePlaylist);
 
   return (
     <>
@@ -34,7 +36,9 @@ export default function RoomPlaylists({ room }: RoomPlaylistsProps) {
           <CommandGroup heading="Tracks">
             {playlists.map((playlist) => (
               <CommandItem
-                onSelect={() => {}}
+                onSelect={() => {
+                  updatePlaylist(playlist.id);
+                }}
                 disabled={playlistId === playlist.id}
                 key={playlist.id}
                 value={playlist.id}
