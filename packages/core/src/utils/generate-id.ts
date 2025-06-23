@@ -19,6 +19,10 @@ function generateTrackId(): string {
   return generateId('trk');
 }
 
+function generateMemberId(): string {
+  return generateId('mbx');
+}
+
 function generateRoomId(): string {
   return generateId('rm');
 }
@@ -27,6 +31,7 @@ export {
   generateId,
   generateArtistId,
   generateAlbumId,
+  generateMemberId,
   generateTrackId,
   generateRoomId,
   generatePlaylistId,

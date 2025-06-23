@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 export interface RoomMemberTrackerProps {
   memberId: string;
+  userId: string | null;
   host: boolean;
   trackId?: string | null;
 }
@@ -19,15 +20,19 @@ export class RoomMemberTracker {
 
   constructor(private readonly props: RoomMemberTrackerProps) {}
 
-  get memberId(): string {
+  get memberId() {
     return this.props.memberId;
   }
 
-  get host(): boolean {
+  get userId() {
+    return this.props.userId;
+  }
+
+  get host() {
     return this.props.host;
   }
 
-  get trackId(): string | null {
+  get trackId() {
     return this.props.trackId || null;
   }
 

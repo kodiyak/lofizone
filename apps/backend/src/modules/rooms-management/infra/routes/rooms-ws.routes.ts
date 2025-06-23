@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { NodeWebSocket } from '@hono/node-ws';
 import { RoomsService } from '../services';
 import { auth } from '@/shared/clients/auth';
+import { generateMemberId } from '@workspace/core';
 
 export function getRoomsWsRoutes({ upgradeWebSocket }: NodeWebSocket) {
   const app = new Hono();
@@ -15,13 +16,15 @@ export function getRoomsWsRoutes({ upgradeWebSocket }: NodeWebSocket) {
           const session = await auth.api.getSession({
             headers: c.req.raw.headers,
           });
-          if (!session) {
-            console.error(`No session found for room ${roomId}`);
-            ws.close(1008, 'Unauthorized');
-            return;
-          }
 
-          RoomsService.getInstance().handleJoin(ws, session, roomId);
+          RoomsService.getInstance().handleJoin(
+            ws,
+            {
+              memberId: generateMemberId(),
+              userId: session?.user?.id || null,
+            },
+            roomId,
+          );
         },
         onMessage: (evt, ws) => {
           const message = JSON.parse(evt.data.toString());

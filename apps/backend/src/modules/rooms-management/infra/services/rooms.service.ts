@@ -1,12 +1,13 @@
 import type { WSContext } from 'hono/ws';
-import { RoomsRepository } from '../repositories';
 import { RoomMemberTracker, roomSchema, RoomsTracker } from '../../domain';
 import WebSocket from 'ws';
-import type { auth } from '@/shared/clients/auth';
 import { db } from '@/shared/clients/db';
 import { parseArrayToSchema } from '@/shared/infra/parse-array-to-schema';
 
-type RoomSession = typeof auth.$Infer.Session;
+interface RoomSession {
+  memberId: string;
+  userId: string | null;
+}
 
 export class RoomsService {
   private static instance: RoomsService;
@@ -57,7 +58,7 @@ export class RoomsService {
     }
 
     if (this.wsClient.has(ws)) {
-      console.warn(`WebSocket already connected for ${session.user.id} in room ${roomId}`);
+      console.warn(`WebSocket already connected for ${session.userId || 'N/A'} in room ${roomId}`);
       return;
     }
 
@@ -76,8 +77,9 @@ export class RoomsService {
 
     const member = room.join(
       RoomMemberTracker.create({
-        memberId: session.user.id,
-        host: session.user.id === room.ownerId,
+        memberId: session.memberId,
+        userId: session.userId,
+        host: session.userId === room.ownerId,
         trackId: null,
       }),
     );
@@ -101,15 +103,16 @@ export class RoomsService {
     }
 
     const { session, roomId } = client;
+    const { memberId } = session;
     const room = this.tracker.getRoom(roomId);
     if (!room) {
       console.error(`Room ${roomId} not found`);
       return;
     }
 
-    const member = room.getMember(session.user.id);
+    const member = room.getMember(memberId);
     if (!member) {
-      console.warn(`Member ${session.user.id} not found in room ${roomId}`);
+      console.warn(`Member ${session.userId} not found in room ${roomId}`);
       return;
     }
 

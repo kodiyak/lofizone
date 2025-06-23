@@ -5,6 +5,7 @@ import { db } from '@/shared/clients/db';
 import { parseArrayToSchema } from '@/shared/infra/parse-array-to-schema';
 import { trackSchema } from '@/modules/vibes-management';
 import { roomSchema } from '../../domain';
+import { generateRoomId } from '@workspace/core';
 
 export function getRoomsRoutes() {
   const app = new OpenAPIHono<{
@@ -84,10 +85,17 @@ export function getRoomsRoutes() {
 
       const room = await db.room.create({
         data: {
+          id: generateRoomId(),
           name,
           metadata: {},
           owner: { connect: { id: userId } },
         },
+      });
+
+      RoomsService.getInstance().tracker.addRoom({
+        ownerId: userId,
+        roomId: room.id,
+        name: room.name,
       });
 
       return c.json(roomSchema.parse(room), 201);
