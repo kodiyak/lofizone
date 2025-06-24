@@ -10,9 +10,6 @@ import RoomDiscordJoin from './room-discord-join';
 import RoomMembers from './room-members';
 import RoomTracks from './room-tracks';
 import { authClient } from '@/lib/authClient';
-import type { Api } from '@workspace/core';
-import RoomPlaylists from './room-playlists';
-import { useRoomStore } from '@/lib/store/use-room-store';
 import {
   Tabs,
   TabsContent,
@@ -23,7 +20,6 @@ import { Separator } from '@workspace/ui/components/separator';
 
 export default function RoomConnectedCard() {
   const { data: session } = authClient.useSession();
-  const room = useRoomStore((state) => state.room);
 
   return (
     <>
@@ -40,17 +36,13 @@ export default function RoomConnectedCard() {
             <Separator className="-mt-2 -mb-4" />
           </>
         )}
-        <Tabs defaultValue={!room || room?.playlistId ? 'tracks' : 'playlists'}>
+        <Tabs defaultValue={'tracks'}>
           <TabsList className="px-6">
             <TabsTrigger value="tracks">Tracks</TabsTrigger>
-            <TabsTrigger value="playlists">Playlists</TabsTrigger>
             <TabsTrigger value="password">Participants</TabsTrigger>
           </TabsList>
           <TabsContent value="tracks">
             <RoomTracks />
-          </TabsContent>
-          <TabsContent value="playlists">
-            {room && <RoomPlaylists room={room} />}
           </TabsContent>
           <TabsContent
             value="password"
