@@ -36,7 +36,18 @@ const validations = {
     playlistId: z.string().nullable(),
     name: z.string().nullish(),
   }),
+  addTracksToRoom: z.object({
+    roomId: z.string().min(1, 'Room ID is required'),
+    tracksIds: z.array(z.string()).min(1, 'At least one track is required'),
+  }),
 };
+
+export type AddTracksToRoomRequest = z.infer<
+  typeof validations.addTracksToRoom
+>;
+export type CreateRoomRequest = z.infer<typeof validations.createRoom>;
+export type CreatePlaylistRequest = z.infer<typeof validations.createPlaylist>;
+export type UploadTrackRequest = z.infer<typeof validations.uploadTrack>;
 
 const backendClient = {
   getRoom: async (roomId: string) =>
@@ -58,16 +69,16 @@ const backendClient = {
       .then((r) => r.data),
   getRoomTracks: async (roomId: string) =>
     client.get<Api.Track[]>(`/rooms/${roomId}/tracks`).then((r) => r.data),
-  createRoom: async (data: Api.CreateRoomRequest) => {
+  createRoom: async (data: CreateRoomRequest) => {
     return client.post<Api.Room>('/rooms', data).then((r) => r.data);
   },
-  createPlaylist: async (data: Api.CreatePlaylistRequest) => {
+  createPlaylist: async (data: CreatePlaylistRequest) => {
     return client.post<Api.Playlist>('/playlists', data).then((r) => r.data);
   },
   getPlaylists: async () => {
     return client.get<Api.Playlist[]>('/playlists').then((r) => r.data);
   },
-  uploadTrack: async (data: Api.UploadTrackRequest) => {
+  uploadTrack: async (data: UploadTrackRequest) => {
     return client
       .post<Api.Track>('/tracks', toFormData(data), {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -82,6 +93,11 @@ const backendClient = {
     }>,
   ) => {
     return client.put<Api.Room>(`/rooms/${roomId}`, data).then((r) => r.data);
+  },
+  addTracksToRoom: async (data: AddTracksToRoomRequest) => {
+    return client
+      .post<Api.Room>(`/rooms/${data.roomId}/tracks`, data)
+      .then((r) => r.data);
   },
   setToken: (token: string) => {
     console.log('Setting token:', token);

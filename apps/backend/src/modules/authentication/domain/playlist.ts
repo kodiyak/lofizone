@@ -5,6 +5,15 @@ export const playlistMetadataSchema = z.object({
 });
 export type PlaylistMetadata = z.infer<typeof playlistMetadataSchema>;
 
+export const playlistTypesSchema = z.enum([
+  'user',
+  'room',
+  'my_liked',
+  'my_favorite',
+  'my_uploaded',
+]);
+export type PlaylistTypes = z.infer<typeof playlistTypesSchema>;
+
 export const playlistSchema = z.object({
   id: z.string(),
   name: z.string(),

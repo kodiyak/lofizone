@@ -2,9 +2,10 @@ import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
 import { db } from '@/shared/clients/db';
 import { authMiddleware } from '../middlewares';
 import { parseArrayToSchema } from '@/shared/infra/parse-array-to-schema';
-import { playlistSchema } from '../../domain';
+import { playlistSchema, playlistTypesSchema } from '../../domain';
 import { trackSchema } from '@/modules/vibes-management';
 import { generatePlaylistId } from '@workspace/core';
+import type { Prisma } from '@workspace/db';
 
 export function getPlaylistsRoutes() {
   const app = new OpenAPIHono<{ Variables: { userId: string } }>();
@@ -34,25 +35,30 @@ export function getPlaylistsRoutes() {
           },
         },
       },
+      request: {
+        query: z.object({
+          types: playlistTypesSchema.array().optional(),
+        }),
+      },
     }),
     async (c) => {
       const userId = c.get('userId');
-
+      const { types } = c.req.valid('query');
       if (!userId) {
         return c.json({ error: 'Unauthorized' }, 401);
       }
 
-      return c.json(
-        parseArrayToSchema(
-          await db.playlist.findMany({
-            where: {
-              ownerId: userId,
-            },
-          }),
-          playlistSchema,
-        ),
-        200,
-      );
+      const where: Prisma.PlaylistWhereInput = {
+        ownerId: userId,
+      };
+
+      if (types === undefined) {
+        where.type = { notIn: ['room'] };
+      } else {
+        where.type = { in: types };
+      }
+
+      return c.json(parseArrayToSchema(await db.playlist.findMany({ where }), playlistSchema), 200);
     },
   );
 

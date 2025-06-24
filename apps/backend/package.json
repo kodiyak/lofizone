@@ -22,6 +22,7 @@
     "fs-jetpack": "^5.1.0",
     "hono": "^4.7.9",
     "ioredis": "^5.6.1",
+    "lodash.kebabcase": "^4.1.1",
     "nanoid": "^5.1.5",
     "s3mini": "^0.2.0",
     "ws": "^8.18.2",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "@types/ffprobe-static": "^2.0.3",
     "@types/fluent-ffmpeg": "^2.1.27",
+    "@types/lodash.kebabcase": "^4.1.9",
     "@types/node": "^22.15.17",
     "@types/ws": "^8.18.1",
     "@types/yargs": "^17.0.33",

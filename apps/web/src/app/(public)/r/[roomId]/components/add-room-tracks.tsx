@@ -2,11 +2,14 @@
 
 import PlaylistsCommand from '@/components/playlists-command';
 import TracksCommand from '@/components/tracks-command';
+import {
+  backendClient,
+  type AddTracksToRoomRequest,
+} from '@/lib/clients/backend';
 import { useBackendAPI } from '@/lib/hooks/useBackendAPI';
 import { PlaylistIcon } from '@phosphor-icons/react';
 import { useMutation } from '@tanstack/react-query';
 import type { Api } from '@workspace/core';
-import { Badge } from '@workspace/ui/components/badge';
 import { Button } from '@workspace/ui/components/button';
 import {
   Dialog,
@@ -22,17 +25,21 @@ import { useForm } from 'react-hook-form';
 
 interface AddRoomTracksProps extends UseDisclosure {
   room: Api.Room;
+  onAdded?: () => void | Promise<void>;
 }
 
 export default function AddRoomTracks({
   isOpen,
   onOpenChange,
   onClose,
+  room,
+  onAdded,
 }: AddRoomTracksProps) {
   const form = useForm({
     defaultValues: {
+      roomId: room.roomId,
       playlistId: null,
-      trackIds: [],
+      tracksIds: [],
     },
   });
   const [{ step }, setState] = useState({
@@ -54,16 +61,27 @@ export default function AddRoomTracks({
     },
   });
 
-  const onStepSubmit = (data: any) => {
+  const onSubmit = useMutation({
+    mutationFn: async (data: AddTracksToRoomRequest) => {
+      await backendClient.addTracksToRoom({
+        roomId: data.roomId,
+        tracksIds: data.tracksIds,
+      });
+    },
+    onSuccess: async () => {
+      onClose();
+      await onAdded?.();
+    },
+  });
+  const onStepSubmit = async (data: AddTracksToRoomRequest) => {
     if (step + 1 >= steps.length) {
+      await onSubmit.mutateAsync(data);
       return;
     }
     setState((prev) => ({ ...prev, step: prev.step + 1 }));
   };
-  const onSubmit = useMutation({
-    mutationFn: async (data: any) => {},
-  });
-  const { trackIds } = form.watch();
+
+  const { tracksIds } = form.watch();
   const [selectedPlaylist, setPlaylist] = useState<Api.Playlist | null>(null);
   const { isSubmitting } = form.formState;
 
@@ -104,8 +122,8 @@ export default function AddRoomTracks({
       content: (
         <>
           <FormField
-            name={'trackIds'}
-            key={'trackIds'}
+            name={'tracksIds'}
+            key={'tracksIds'}
             render={({ field }) => (
               <TracksCommand
                 tracks={tracks}
@@ -132,9 +150,13 @@ export default function AddRoomTracks({
     if (isOpen) {
       setState({ step: 0 });
       setPlaylist(() => null);
-      form.reset();
+      form.reset({
+        roomId: room.roomId,
+        playlistId: null,
+        tracksIds: [],
+      });
     }
-  }, [isOpen]);
+  }, [isOpen, room.roomId]);
 
   return (
     <>
@@ -170,11 +192,15 @@ export default function AddRoomTracks({
                 <Button
                   size={'sm'}
                   type={'submit'}
-                  disabled={trackIds.length === 0 || isSubmitting}
+                  disabled={tracksIds.length === 0 || isSubmitting}
                 >
                   <span>
-                    Add {trackIds.length} song
-                    {trackIds.length > 1 ? 's' : ''} to Room
+                    {[
+                      'Add ',
+                      tracksIds.length,
+                      tracksIds.length > 0 ? ' Song' : ' Songs',
+                      ' to Room',
+                    ].join('')}
                   </span>
                 </Button>
               </div>

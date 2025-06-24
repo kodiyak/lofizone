@@ -12,6 +12,7 @@ import {
   generateTrackId,
 } from '@workspace/core';
 import { readFileSync } from 'fs';
+import kebabCase from 'lodash.kebabcase';
 
 async function cleanup() {
   // Delete in order to avoid foreign key constraint errors
@@ -121,12 +122,25 @@ async function seedRooms() {
   });
 
   for (const user of users) {
+    const roomId = generateRoomId();
+    const playlistId = generatePlaylistId();
+    const name = `Room for ${user.id}`;
     const room = await db.room.create({
       data: {
-        id: generateRoomId(),
-        name: `Room for ${user.id}`,
+        id: roomId,
+        name,
         owner: { connect: { id: user.id } },
         metadata: { cover: null },
+        playlist: {
+          create: {
+            id: playlistId,
+            name: `Playlist for ${user.id}`,
+            slug: kebabCase(name),
+            type: 'room',
+            owner: { connect: { id: user.id } },
+            metadata: { cover: null },
+          },
+        },
       },
     });
     console.log(`Created room ${room.id} for user ${user.id}`);

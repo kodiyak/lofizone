@@ -4,7 +4,8 @@ import { db } from '@/shared/clients/db';
 import { parseArrayToSchema } from '@/shared/infra/parse-array-to-schema';
 import { trackSchema } from '@/modules/vibes-management';
 import { roomSchema } from '../../domain';
-import { generateRoomId } from '@workspace/core';
+import { generatePlaylistId, generateRoomId } from '@workspace/core';
+import kebabCase from 'lodash.kebabcase';
 
 export function getRoomsRoutes() {
   const app = new OpenAPIHono<{
@@ -81,18 +82,31 @@ export function getRoomsRoutes() {
         return c.json({ error: 'Unauthorized' }, 401);
       }
 
+      const roomId = generateRoomId();
+      const playlistId = generatePlaylistId();
       const room = await db.room.create({
         data: {
-          id: generateRoomId(),
+          id: roomId,
           name,
           metadata: {},
           owner: { connect: { id: userId } },
+          playlist: {
+            create: {
+              id: playlistId,
+              type: 'room',
+              name: `${name}'s Playlist`,
+              slug: `${kebabCase(name)}-${roomId}`,
+              owner: { connect: { id: userId } },
+              metadata: { cover: null },
+            },
+          },
         },
       });
 
       RoomsService.getInstance().tracker.addRoom({
+        playlistId,
+        roomId,
         ownerId: userId,
-        roomId: room.id,
         name: room.name,
       });
 
@@ -157,7 +171,6 @@ export function getRoomsRoutes() {
             'application/json': {
               schema: z.object({
                 name: z.string().optional(),
-                playlistId: z.string().optional(),
               }),
             },
           },
@@ -190,7 +203,7 @@ export function getRoomsRoutes() {
     }),
     async (c) => {
       const roomId = c.req.param('roomId');
-      const { name, playlistId } = c.req.valid('json');
+      const { name } = c.req.valid('json');
       if (!roomId) {
         return c.json({ error: 'Room ID is required' }, 400);
       }
@@ -201,11 +214,9 @@ export function getRoomsRoutes() {
         return c.json({ error: 'Room not found' }, 404);
       }
 
-      if (playlistId !== undefined) room.updatePlaylist(playlistId);
-
       const updatedRoom = await db.room.update({
         where: { id: roomId },
-        data: { name, playlistId },
+        data: { name },
       });
 
       return c.json(roomSchema.parse(updatedRoom), 200);
@@ -331,7 +342,7 @@ export function getRoomsRoutes() {
           content: {
             'application/json': {
               schema: z.object({
-                trackIds: z.array(z.string()).nonempty(),
+                tracksIds: z.array(z.string()).nonempty(),
               }),
             },
           },
@@ -363,15 +374,25 @@ export function getRoomsRoutes() {
       },
     }),
     async (c) => {
-      /**
-       * @todo Implement the logic to add tracks to a room.
-       * This should include validating the room ID,
-       * checking if the tracks exist,
-       * and updating the room's playlist.
-       * PS: remove playlist_changed event from the tracker
-       * room will have your own playlist
-       * and tracks will be added to the room's playlist.
-       */
+      const roomId = c.req.param('roomId');
+      const { tracksIds } = c.req.valid('json');
+      const { playlistId } = await db.room.update({
+        where: { id: roomId },
+        data: {
+          playlist: { update: { tracks: { connect: tracksIds.map((id) => ({ id })) } } },
+        },
+        select: { id: true, playlistId: true },
+      });
+
+      RoomsService.getInstance().tracker.getRoom(roomId)?.addTracks(tracksIds);
+
+      return c.json(
+        {
+          roomId,
+          playlistId,
+        },
+        200,
+      );
     },
   );
 

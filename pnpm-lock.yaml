@@ -114,6 +114,9 @@ importers:
       ioredis:
         specifier: ^5.6.1
         version: 5.6.1
+      lodash.kebabcase:
+        specifier: ^4.1.1
+        version: 4.1.1
       nanoid:
         specifier: ^5.1.5
         version: 5.1.5
@@ -133,6 +136,9 @@ importers:
       '@types/fluent-ffmpeg':
         specifier: ^2.1.27
         version: 2.1.27
+      '@types/lodash.kebabcase':
+        specifier: ^4.1.9
+        version: 4.1.9
       '@types/node':
         specifier: ^22.15.17
         version: 22.15.32
@@ -1602,6 +1608,12 @@ packages:
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
 
+  '@types/lodash.kebabcase@4.1.9':
+    resolution: {integrity: sha512-kPrrmcVOhSsjAVRovN0lRfrbuidfg0wYsrQa5IYuoQO1fpHHGSme66oyiYA/5eQPVl8Z95OA3HG0+d2SvYC85w==}
+
+  '@types/lodash@4.17.18':
+    resolution: {integrity: sha512-KJ65INaxqxmU6EoCiJmRPZC9H9RVWCRd349tXM2M3O5NA7cY6YL7c0bHAHQ93NOfTObEQ004kd2QVHs/r0+m4g==}
+
   '@types/node@20.19.1':
     resolution: {integrity: sha512-jJD50LtlD2dodAEO653i3YF04NWak6jN3ky+Ri3Em3mGR39/glWiboM/IePaRbgwSfqM1TpGXfAg8ohn/4dTgA==}
 
@@ -2716,6 +2728,9 @@ packages:
 
   lodash.isarguments@3.1.0:
     resolution: {integrity: sha512-chi4NHZlZqZD18a0imDHnZPrDeBbTtVN7GXMwuGdRH9qotxAjYs3aVLKc7zNOG9eddR5Ksd8rvFEBc9SsggPpg==}
+
+  lodash.kebabcase@4.1.1:
+    resolution: {integrity: sha512-N8XRTIMMqqDgSy4VLKPnJ/+hpGZN+PHQiJnSenYqPaVV/NCqEogTnAdZLQiGKhxX+JCs8waWq2t1XHWKOmlY8g==}
 
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
@@ -4663,6 +4678,12 @@ snapshots:
 
   '@types/json5@0.0.29': {}
 
+  '@types/lodash.kebabcase@4.1.9':
+    dependencies:
+      '@types/lodash': 4.17.18
+
+  '@types/lodash@4.17.18': {}
+
   '@types/node@20.19.1':
     dependencies:
       undici-types: 6.21.0
@@ -5989,6 +6010,8 @@ snapshots:
   lodash.defaults@4.2.0: {}
 
   lodash.isarguments@3.1.0: {}
+
+  lodash.kebabcase@4.1.1: {}
 
   lodash.merge@4.6.2: {}
 

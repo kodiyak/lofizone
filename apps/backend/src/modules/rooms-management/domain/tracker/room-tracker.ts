@@ -24,14 +24,20 @@ const RoomTrackerEvents = z.object({
     memberId: z.string(),
     trackId: z.string().nullable(),
   }),
-  playlist_changed: z.object({
+  track_added: z.object({
     memberId: z.string(),
-    playlistId: z.string().nullable(),
+    trackId: z.string(),
+  }),
+  track_removed: z.object({
+    memberId: z.string(),
+    trackId: z.string(),
   }),
 });
 
 export class RoomTracker {
   private readonly members: RoomMemberTracker[] = [];
+  private readonly tracksIds: string[] = []; // Assuming tracks are stored as an array of track IDs
+
   public readonly events = new EventEmitter(RoomTrackerEvents, 'RoomTracker');
 
   constructor(private readonly props: RoomTrackerProps) {}
@@ -46,10 +52,6 @@ export class RoomTracker {
 
   get playlistId() {
     return this.props.playlistId || null;
-  }
-
-  get trackId() {
-    return this.props.trackId || null;
   }
 
   get name() {
@@ -79,12 +81,12 @@ export class RoomTracker {
           trackId: data.trackId,
         });
       }),
-      member.events.buildListener('playlist_changed', (data) => {
-        this.events.emit('playlist_changed', {
-          memberId: member.memberId,
-          playlistId: data.playlistId,
-        });
-      }),
+      // member.events.buildListener('playlist_changed', (data) => {
+      //   this.events.emit('playlist_changed', {
+      //     memberId: member.memberId,
+      //     playlistId: data.playlistId,
+      //   });
+      // }),
     ];
 
     member.events.buildListener('member_left', ({ off: offMemberLeft }) => {
@@ -103,13 +105,56 @@ export class RoomTracker {
     return member;
   }
 
-  updatePlaylist(playlistId: string | null) {
-    if (this.playlistId === playlistId) return;
+  // updatePlaylist(playlistId: string | null) {
+  //   if (this.playlistId === playlistId) return;
 
-    this.props.playlistId = playlistId;
-    this.events.emit('playlist_changed', {
-      memberId: this.ownerId,
-      playlistId,
+  //   this.props.playlistId = playlistId;
+  //   this.events.emit('playlist_changed', {
+  //     memberId: this.ownerId,
+  //     playlistId,
+  //   });
+  // }
+
+  public addTracks(tracksIds: string[]) {
+    if (tracksIds.length === 0) {
+      console.warn('No tracks provided to add.');
+      return;
+    }
+
+    const addedTracks = tracksIds.filter((id) => !this.tracksIds.includes(id));
+    if (addedTracks.length === 0) {
+      console.warn('No new tracks to add. Tracks already exist in the room.');
+      return;
+    }
+    addedTracks.forEach((trackId) => {
+      this.tracksIds.push(trackId);
+      this.events.emit('track_added', {
+        memberId: this.ownerId,
+        trackId,
+      });
+    });
+  }
+
+  public removeTracks(tracksIds: string[]) {
+    if (tracksIds.length === 0) {
+      console.warn('No tracks provided to remove.');
+      return;
+    }
+
+    const removedTracks = tracksIds.filter((id) => this.tracksIds.includes(id));
+    if (removedTracks.length === 0) {
+      console.warn('No tracks to remove. Tracks do not exist in the room.');
+      return;
+    }
+    removedTracks.forEach((trackId) => {
+      const index = this.tracksIds.indexOf(trackId);
+      if (index !== -1) {
+        this.tracksIds.splice(index, 1);
+        this.events.emit('track_removed', {
+          memberId: this.ownerId,
+          trackId,
+        });
+      }
     });
   }
 
@@ -125,8 +170,6 @@ export class RoomTracker {
     return {
       roomId: this.roomId,
       ownerId: this.ownerId,
-      playlistId: this.playlistId,
-      trackId: this.trackId,
       name: this.name,
       cover: this.cover,
       members: this.members,
