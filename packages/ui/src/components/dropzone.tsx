@@ -104,12 +104,14 @@ function Dropzone({
                 </p>
                 {supportedFormats.length > 0 && (
                   <>
-                    <strong className="mt-2">Supported formats: </strong>
-                    {supportedFormats.map((f) => (
-                      <Badge variant={'muted'} key={`f.${f}`}>
-                        {f}
-                      </Badge>
-                    ))}
+                    <div className="flex items-center gap-2 mt-2">
+                      <strong>Supported formats: </strong>
+                      {supportedFormats.map((f) => (
+                        <Badge variant={'muted'} key={`f.${f}`}>
+                          {f}
+                        </Badge>
+                      ))}
+                    </div>
                   </>
                 )}
               </div>

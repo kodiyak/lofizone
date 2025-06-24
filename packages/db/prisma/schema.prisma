@@ -128,14 +128,24 @@ model Room {
 }
 
 model Playlist {
-  id        String   @id @default(uuid())
-  name      String
-  slug      String   @unique
-  ownerId   String
-  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  tracks    Track[]
-  metadata  Json
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @db.Timestamptz(3)
-  rooms     Room[]
+  id          String       @id @default(uuid())
+  name        String
+  description String?
+  slug        String       @unique
+  ownerId     String
+  owner       User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  tracks      Track[]
+  metadata    Json
+  type        PlaylistType @default(user)
+  createdAt   DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime     @updatedAt @db.Timestamptz(3)
+  rooms       Room[]
+}
+
+enum PlaylistType {
+  my_uploaded
+  my_favorite
+  my_liked
+  user
+  room
 }

@@ -6,7 +6,7 @@ import { createNodeWebSocket } from '@hono/node-ws';
 
 import { getVibesManagementRoutes } from './modules/vibes-management';
 import { getRoomsManagementRoutes, RoomsService } from './modules/rooms-management';
-import { getAuthRoutes } from './modules/authentication';
+import { authMiddleware, getAuthRoutes } from './modules/authentication';
 
 async function main() {
   await RoomsService.init(); // Initialize the RoomsService
@@ -25,6 +25,7 @@ async function main() {
   );
 
   const ws = createNodeWebSocket({ app });
+  app.use('*', authMiddleware);
   app.route('/', getVibesManagementRoutes());
   app.route('/', getRoomsManagementRoutes(ws));
   app.route('/', getAuthRoutes());

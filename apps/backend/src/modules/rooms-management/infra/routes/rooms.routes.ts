@@ -1,6 +1,5 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
 import { RoomsService } from '../services';
-import { authMiddleware } from '@/modules/authentication';
 import { db } from '@/shared/clients/db';
 import { parseArrayToSchema } from '@/shared/infra/parse-array-to-schema';
 import { trackSchema } from '@/modules/vibes-management';
@@ -11,7 +10,6 @@ export function getRoomsRoutes() {
   const app = new OpenAPIHono<{
     Variables: { userId: string };
   }>();
-  app.use('*', authMiddleware);
 
   /** [LIST] Rooms */
   app.openapi(
@@ -320,6 +318,60 @@ export function getRoomsRoutes() {
       });
 
       return c.json(parseArrayToSchema(playlist.tracks, trackSchema), 200);
+    },
+  );
+
+  /** [POST][Tracks] Add Room Tracks */
+  app.openapi(
+    createRoute({
+      method: 'post',
+      path: '/:roomId/tracks',
+      request: {
+        body: {
+          content: {
+            'application/json': {
+              schema: z.object({
+                trackIds: z.array(z.string()).nonempty(),
+              }),
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'Tracks added to room successfully',
+          content: {
+            'application/json': { schema: z.any() },
+          },
+        },
+        400: {
+          description: 'Bad Request',
+          content: {
+            'application/json': {
+              schema: z.object({ error: z.string() }),
+            },
+          },
+        },
+        404: {
+          description: 'Room not found',
+          content: {
+            'application/json': {
+              schema: z.object({ error: z.string() }),
+            },
+          },
+        },
+      },
+    }),
+    async (c) => {
+      /**
+       * @todo Implement the logic to add tracks to a room.
+       * This should include validating the room ID,
+       * checking if the tracks exist,
+       * and updating the room's playlist.
+       * PS: remove playlist_changed event from the tracker
+       * room will have your own playlist
+       * and tracks will be added to the room's playlist.
+       */
     },
   );
 

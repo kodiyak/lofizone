@@ -6,6 +6,7 @@ import { env } from '@/env';
 import { trackSchema } from '../../domain';
 import { db } from '@/shared/clients/db';
 import { parseArrayToSchema } from '@/shared/infra/parse-array-to-schema';
+import type { Prisma } from '@workspace/db';
 
 export function addTracksRoutes() {
   const app = new OpenAPIHono<{ Variables: { userId?: string } }>();
@@ -25,18 +26,22 @@ export function addTracksRoutes() {
           },
         },
       },
+      request: {
+        query: z.object({
+          playlistId: z.string().optional(),
+        }),
+      },
     }),
     async (c) => {
       const userId = c.get('userId');
-      if (!userId) {
-        const tracks = await db.track.findMany();
-        return c.json(parseArrayToSchema(tracks, trackSchema), 200);
-      } else {
-        const tracks = await db.track.findMany({
-          where: { uploadedById: userId },
-        });
-        return c.json(parseArrayToSchema(tracks, trackSchema), 200);
-      }
+      const playlistId = c.req.query('playlistId');
+      const where: Prisma.TrackWhereInput = {
+        uploadedById: userId || undefined,
+        playlists: playlistId ? { some: { id: playlistId } } : undefined,
+      };
+      console.log(JSON.stringify(where, null, 2));
+      const tracks = await db.track.findMany({ where });
+      return c.json(parseArrayToSchema(tracks, trackSchema), 200);
     },
   );
 
@@ -80,6 +85,16 @@ export function addTracksRoutes() {
             },
           },
         },
+        404: {
+          description: 'No playlist found for uploaded tracks',
+          content: {
+            'application/json': {
+              schema: z.object({
+                error: z.string(),
+              }),
+            },
+          },
+        },
       },
     }),
     async (c) => {
@@ -93,6 +108,17 @@ export function addTracksRoutes() {
         return c.json({ error: 'Unauthorized' }, 401);
       }
 
+      const playlist = await db.playlist.findFirst({
+        where: {
+          ownerId: userId,
+          type: 'my_uploaded',
+        },
+      });
+
+      if (!playlist) {
+        return c.json({ error: 'No playlist found for uploaded tracks' }, 404);
+      }
+
       const coverUrl = await s3Client
         .putObject(backgroundPath, await fileToBuffer(cover), cover.type)
         .then((res) => res.url);
@@ -100,7 +126,7 @@ export function addTracksRoutes() {
         data: {
           id: trackId,
           title,
-          // album: { connect: { id: albumId } },
+          playlists: { connect: { id: playlist.id } },
           uploadedBy: { connect: { id: c.get('userId') } },
           album: albumId
             ? { connect: { id: albumId } }

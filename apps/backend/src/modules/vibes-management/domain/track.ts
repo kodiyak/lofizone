@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const trackMetadataSchema = z.object({
   background: z
     .object({
-      type: z.enum(['video', 'image']),
+      type: z.string(),
       url: z.string(),
     })
     .nullish(),

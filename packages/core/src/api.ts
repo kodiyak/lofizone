@@ -27,7 +27,7 @@ export namespace Api {
 
   export interface Playlist {
     id: string;
-    title: string;
+    name: string;
     ownerId: string;
     metadata: {
       cover: string | null;

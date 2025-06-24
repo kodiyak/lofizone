@@ -1,4 +1,5 @@
 import { env } from '@/env';
+import { createUserBasePlaylists } from '@/modules/authentication';
 import type { AlbumSchema, ArtistSchema } from '@/modules/vibes-management';
 import { db } from '@/shared/clients/db';
 import { s3Client } from '@/shared/clients/s3';
@@ -83,50 +84,34 @@ async function createTrack(userId: string, artistId: string, albumId: string, tr
   });
 }
 
-async function seedTracks(size: number) {
-  const artist = await createArtist();
-  const tracks = ['track-01.mp3', 'track-02.mp3', 'track-03.mp3'];
+// async function seedTracks(size: number) {
+//   const artist = await createArtist();
+//   const tracks = ['track-01.mp3', 'track-02.mp3', 'track-03.mp3'];
+//   const users = await db.user.findMany({
+//     select: { id: true },
+//   });
+
+//   for (const user of users) {
+//     for (const i in Array.from({ length: size })) {
+//       for (const t in tracks) {
+//         const index = Number(Number(i) + Number(t));
+//         console.log(`Seeding track ${index + 1} for artist ${artist.id}`);
+//         const track = tracks[t];
+//         const cover = `cover-0${parseInt(t) + 1}.webp`;
+//         const album = await createAlbum(artist.id, cover);
+//         await createTrack(user.id, artist.id, album.id, track);
+//       }
+//     }
+//   }
+// }
+
+async function seedPlaylists() {
   const users = await db.user.findMany({
     select: { id: true },
   });
 
   for (const user of users) {
-    for (const i in Array.from({ length: size })) {
-      for (const t in tracks) {
-        const index = Number(Number(i) + Number(t));
-        console.log(`Seeding track ${index + 1} for artist ${artist.id}`);
-        const track = tracks[t];
-        const cover = `cover-0${parseInt(t) + 1}.webp`;
-        const album = await createAlbum(artist.id, cover);
-        await createTrack(user.id, artist.id, album.id, track);
-      }
-    }
-  }
-}
-
-async function seedPlaylists(size: number) {
-  const users = await db.user.findMany({
-    select: { id: true },
-  });
-
-  for (const user of users) {
-    for (const i in Array.from({ length: size })) {
-      await db.playlist.create({
-        data: {
-          id: generatePlaylistId(),
-          name: `(${i}) Playlist for ${user.id}`,
-          owner: { connect: { id: user.id } },
-          slug: `playlist-${user.id}-${i}`,
-          metadata: { cover: null },
-          tracks: {
-            connect: await db.track.findMany({
-              take: 10, // Example to connect 5 random tracks
-              select: { id: true },
-            }),
-          },
-        },
-      });
-    }
+    await createUserBasePlaylists(user.id);
   }
 }
 
@@ -150,8 +135,7 @@ async function seedRooms() {
 
 async function main() {
   await cleanup();
-  await seedTracks(2);
-  await seedPlaylists(10);
+  await seedPlaylists();
   await seedRooms();
   console.log('Database seeded successfully!');
   console.log('You can now start the server with `npm run dev`');
