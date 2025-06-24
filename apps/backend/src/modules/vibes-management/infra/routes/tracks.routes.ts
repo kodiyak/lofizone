@@ -1,7 +1,7 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
 import { s3Client } from '@/shared/clients/s3';
 import { fileToBuffer } from '@/shared/infra/file-to-buffer';
-import { generateId } from '@workspace/core';
+import { generateAlbumId, generateId } from '@workspace/core';
 import { env } from '@/env';
 import { trackSchema } from '../../domain';
 import { db } from '@/shared/clients/db';
@@ -18,11 +18,11 @@ export function addTracksRoutes() {
           content: {
             'multipart/form-data': {
               schema: z.object({
-                name: z.string().nonempty(),
-                albumId: z.string().nonempty(),
-                backgroundType: z.enum(['video', 'image']),
-                backgroundFile: z.instanceof(File).describe('Background file'),
-                audioFile: z.instanceof(File).describe('Audio file'),
+                title: z.string().nonempty(),
+                albumId: z.string().optional(),
+                artistId: z.string().optional(),
+                cover: z.instanceof(File).describe('Background file'),
+                track: z.instanceof(File).describe('Audio file'),
               }),
             },
           },
@@ -43,24 +43,33 @@ export function addTracksRoutes() {
     }),
     async (c) => {
       const trackId = generateId('track');
-      const { albumId, backgroundFile, backgroundType, audioFile, name } = c.req.valid('form');
-      const backgroundPath = `${env.s3.bucket}/${albumId}/${trackId}/background.${backgroundFile.name.split('.').pop()}`;
-      const audioPath = `${env.s3.bucket}/${albumId}/${trackId}/audio.${audioFile.name.split('.').pop()}`;
+      const { albumId, cover, track, title } = c.req.valid('form');
+      const backgroundPath = `${env.s3.bucket}/${albumId}/${trackId}/background.${cover.name.split('.').pop()}`;
+      const audioPath = `${env.s3.bucket}/${albumId}/${trackId}/audio.${track.name.split('.').pop()}`;
+      const coverUrl = await s3Client
+        .putObject(backgroundPath, await fileToBuffer(cover), cover.type)
+        .then((res) => res.url);
       await db.track.create({
         data: {
           id: trackId,
-          album: { connect: { id: albumId } },
+          title,
+          // album: { connect: { id: albumId } },
+          album: albumId
+            ? { connect: { id: albumId } }
+            : {
+                create: {
+                  id: generateAlbumId(),
+                  title,
+                  metadata: {
+                    cover: coverUrl,
+                  },
+                },
+              },
           duration: 190, // Placeholder duration, should be calculated from audio file
-          title: name,
           metadata: {
-            background: {
-              type: backgroundType,
-              url: await s3Client
-                .putObject(backgroundPath, await fileToBuffer(backgroundFile), backgroundFile.type)
-                .then((res) => res.url),
-            },
+            background: { type: cover.type, url: coverUrl },
             audio: await s3Client
-              .putObject(audioPath, await fileToBuffer(audioFile), audioFile.type)
+              .putObject(audioPath, await fileToBuffer(track), track.type)
               .then((res) => res.url),
           },
         },

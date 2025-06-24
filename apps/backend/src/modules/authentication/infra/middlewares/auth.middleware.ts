@@ -2,6 +2,7 @@ import { auth } from '@/shared/clients/auth';
 import { jwtVerify, createRemoteJWKSet } from 'jose';
 import type { Handler } from 'hono';
 import { env } from '@/env';
+import { JWTExpired } from 'jose/errors';
 
 const JWKS = createRemoteJWKSet(new URL('/api/auth/jwks', env.authUrl));
 
@@ -12,7 +13,10 @@ async function validateToken(token: string) {
       audience: env.authAudience,
     });
     return payload;
-  } catch (error) {
+  } catch (error: any) {
+    if (error instanceof JWTExpired) {
+      return error.payload;
+    }
     console.error('Token validation error:', error);
     return null;
   }

@@ -87,17 +87,16 @@ model Album {
 }
 
 model Track {
-  id         String    @id @default(uuid())
-  title      String
-  artists    Artist[]
-  albumId    String
-  album      Album     @relation(fields: [albumId], references: [id], onDelete: Cascade)
-  duration   Int // duration in seconds
-  metadata   Json
-  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
-  updatedAt  DateTime  @updatedAt @db.Timestamptz(3)
-  Playlist   Playlist? @relation(fields: [playlistId], references: [id])
-  playlistId String?
+  id        String     @id @default(uuid())
+  title     String
+  artists   Artist[]
+  albumId   String
+  album     Album      @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  duration  Int // duration in seconds
+  metadata  Json
+  createdAt DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime   @updatedAt @db.Timestamptz(3)
+  playlists Playlist[]
 }
 
 model Artist {

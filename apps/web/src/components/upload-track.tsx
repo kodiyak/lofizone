@@ -109,7 +109,20 @@ export default function UploadTrack({
                         <FormField
                           name={'cover'}
                           control={form.control}
-                          render={({ field }) => <DropzoneImage {...field} />}
+                          render={({ field }) => (
+                            <DropzoneImage
+                              accept={{
+                                'image/*': [
+                                  '.jpg',
+                                  '.jpeg',
+                                  '.png',
+                                  '.webp',
+                                  '.gif',
+                                ],
+                              }}
+                              {...field}
+                            />
+                          )}
                         />
                       )}
                     />
