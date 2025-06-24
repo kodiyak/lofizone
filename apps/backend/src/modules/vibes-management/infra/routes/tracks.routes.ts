@@ -5,9 +5,40 @@ import { generateAlbumId, generateId } from '@workspace/core';
 import { env } from '@/env';
 import { trackSchema } from '../../domain';
 import { db } from '@/shared/clients/db';
+import { parseArrayToSchema } from '@/shared/infra/parse-array-to-schema';
 
 export function addTracksRoutes() {
-  const app = new OpenAPIHono();
+  const app = new OpenAPIHono<{ Variables: { userId?: string } }>();
+
+  // list tracks
+  app.openapi(
+    createRoute({
+      method: 'get',
+      path: '/',
+      responses: {
+        200: {
+          description: 'List of tracks',
+          content: {
+            'application/json': {
+              schema: z.array(trackSchema),
+            },
+          },
+        },
+      },
+    }),
+    async (c) => {
+      const userId = c.get('userId');
+      if (!userId) {
+        const tracks = await db.track.findMany();
+        return c.json(parseArrayToSchema(tracks, trackSchema), 200);
+      } else {
+        const tracks = await db.track.findMany({
+          where: { uploadedById: userId },
+        });
+        return c.json(parseArrayToSchema(tracks, trackSchema), 200);
+      }
+    },
+  );
 
   app.openapi(
     createRoute({
@@ -29,7 +60,7 @@ export function addTracksRoutes() {
         },
       },
       responses: {
-        200: {
+        201: {
           description: 'Track created successfully',
           content: {
             'application/json': {
@@ -39,13 +70,29 @@ export function addTracksRoutes() {
             },
           },
         },
+        401: {
+          description: 'Unauthorized',
+          content: {
+            'application/json': {
+              schema: z.object({
+                error: z.string(),
+              }),
+            },
+          },
+        },
       },
     }),
     async (c) => {
       const trackId = generateId('track');
+      const userId = c.get('userId');
       const { albumId, cover, track, title } = c.req.valid('form');
       const backgroundPath = `${env.s3.bucket}/${albumId}/${trackId}/background.${cover.name.split('.').pop()}`;
       const audioPath = `${env.s3.bucket}/${albumId}/${trackId}/audio.${track.name.split('.').pop()}`;
+
+      if (!userId) {
+        return c.json({ error: 'Unauthorized' }, 401);
+      }
+
       const coverUrl = await s3Client
         .putObject(backgroundPath, await fileToBuffer(cover), cover.type)
         .then((res) => res.url);
@@ -54,6 +101,7 @@ export function addTracksRoutes() {
           id: trackId,
           title,
           // album: { connect: { id: albumId } },
+          uploadedBy: { connect: { id: c.get('userId') } },
           album: albumId
             ? { connect: { id: albumId } }
             : {
@@ -75,9 +123,7 @@ export function addTracksRoutes() {
         },
       });
 
-      return c.json({
-        id: trackId,
-      });
+      return c.json({ id: trackId }, 201);
     },
   );
 

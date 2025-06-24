@@ -56,7 +56,7 @@ async function createAlbum(artistId: string, cover: string) {
   });
 }
 
-async function createTrack(artistId: string, albumId: string, track: string) {
+async function createTrack(userId: string, artistId: string, albumId: string, track: string) {
   const trackId = generateTrackId();
   const trackPath = [env.s3.bucket, 'tracks', trackId, 'audio.mp3'].join('/');
   const backgroundPath = [env.s3.bucket, 'tracks', trackId, 'background.webp'].join('/');
@@ -65,6 +65,7 @@ async function createTrack(artistId: string, albumId: string, track: string) {
       id: trackId,
       title: `Track ${trackId}`,
       duration: 180, // Example duration in seconds
+      uploadedBy: { connect: { id: userId } },
       metadata: {
         background: {
           type: 'image',
@@ -85,15 +86,20 @@ async function createTrack(artistId: string, albumId: string, track: string) {
 async function seedTracks(size: number) {
   const artist = await createArtist();
   const tracks = ['track-01.mp3', 'track-02.mp3', 'track-03.mp3'];
+  const users = await db.user.findMany({
+    select: { id: true },
+  });
 
-  for (const i in Array.from({ length: size })) {
-    for (const t in tracks) {
-      const index = Number(Number(i) + Number(t));
-      console.log(`Seeding track ${index + 1} for artist ${artist.id}`);
-      const track = tracks[t];
-      const cover = `cover-0${parseInt(t) + 1}.webp`;
-      const album = await createAlbum(artist.id, cover);
-      await createTrack(artist.id, album.id, track);
+  for (const user of users) {
+    for (const i in Array.from({ length: size })) {
+      for (const t in tracks) {
+        const index = Number(Number(i) + Number(t));
+        console.log(`Seeding track ${index + 1} for artist ${artist.id}`);
+        const track = tracks[t];
+        const cover = `cover-0${parseInt(t) + 1}.webp`;
+        const album = await createAlbum(artist.id, cover);
+        await createTrack(user.id, artist.id, album.id, track);
+      }
     }
   }
 }
@@ -130,7 +136,7 @@ async function seedRooms() {
   });
 
   for (const user of users) {
-    await db.room.create({
+    const room = await db.room.create({
       data: {
         id: generateRoomId(),
         name: `Room for ${user.id}`,
@@ -138,6 +144,7 @@ async function seedRooms() {
         metadata: { cover: null },
       },
     });
+    console.log(`Created room ${room.id} for user ${user.id}`);
   }
 }
 

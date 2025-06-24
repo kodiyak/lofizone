@@ -21,6 +21,7 @@ model User {
   accounts      Account[]
   Room          Room[]
   Playlist      Playlist[]
+  Track         Track[]
 
   @@unique([email])
 }
@@ -87,16 +88,19 @@ model Album {
 }
 
 model Track {
-  id        String     @id @default(uuid())
-  title     String
-  artists   Artist[]
-  albumId   String
-  album     Album      @relation(fields: [albumId], references: [id], onDelete: Cascade)
-  duration  Int // duration in seconds
-  metadata  Json
-  createdAt DateTime   @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime   @updatedAt @db.Timestamptz(3)
-  playlists Playlist[]
+  id           String     @id @default(uuid())
+  title        String
+  artists      Artist[]
+  albumId      String
+  album        Album      @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  duration     Int // duration in seconds
+  metadata     Json
+  createdAt    DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime   @updatedAt @db.Timestamptz(3)
+  playlists    Playlist[]
+  uploadedBy   User       @relation(fields: [uploadedById], references: [id])
+  uploadedById String
+  public       Boolean    @default(false)
 }
 
 model Artist {
