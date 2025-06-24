@@ -38,7 +38,7 @@ export default function NavTop() {
     <>
       {session && <CreatePlaylist {...createPlaylist} />}
       <div className="fixed w-full z-50 left-0 top-0 h-[var(--nav-top-height)] border-b border-border/50 bg-background/10 backdrop-blur-xs">
-        <Menubar className="rounded-none bg-transparent border-0 container mx-auto h-full px-0">
+        <Menubar className="rounded-none bg-transparent border-0 container mx-auto h-full p-0">
           <div className="flex-1">
             <Link href={'/'}>
               <Image
@@ -49,7 +49,7 @@ export default function NavTop() {
               />
             </Link>
           </div>
-          <div className="w-1/5 h-full">
+          <div className="w-1/5 h-full flex">
             <NavTrackPlayer />
           </div>
           <div className="flex-1 flex items-center gap-1 justify-end">

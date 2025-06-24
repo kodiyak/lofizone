@@ -16,6 +16,7 @@ import { Button } from '@workspace/ui/components/button';
 import React, { useEffect, useState } from 'react';
 import { SliderPlayer } from '@workspace/ui/components/slider';
 import Link from 'next/link';
+import { cn } from '@workspace/ui/lib/utils';
 
 export default function NavTrackPlayer() {
   const isConnected = useRoomStore((state) => state.isConnected);
@@ -43,7 +44,7 @@ export default function NavTrackPlayer() {
         <Button
           variant={'outline'}
           size={'sm'}
-          className="w-full h-7 mt-0.5 text-xs border-border/50 bg-background/50 backdrop-blur-sm"
+          className="w-full self-center h-8 text-xs border-border/50 bg-background/50 backdrop-blur-sm"
           asChild
         >
           <Link href={'/'}>Explore Rooms</Link>
@@ -54,27 +55,51 @@ export default function NavTrackPlayer() {
 
   return (
     <>
-      <div className="flex flex-col w-full gap-1">
-        <div className="flex items-center gap-1.5">
-          <div className="flex flex-1 justify-start items-center gap-2.5">
-            {track?.metadata?.background?.url && (
-              <Avatar className="size-5 rounded-sm bg-transparent">
-                <AvatarImage
-                  src={track.metadata.background.url}
-                  alt={track.title}
-                />
-                <AvatarFallback className="rounded-sm bg-muted animate-pulse" />
-              </Avatar>
-            )}
-            <span className="text-[11px] font-mono text-center">
-              {track?.title || 'No track playing'}
-            </span>
+      <div className="flex items-center self-center gap-2 rounded-lg bg-background/50 backdrop-blur-sm h-8 w-full py-0.5 px-1 border">
+        <Avatar className="size-6 rounded-sm bg-transparent">
+          <AvatarImage
+            src={track?.metadata.background?.url}
+            alt={track?.title}
+          />
+          <AvatarFallback className="rounded-sm" />
+        </Avatar>
+        <div
+          className={cn('flex flex-col flex-1 gap-px', !track && 'opacity-50')}
+        >
+          <div className="flex items-center gap-1.5">
+            <div className="flex flex-1 justify-start items-center gap-2.5">
+              <span
+                className={cn(
+                  'text-[10px] font-mono text-center',
+                  !track && 'text-muted-foreground select-none',
+                )}
+              >
+                {track?.title || 'No track playing'}
+              </span>
+            </div>
           </div>
-          <Button size={'icon-xs'} variant={'ghost'}>
+          <SliderPlayer
+            value={progress !== undefined ? [progress] : []}
+            disabled={!track}
+            min={0}
+            max={100}
+            onValueChange={([v]) => {
+              setDragging(true);
+              setProgress(v);
+            }}
+            onValueCommit={([v]) => {
+              setDragging(false);
+              const newTime = (v / 100) * duration;
+              seek(newTime);
+            }}
+          />
+        </div>
+        <div className="flex items-center gap-0.5 mr-1.5">
+          <Button size={'icon-xxs'} variant={'ghost'}>
             <SkipBackIcon />
           </Button>
           <Button
-            size={'icon-xs'}
+            size={'icon-xxs'}
             variant={'ghost'}
             onClick={() => (isPlaying ? pause() : resume())}
           >
@@ -84,24 +109,10 @@ export default function NavTrackPlayer() {
               <PlayIcon weight="fill" />
             )}
           </Button>
-          <Button size={'icon-xs'} variant={'ghost'}>
+          <Button size={'icon-xxs'} variant={'ghost'}>
             <SkipForwardIcon />
           </Button>
         </div>
-        <SliderPlayer
-          value={progress !== undefined ? [progress] : []}
-          min={0}
-          max={100}
-          onValueChange={([v]) => {
-            setDragging(true);
-            setProgress(v);
-          }}
-          onValueCommit={([v]) => {
-            setDragging(false);
-            const newTime = (v / 100) * duration;
-            seek(newTime);
-          }}
-        />
       </div>
     </>
   );
