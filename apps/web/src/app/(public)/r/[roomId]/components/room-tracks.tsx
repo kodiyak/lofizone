@@ -27,9 +27,7 @@ export default function RoomTracks() {
         value={trackId ? [trackId] : []}
         onChange={(track) => {
           const newTrackId = track.pop();
-          if (trackId === newTrackId) {
-            return;
-          }
+          if (trackId === newTrackId) return;
           const nextTrack = tracks.find((t) => t.id === newTrackId);
           if (nextTrack) playTrack(nextTrack);
         }}
