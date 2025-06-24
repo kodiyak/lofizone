@@ -19,7 +19,7 @@ import { cn } from '@workspace/ui/lib/utils';
 import { MusicIcon } from 'lucide-react';
 import React from 'react';
 
-export default function RoomPlaylist() {
+export default function RoomTracks() {
   const tracks = useRoomStore((state) => state.tracks);
   const playTrack = useRoomStore((state) => state.playTrack);
   const trackId = useRoomStore((state) => state.track?.id);

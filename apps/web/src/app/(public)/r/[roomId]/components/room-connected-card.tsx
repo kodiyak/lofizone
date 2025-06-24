@@ -8,7 +8,7 @@ import {
 import React from 'react';
 import RoomDiscordJoin from './room-discord-join';
 import RoomMembers from './room-members';
-import RoomPlaylist from './room-playlist';
+import RoomTracks from './room-tracks';
 import { authClient } from '@/lib/authClient';
 import type { Api } from '@workspace/core';
 import RoomPlaylists from './room-playlists';
@@ -42,14 +42,12 @@ export default function RoomConnectedCard() {
         )}
         <Tabs defaultValue={!room || room?.playlistId ? 'tracks' : 'playlists'}>
           <TabsList className="px-6">
-            <TabsTrigger value="tracks" disabled={!room?.playlistId}>
-              Tracks
-            </TabsTrigger>
+            <TabsTrigger value="tracks">Tracks</TabsTrigger>
             <TabsTrigger value="playlists">Playlists</TabsTrigger>
             <TabsTrigger value="password">Participants</TabsTrigger>
           </TabsList>
           <TabsContent value="tracks">
-            <RoomPlaylist />
+            <RoomTracks />
           </TabsContent>
           <TabsContent value="playlists">
             {room && <RoomPlaylists room={room} />}
