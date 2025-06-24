@@ -25,6 +25,12 @@ const validations = {
     track: z.instanceof(File).refine((file) => file.size > 0, {
       message: 'Track file is required',
     }),
+    cover: z
+      .instanceof(File)
+      .optional()
+      .refine((file) => !file || file.size > 0, {
+        message: 'Cover image must be a valid file or empty',
+      }),
   }),
   updateRoom: z.object({
     playlistId: z.string().nullable(),
