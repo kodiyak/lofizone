@@ -26,14 +26,12 @@ export default function RoomTracks() {
         tracks={tracks}
         value={trackId ? [trackId] : []}
         onChange={(track) => {
-          if (trackId === track[0]) {
+          const newTrackId = track.pop();
+          if (trackId === newTrackId) {
             return;
           }
-          const nextTrackId = track[0];
-          const nextTrack = tracks.find((t) => t.id === nextTrackId);
-          if (nextTrack) {
-            playTrack(nextTrack);
-          }
+          const nextTrack = tracks.find((t) => t.id === newTrackId);
+          if (nextTrack) playTrack(nextTrack);
         }}
         footer={
           <>
