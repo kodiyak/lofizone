@@ -40,7 +40,6 @@ export default function NavTrackPlayer() {
   if (!isConnected) {
     return (
       <>
-        {JSON.stringify({ isConnected, currentTime, duration, isPlaying })}
         <Button
           variant={'outline'}
           size={'sm'}

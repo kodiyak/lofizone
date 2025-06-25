@@ -1,6 +1,6 @@
 import React from 'react';
 import RoomProvider from '@/components/providers/room-provider';
-import RoomCard from './components/room-card';
+import RoomPage from '@/components/pages/room-page';
 
 interface Props {
   params: Promise<{ roomId: string }>;
@@ -11,7 +11,7 @@ export default async function Page({ params }: Props) {
 
   return (
     <RoomProvider roomId={roomId}>
-      <RoomCard roomId={roomId} />
+      <RoomPage roomId={roomId} />
     </RoomProvider>
   );
 }
