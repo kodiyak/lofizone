@@ -41,7 +41,7 @@ export class RoomController implements RoomEventHandlers {
   set isConnected(isConnected: boolean) {
     this._isConnected = isConnected;
     this.store.setState(() => ({ isConnected }));
-    this.ui.backgroundState = isConnected ? 'success' : 'loading';
+    this.ui.backgroundState = isConnected ? 'hidden' : 'loading';
     console.log(`[RoomController] Connection status changed: ${isConnected}`);
   }
 
@@ -74,7 +74,7 @@ export class RoomController implements RoomEventHandlers {
     };
   }
 
-  private get ui() {
+  get ui() {
     return UiController.getInstance();
   }
 

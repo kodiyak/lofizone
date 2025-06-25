@@ -12,6 +12,13 @@ export class MusicStreamController {
       throw new Error('Track does not have audio metadata');
     }
 
+    if (track.metadata.background?.url) {
+      this.room.ui.background = {
+        ...this.room.ui.background,
+        src: track.metadata.background.url,
+      };
+    }
+
     if (this.audio) {
       this.stop();
       console.warn(

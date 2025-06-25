@@ -64,7 +64,7 @@ export default function TracksCommand({
                 }}
                 key={t}
                 value={track.id}
-                className={cn(isSelected(track.id) && 'bg-muted')}
+                data-state={isSelected(track.id) ? 'selected' : undefined}
               >
                 {track?.metadata?.background?.url && (
                   <Avatar className="size-8 rounded-sm bg-transparent">

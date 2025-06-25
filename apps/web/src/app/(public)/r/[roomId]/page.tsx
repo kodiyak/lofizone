@@ -1,6 +1,6 @@
 import React from 'react';
 import RoomProvider from '@/components/providers/room-provider';
-import RoomPage from '@/components/pages/room-page';
+import RoomPage from '@/components/room';
 
 interface Props {
   params: Promise<{ roomId: string }>;

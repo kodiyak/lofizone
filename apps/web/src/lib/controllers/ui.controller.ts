@@ -21,7 +21,7 @@ export class UiController {
   private _backgroundState: UiBackgroundState = 'hidden';
 
   public get background() {
-    return this._background;
+    return this.store.getState().background;
   }
 
   public set background(background: UiBackground | undefined) {
@@ -30,7 +30,7 @@ export class UiController {
   }
 
   public get backgroundState() {
-    return this._backgroundState;
+    return this.store.getState().backgroundState;
   }
 
   public set backgroundState(state: UiBackgroundState) {

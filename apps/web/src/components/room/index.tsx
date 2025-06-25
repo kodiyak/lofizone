@@ -12,7 +12,6 @@ import {
   ResizablePanelGroup,
 } from '@workspace/ui/components/resizable';
 import RoomSidebar from './sidebars/room-sidebar';
-import RoomContentPage from './shared/room-content-page';
 
 interface RoomPageProps {
   roomId: string;
@@ -29,14 +28,15 @@ export default function RoomPage({ roomId }: RoomPageProps) {
 
   return (
     <>
-      <ResizablePanelGroup direction="horizontal" className="h-screen w-full">
-        <ResizablePanel className="h-screen">
+      <ResizablePanelGroup
+        direction="horizontal"
+        className="flex size-full items-stretch"
+      >
+        <ResizablePanel className="relative">
           {isConnected && currentRoom && currentRoom.roomId === room.roomId ? (
             <RoomConnectedContent room={room} />
           ) : (
-            <RoomContentPage title={'Disconnected'}>
-              <RoomDisconnectedContent room={room} />
-            </RoomContentPage>
+            <RoomDisconnectedContent room={room} />
           )}
         </ResizablePanel>
         <ResizableHandle />

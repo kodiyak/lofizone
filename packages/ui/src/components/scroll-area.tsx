@@ -28,6 +28,27 @@ function ScrollArea({
   );
 }
 
+function ScrollAreaShadow(props?: { className?: string }) {
+  return (
+    <>
+      <div
+        data-slot="scroll-area-shadow-top"
+        className={cn(
+          'absolute w-full left-0 -top-px h-10 bg-gradient-to-t from-transparent to-sidebar pointer-events-none z-20',
+          props?.className,
+        )}
+      ></div>
+      <div
+        data-slot="scroll-area-shadow-bottom"
+        className={cn(
+          'absolute w-full left-0 -bottom-px h-10 bg-gradient-to-b from-transparent to-sidebar pointer-events-none z-20',
+          props?.className,
+        )}
+      ></div>
+    </>
+  );
+}
+
 function ScrollBar({
   className,
   orientation = 'vertical',
@@ -55,4 +76,4 @@ function ScrollBar({
   );
 }
 
-export { ScrollArea, ScrollBar };
+export { ScrollArea, ScrollBar, ScrollAreaShadow };

@@ -48,10 +48,11 @@ export default function RootLayout({
           <AuthProvider>
             <BackgroundProvider />
             {/* <NavTop /> */}
-            <div className="flex relative overflow-hidden w-full h-screen items-stretch">
-              <Sidebar />
-              <div className="flex flex-1 flex-col relative overflow-hidden">
-                {/* <div className="absolute -z-10 w-[50vw] right-0 top-0 -translate-y-1/5 translate-x-1/2">
+            <div className="flex flex-col w-full h-screen overflow-hidden">
+              <div className="flex flex-1 relative items-stretch">
+                <Sidebar />
+                <div className="flex-1 relative overflow-hidden">
+                  {/* <div className="absolute -z-10 w-[50vw] right-0 top-0 -translate-y-1/5 translate-x-1/2">
                   <div className="size-full absolute left-0 top-0 bg-gradient-to-b from-transparent to-background"></div>
                   <div className="size-full absolute left-0 top-0 bg-gradient-to-l from-transparent to-background"></div>
                   <Image
@@ -60,8 +61,10 @@ export default function RootLayout({
                     className="w-full h-screen object-cover object-center"
                   />
                 </div> */}
-                {children}
+                  {children}
+                </div>
               </div>
+              <div className="h-12 border-t bg-background"></div>
             </div>
           </AuthProvider>
         </QueryProvider>
