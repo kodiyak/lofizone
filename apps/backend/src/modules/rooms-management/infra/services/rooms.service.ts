@@ -3,6 +3,7 @@ import { RoomMemberTracker, roomSchema, RoomsTracker } from '../../domain';
 import WebSocket from 'ws';
 import { db } from '@/shared/clients/db';
 import { parseArrayToSchema } from '@/shared/infra/parse-array-to-schema';
+import type { Plugin } from '@/modules/plugins';
 
 interface RoomSession {
   memberId: string;
@@ -12,6 +13,8 @@ interface RoomSession {
 export class RoomsService {
   private static instance: RoomsService;
   private wsClient = new Map<WSContext<WebSocket>, { session: RoomSession; roomId: string }>();
+
+  public globalPlugins: Plugin[] = [];
 
   private static get tracker() {
     return RoomsTracker.getInstance();
@@ -31,13 +34,13 @@ export class RoomsService {
   static async init(): Promise<void> {
     const rooms = parseArrayToSchema(await db.room.findMany({}), roomSchema);
 
-    rooms.forEach((room) => {
+    rooms.forEach((roomData) => {
       this.tracker.addRoom({
-        roomId: room.id,
-        ownerId: room.ownerId,
-        name: room.name || undefined,
-        playlistId: room.playlistId || null,
-        cover: room.metadata?.cover,
+        roomId: roomData.id,
+        ownerId: roomData.ownerId,
+        name: roomData.name || undefined,
+        playlistId: roomData.playlistId || null,
+        cover: roomData.metadata?.cover,
       });
     });
   }
@@ -48,6 +51,33 @@ export class RoomsService {
 
   getRoomMembers(roomId: string) {
     return this.tracker.getRoom(roomId)?.getMembers() || [];
+  }
+
+  async addPlugin(plugin: Plugin) {
+    if (this.globalPlugins.some((p) => p.id === plugin.id)) {
+      console.warn(`Plugin ${plugin.id} is already registered globally`);
+      return;
+    }
+    this.globalPlugins.push(plugin);
+    await plugin.bootstrap();
+
+    for (const rooms of this.tracker.getAllRooms()) {
+      rooms.startPlugin(plugin);
+    }
+  }
+
+  addPluginToRoom(roomId: string, pluginId: string) {
+    const room = this.tracker.getRoom(roomId);
+    const plugin = this.globalPlugins.find((p) => p.id === pluginId);
+    if (!room) {
+      console.error(`Room ${roomId} not found`);
+      return;
+    }
+    if (!plugin) {
+      console.error(`Plugin ${pluginId} not found`);
+      return;
+    }
+    room.startPlugin(plugin);
   }
 
   handleJoin(ws: WSContext<WebSocket>, session: RoomSession, roomId: string) {
@@ -73,7 +103,6 @@ export class RoomsService {
       room.events.buildListener('track_changed', send('track_changed')),
       room.events.buildListener('member_joined', send('member_joined')),
       room.events.buildListener('member_left', send('member_left')),
-      room.events.buildListener('playlist_changed', send('playlist_changed')),
     ];
 
     const member = room.join(
