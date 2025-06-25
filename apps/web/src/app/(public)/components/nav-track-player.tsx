@@ -17,14 +17,13 @@ import React, { useEffect, useState } from 'react';
 import { SliderPlayer } from '@workspace/ui/components/slider';
 import Link from 'next/link';
 import { cn } from '@workspace/ui/lib/utils';
+import { useRoomController } from '@/lib/store/use-room-controller';
 
 export default function NavTrackPlayer() {
-  const isConnected = useRoomStore((state) => state.isConnected);
-  const track = useRoomStore((state) => state.track);
-  const pause = useRoomStore((state) => state.pause);
-  const resume = useRoomStore((state) => state.resume);
-  const seek = useRoomStore((state) => state.seek);
-  const { currentTime, duration, isPlaying } = useRoomStore(
+  const isConnected = useRoomController((state) => state.isConnected);
+  const controller = useRoomController((state) => state.controller);
+  const track = useRoomController((state) => state.track);
+  const { currentTime, duration, isPlaying } = useRoomController(
     (state) => state.audioState,
   );
 
@@ -41,6 +40,7 @@ export default function NavTrackPlayer() {
   if (!isConnected) {
     return (
       <>
+        {JSON.stringify({ isConnected, currentTime, duration, isPlaying })}
         <Button
           variant={'outline'}
           size={'sm'}
@@ -90,7 +90,7 @@ export default function NavTrackPlayer() {
             onValueCommit={([v]) => {
               setDragging(false);
               const newTime = (v / 100) * duration;
-              seek(newTime);
+              controller.music.seek(newTime);
             }}
           />
         </div>
@@ -101,7 +101,13 @@ export default function NavTrackPlayer() {
           <Button
             size={'icon-xxs'}
             variant={'ghost'}
-            onClick={() => (isPlaying ? pause() : resume())}
+            onClick={() => {
+              if (isPlaying) {
+                controller.music.pause();
+              } else {
+                controller.music.play();
+              }
+            }}
           >
             {isPlaying ? (
               <PauseIcon weight="fill" />

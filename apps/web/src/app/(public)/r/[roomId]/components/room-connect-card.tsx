@@ -1,22 +1,11 @@
 'use client';
 
-import { useBackendAPI } from '@/lib/hooks/useBackendAPI';
-import { useRoomStore } from '@/lib/store/use-room-store';
+import { RoomController } from '@/lib/rooms/room.controller';
 import { ArrowRightIcon } from '@phosphor-icons/react';
-import { Api } from '@workspace/core';
 import { Button } from '@workspace/ui/components/button';
 import React from 'react';
 
 export default function RoomConnectCard({ roomId }: { roomId: string }) {
-  const connect = useRoomStore((state) => state.connect);
-  const { data: room } = useBackendAPI<Api.Room>(`/rooms/${roomId}`);
-  const { data: tracks = [] } = useBackendAPI<Api.Track[]>(
-    `/rooms/${roomId}/tracks`,
-  );
-  const { data: members = [] } = useBackendAPI<Api.RoomMember[]>(
-    `/rooms/${roomId}/members`,
-  );
-
   return (
     <>
       <div className="w-full aspect-[10/6] relative overflow-hidden bg-gradient-to-br from-background to-card rounded-xl border">
@@ -27,7 +16,7 @@ export default function RoomConnectCard({ roomId }: { roomId: string }) {
             <Button
               variant={'link'}
               onClick={() => {
-                connect(roomId);
+                RoomController.getInstance().connect(roomId);
               }}
             >
               <span>Join Now</span>

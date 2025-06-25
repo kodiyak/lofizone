@@ -2,15 +2,15 @@ import { Hono } from 'hono';
 import { NodeWebSocket } from '@hono/node-ws';
 import { RoomsService } from '../services';
 import { auth } from '@/shared/clients/auth';
-import { generateMemberId } from '@workspace/core';
 
 export function getRoomsWsRoutes({ upgradeWebSocket }: NodeWebSocket) {
   const app = new Hono();
 
   app.get(
-    '/:roomId/ws',
+    '/:roomId/members/:memberId/ws',
     upgradeWebSocket((c) => {
       const roomId = c.req.param('roomId');
+      const memberId = c.req.param('memberId');
       return {
         onOpen: async (evt, ws) => {
           const session = await auth.api.getSession({
@@ -19,10 +19,7 @@ export function getRoomsWsRoutes({ upgradeWebSocket }: NodeWebSocket) {
 
           RoomsService.getInstance().handleJoin(
             ws,
-            {
-              memberId: generateMemberId(),
-              userId: session?.user?.id || null,
-            },
+            { memberId, userId: session?.user?.id || null },
             roomId,
           );
         },

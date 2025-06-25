@@ -5,11 +5,11 @@ import { ArrowLeftIcon } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 import RoomTrack from './room-track';
-import { useRoomStore } from '@/lib/store/use-room-store';
 import RoomConnectedCard from './room-connected-card';
 import RoomConnectCard from './room-connect-card';
 import { useBackendAPI } from '@/lib/hooks/useBackendAPI';
 import type { Api } from '@workspace/core';
+import { useRoomController } from '@/lib/store/use-room-controller';
 
 interface RoomCardProps {
   roomId: string;
@@ -17,8 +17,8 @@ interface RoomCardProps {
 
 export default function RoomCard({ roomId }: RoomCardProps) {
   const { data: room } = useBackendAPI<Api.Room>(`/rooms/${roomId}`);
-  const isConnected = useRoomStore((state) => state.isConnected);
-  const connectedRoomId = useRoomStore((state) => state.room?.roomId);
+  const isConnected = useRoomController((state) => state.isConnected);
+  const connectedRoomId = useRoomController((state) => state.room?.roomId);
 
   return (
     <>

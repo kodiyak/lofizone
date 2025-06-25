@@ -1,6 +1,6 @@
 'use client';
 
-import { useRoomStore } from '@/lib/store/use-room-store';
+import { useRoomController } from '@/lib/store/use-room-controller';
 import {
   Avatar,
   AvatarFallback,
@@ -11,7 +11,7 @@ import { Volume2Icon, VolumeOffIcon } from 'lucide-react';
 import React from 'react';
 
 export default function RoomMembers() {
-  const members = useRoomStore((state) => state.members);
+  const members = useRoomController((state) => state.members);
 
   return (
     <>

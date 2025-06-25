@@ -52,9 +52,9 @@ export type UploadTrackRequest = z.infer<typeof validations.uploadTrack>;
 const backendClient = {
   getRoom: async (roomId: string) =>
     client.get<Api.Room>(`/rooms/${roomId}`).then((r) => r.data),
-  getRoomWsUrl: (roomId: string) => {
+  getRoomWsUrl: (roomId: string, memberId: string) => {
     const url = new URL(
-      `/rooms/${roomId}/ws`,
+      `/rooms/${roomId}/members/${memberId}/ws`,
       process.env.NEXT_PUBLIC_BACKEND_API_URL,
     );
 
@@ -99,6 +99,8 @@ const backendClient = {
       .post<Api.Room>(`/rooms/${data.roomId}/tracks`, data)
       .then((r) => r.data);
   },
+  getTrack: async (trackId: string) =>
+    client.get<Api.Track>(`/tracks/${trackId}`).then((r) => r.data),
   setToken: (token: string) => {
     console.log('Setting token:', token);
     localStorage.setItem('auth_token', token);

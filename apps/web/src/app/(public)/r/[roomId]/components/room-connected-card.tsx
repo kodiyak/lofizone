@@ -17,13 +17,12 @@ import {
   TabsTrigger,
 } from '@workspace/ui/components/tabs';
 import { Separator } from '@workspace/ui/components/separator';
-import PluginsAccordion from '@/plugins/shared/components/plugins-accordion';
-import { useRoomStore } from '@/lib/store/use-room-store';
 import PluginsGrid from '@/plugins/shared/components/plugins-grid';
+import { useRoomController } from '@/lib/store/use-room-controller';
 
 export default function RoomConnectedCard() {
   const { data: session } = authClient.useSession();
-  const room = useRoomStore((state) => state.room);
+  const room = useRoomController((state) => state.room);
   if (!room) return null;
 
   return (

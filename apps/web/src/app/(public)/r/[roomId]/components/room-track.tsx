@@ -1,23 +1,13 @@
 'use client';
 
 import Wallpaper from '@/assets/images/wallpaper-2.webp';
-import { useRoomStore } from '@/lib/store/use-room-store';
-import {
-  PauseIcon,
-  PlayIcon,
-  SkipBackIcon,
-  SkipForwardIcon,
-} from '@phosphor-icons/react';
-import { Button } from '@workspace/ui/components/button';
-import { StepBackIcon } from 'lucide-react';
+import { useRoomController } from '@/lib/store/use-room-controller';
 import Image from 'next/image';
 import React from 'react';
 
 export default function RoomTrack() {
-  const track = useRoomStore((state) => state.track);
-  const pause = useRoomStore((state) => state.pause);
-  const resume = useRoomStore((state) => state.resume);
-  const { isPlaying, currentTime, duration } = useRoomStore(
+  const track = useRoomController((state) => state.track);
+  const { currentTime, duration } = useRoomController(
     (state) => state.audioState,
   );
   const progress = (currentTime / duration) * 100 || 0;

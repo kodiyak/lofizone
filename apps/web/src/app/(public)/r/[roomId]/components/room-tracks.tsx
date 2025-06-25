@@ -1,6 +1,5 @@
 'use client';
 
-import { useRoomStore } from '@/lib/store/use-room-store';
 import {
   CommandGroup,
   CommandItem,
@@ -11,13 +10,18 @@ import React from 'react';
 import AddRoomTracks from './add-room-tracks';
 import { useDisclosure } from '@workspace/ui/hooks/use-disclosure';
 import TracksCommand from '@/components/tracks-command';
+import { useBackendAPI } from '@/lib/hooks/useBackendAPI';
+import { useRoomController } from '@/lib/store/use-room-controller';
+import type { Api } from '@workspace/core';
 
 export default function RoomTracks() {
-  const tracks = useRoomStore((state) => state.tracks);
-  const playTrack = useRoomStore((state) => state.playTrack);
-  const trackId = useRoomStore((state) => state.track?.id);
-  const room = useRoomStore((state) => state.room);
+  const trackId = useRoomController((state) => state.track?.id);
+  const room = useRoomController((state) => state.room);
+  const controller = useRoomController((state) => state.controller);
   const addRoomTrack = useDisclosure();
+  const { data: tracks = [] } = useBackendAPI<Api.Track[]>(
+    `/playlists/${room?.playlistId}/tracks`,
+  );
 
   return (
     <>
@@ -25,11 +29,10 @@ export default function RoomTracks() {
       <TracksCommand
         tracks={tracks}
         value={trackId ? [trackId] : []}
-        onChange={(track) => {
+        onChange={async (track) => {
           const newTrackId = track.pop();
-          if (trackId === newTrackId) return;
-          const nextTrack = tracks.find((t) => t.id === newTrackId);
-          if (nextTrack) playTrack(nextTrack);
+          if (!newTrackId) return;
+          await controller.play(newTrackId);
         }}
         footer={
           <>

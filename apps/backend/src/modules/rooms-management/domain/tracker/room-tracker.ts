@@ -198,6 +198,7 @@ export class RoomTracker {
     return {
       roomId: this.roomId,
       ownerId: this.ownerId,
+      playlistId: this.playlistId,
       name: this.name,
       cover: this.cover,
       members: this.members,
