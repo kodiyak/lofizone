@@ -10,6 +10,12 @@ import { QueryProvider } from '@/components/providers/query-provider';
 import { AuthProvider } from '@/components/providers/auth-provider';
 import Sidebar from './components/sidebar';
 import BackgroundProvider from '@/components/providers/background-provider';
+import NavTrackPlayer from './components/nav-track-player';
+
+/**
+ * @todo Room Theme (Change Page Background, Sidebar Background) Only First.
+ * @todo Plugins is Client-Side Only! Refactor! (Remove from Backend)
+ */
 
 const sans = Font_Sans({
   variable: '--font-sans',
@@ -64,7 +70,11 @@ export default function RootLayout({
                   {children}
                 </div>
               </div>
-              <div className="h-12 border-t bg-background"></div>
+              <div className="h-12 border-t bg-background flex items-center justify-center">
+                <div className="w-[260]">
+                  <NavTrackPlayer />
+                </div>
+              </div>
             </div>
           </AuthProvider>
         </QueryProvider>

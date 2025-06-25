@@ -52,7 +52,7 @@ export default function RoomTrack({ className }: RoomTrackProps) {
           width={1080}
           height={1080}
           alt={'Lofi'}
-          className="w-full h-[32vh] object-cover object-center"
+          className="absolute size-full inset-0 object-cover object-center"
         />
       </div>
     </>

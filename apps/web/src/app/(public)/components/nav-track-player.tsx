@@ -1,6 +1,5 @@
 'use client';
 
-import { useRoomStore } from '@/lib/store/use-room-store';
 import {
   PauseIcon,
   PlayIcon,
