@@ -15,6 +15,7 @@ interface RoomStore {
   resume: () => void;
   seek: (time: number) => void;
   pause: () => void;
+  sendEvent: (event: string, data: any) => void;
 
   // Audio
   audio: HTMLAudioElement | null;
@@ -38,6 +39,15 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     currentTime: 0,
     duration: 0,
   },
+  sendEvent: (event: string, data: any) => {
+    const { socket } = get();
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+      console.warn('WebSocket is not connected. Cannot send event:', event);
+      return;
+    }
+    const payload = JSON.stringify({ event, data });
+    socket.send(payload);
+  },
   playTrack: async (track) => {
     const { audio: currentAudio } = get();
     if (currentAudio) {
@@ -52,6 +62,8 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     set((prev) => ({ audioState: { ...prev.audioState, isPlaying: false } }));
 
     audio.addEventListener('play', () => {
+      const { sendEvent } = get();
+      sendEvent('track_changed', { trackId: track.id });
       set((prev) => ({ audioState: { ...prev.audioState, isPlaying: true } }));
     });
 

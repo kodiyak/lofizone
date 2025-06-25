@@ -1,8 +1,8 @@
 import { EventEmitter } from '@/shared/infra/event-emitter';
 import { RoomMemberTracker } from './room-member-tracker';
-import { z } from 'zod';
 import { MemberNotFoundError } from '../errors';
 import type { Plugin } from '@/modules/plugins';
+import { RoomTrackerEvents } from '@workspace/core';
 
 export interface RoomTrackerProps {
   roomId: string;
@@ -13,36 +13,6 @@ export interface RoomTrackerProps {
   cover?: string | null;
   plugins?: Plugin[];
 }
-
-const RoomTrackerEvents = z.object({
-  member_joined: z.object({
-    memberId: z.string(),
-    host: z.boolean(),
-  }),
-  member_left: z.object({
-    memberId: z.string(),
-  }),
-  track_changed: z.object({
-    memberId: z.string(),
-    trackId: z.string().nullable(),
-  }),
-  track_added: z.object({
-    memberId: z.string(),
-    trackId: z.string(),
-  }),
-  track_removed: z.object({
-    memberId: z.string(),
-    trackId: z.string(),
-  }),
-  plugin_started: z.object({
-    pluginId: z.string(),
-    roomId: z.string(),
-  }),
-  plugin_stopped: z.object({
-    pluginId: z.string(),
-    roomId: z.string(),
-  }),
-});
 
 export class RoomTracker {
   private readonly members: RoomMemberTracker[] = [];

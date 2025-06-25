@@ -1,4 +1,4 @@
-import type { WSContext } from 'hono/ws';
+import type { WSContext, WSMessageReceive } from 'hono/ws';
 import { RoomMemberTracker, roomSchema, RoomsTracker } from '../../domain';
 import WebSocket from 'ws';
 import { db } from '@/shared/clients/db';
@@ -122,6 +122,27 @@ export class RoomsService {
 
       pipes.forEach((pipe) => pipe.off());
       offMemberLeft();
+    });
+  }
+
+  handleMessage(evt: MessageEvent<WSMessageReceive>, ws: WSContext<WebSocket>) {
+    const message = JSON.parse(evt.data.toString());
+    const client = this.wsClient.get(ws);
+    if (!client) {
+      console.warn('WebSocket client not found');
+      return;
+    }
+
+    const { session, roomId } = client;
+    const room = this.tracker.getRoom(roomId);
+    if (!room) {
+      console.error(`Room ${roomId} not found`);
+      return;
+    }
+
+    room.events.emit(message.event, {
+      memberId: session.memberId,
+      ...message.data,
     });
   }
 

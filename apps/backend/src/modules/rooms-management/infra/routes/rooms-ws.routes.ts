@@ -27,7 +27,7 @@ export function getRoomsWsRoutes({ upgradeWebSocket }: NodeWebSocket) {
           );
         },
         onMessage: (evt, ws) => {
-          const message = JSON.parse(evt.data.toString());
+          RoomsService.getInstance().handleMessage(evt, ws);
         },
         onClose: (evt, ws) => {
           console.log(`WebSocket closed for room ${roomId}`);
@@ -35,7 +35,6 @@ export function getRoomsWsRoutes({ upgradeWebSocket }: NodeWebSocket) {
         },
         onError: (evt, ws) => {
           console.error(`WebSocket error for room ${roomId}:`, evt);
-          // roomService.handleError(ws, roomId, evt);
         },
       };
     }),

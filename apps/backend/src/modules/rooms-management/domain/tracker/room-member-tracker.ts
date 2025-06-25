@@ -1,5 +1,5 @@
 import { EventEmitter } from '@/shared/infra/event-emitter';
-import { z } from 'zod';
+import { RoomMemberTrackerEvents } from '@workspace/core';
 
 export interface RoomMemberTrackerProps {
   memberId: string;
@@ -7,16 +7,6 @@ export interface RoomMemberTrackerProps {
   host: boolean;
   trackId?: string | null;
 }
-
-const RoomMemberTrackerEvents = z.object({
-  track_changed: z.object({
-    trackId: z.string().nullable(),
-  }),
-  playlist_changed: z.object({
-    playlistId: z.string().nullable(),
-  }),
-  member_left: z.object({}),
-});
 
 export class RoomMemberTracker {
   public readonly events = new EventEmitter(RoomMemberTrackerEvents, 'RoomMemberTracker');

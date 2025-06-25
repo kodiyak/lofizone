@@ -3,7 +3,6 @@ import { RoomTracker, type RoomTrackerProps } from '../../domain/tracker/room-tr
 export class RoomsTracker {
   private static instance: RoomsTracker;
   private rooms: RoomTracker[] = [];
-  private wsClient = new Map<WebSocket, { memberId: string; roomId: string }>();
 
   public static getInstance(): RoomsTracker {
     if (!RoomsTracker.instance) {
