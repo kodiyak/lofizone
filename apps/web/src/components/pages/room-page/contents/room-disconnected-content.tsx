@@ -26,7 +26,6 @@ export default function RoomDisconnectedContent({
   const controller = useRoomController((state) => state.controller);
   return (
     <>
-      <div className="w-[100%] h-[100%] fixed inset-0 translate-y-1/2 rounded-[50%] bg-background bg-radial from-muted via-background/10 to-background -z-10"></div>
       <div className="size-full py-96 relative flex flex-col items-center justify-center">
         <div className="flex flex-col relative gap-6 z-20">
           <Card className="dark:bg-background dark:bg-gradient-to-br dark:from-background dark:to-muted/5 border-border py-2 ring-2 ring-ring/20">

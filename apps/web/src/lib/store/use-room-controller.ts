@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { RoomController } from '../rooms/room.controller';
+import { RoomController } from '../controllers/room.controller';
 import type { Api } from '@workspace/core';
 
 interface RoomControllerStore {

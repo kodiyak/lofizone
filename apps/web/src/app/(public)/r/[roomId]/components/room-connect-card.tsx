@@ -1,11 +1,12 @@
 'use client';
 
-import { RoomController } from '@/lib/rooms/room.controller';
+import { useRoomController } from '@/lib/store/use-room-controller';
 import { ArrowRightIcon } from '@phosphor-icons/react';
 import { Button } from '@workspace/ui/components/button';
 import React from 'react';
 
 export default function RoomConnectCard({ roomId }: { roomId: string }) {
+  const controller = useRoomController((state) => state.controller);
   return (
     <>
       <div className="w-full aspect-[10/6] relative overflow-hidden bg-gradient-to-br from-background to-card rounded-xl border">
@@ -16,7 +17,7 @@ export default function RoomConnectCard({ roomId }: { roomId: string }) {
             <Button
               variant={'link'}
               onClick={() => {
-                RoomController.getInstance().connect(roomId);
+                controller.connect(roomId);
               }}
             >
               <span>Join Now</span>

@@ -7,6 +7,7 @@ import {
 import { backendClient } from '../clients/backend';
 import { MusicStreamController } from './music-stream.controller';
 import { useRoomController } from '../store/use-room-controller';
+import { UiController } from './ui.controller';
 
 type RoomEventHandler<K extends keyof RoomTrackerEventsData> = (
   data: RoomTrackerEventsData[K] & { roomId: string },
@@ -40,6 +41,7 @@ export class RoomController implements RoomEventHandlers {
   set isConnected(isConnected: boolean) {
     this._isConnected = isConnected;
     this.store.setState(() => ({ isConnected }));
+    this.ui.backgroundState = isConnected ? 'success' : 'loading';
     console.log(`[RoomController] Connection status changed: ${isConnected}`);
   }
 
@@ -70,6 +72,10 @@ export class RoomController implements RoomEventHandlers {
       getState: useRoomController.getState,
       setState: useRoomController.setState,
     };
+  }
+
+  private get ui() {
+    return UiController.getInstance();
   }
 
   get backend() {

@@ -9,6 +9,7 @@ import type { CSSProperties } from 'react';
 import { QueryProvider } from '@/components/providers/query-provider';
 import { AuthProvider } from '@/components/providers/auth-provider';
 import Sidebar from './components/sidebar';
+import BackgroundProvider from '@/components/providers/background-provider';
 
 const sans = Font_Sans({
   variable: '--font-sans',
@@ -45,11 +46,12 @@ export default function RootLayout({
       >
         <QueryProvider>
           <AuthProvider>
+            <BackgroundProvider />
             {/* <NavTop /> */}
             <div className="flex relative overflow-hidden w-full h-screen items-stretch">
               <Sidebar />
               <div className="flex flex-1 flex-col relative overflow-hidden">
-                <div className="absolute -z-10 w-[50vw] right-0 top-0 -translate-y-1/5 translate-x-1/2">
+                {/* <div className="absolute -z-10 w-[50vw] right-0 top-0 -translate-y-1/5 translate-x-1/2">
                   <div className="size-full absolute left-0 top-0 bg-gradient-to-b from-transparent to-background"></div>
                   <div className="size-full absolute left-0 top-0 bg-gradient-to-l from-transparent to-background"></div>
                   <Image
@@ -57,7 +59,7 @@ export default function RootLayout({
                     alt={'Wallpaper Lofi'}
                     className="w-full h-screen object-cover object-center"
                   />
-                </div>
+                </div> */}
                 {children}
               </div>
             </div>
