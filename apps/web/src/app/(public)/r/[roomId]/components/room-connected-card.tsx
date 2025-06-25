@@ -17,9 +17,14 @@ import {
   TabsTrigger,
 } from '@workspace/ui/components/tabs';
 import { Separator } from '@workspace/ui/components/separator';
+import PluginsAccordion from '@/plugins/shared/components/plugins-accordion';
+import { useRoomStore } from '@/lib/store/use-room-store';
+import PluginsGrid from '@/plugins/shared/components/plugins-grid';
 
 export default function RoomConnectedCard() {
   const { data: session } = authClient.useSession();
+  const room = useRoomStore((state) => state.room);
+  if (!room) return null;
 
   return (
     <>
@@ -36,6 +41,7 @@ export default function RoomConnectedCard() {
             <Separator className="-mt-2 -mb-4" />
           </>
         )}
+        <PluginsGrid room={room} />
         <Tabs defaultValue={'tracks'}>
           <TabsList className="px-6">
             <TabsTrigger value="tracks">Tracks</TabsTrigger>

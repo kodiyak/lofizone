@@ -3,6 +3,7 @@ import type { PluginApi } from './plugin-api';
 
 export abstract class Plugin {
   abstract id: string;
+  abstract ui: Plugin.UI;
   abstract bootstrap: () => Promise<void>;
   onRoomStarted?: (room: RoomTracker) => Promise<void>;
   onRoomStopped?: (room: RoomTracker) => Promise<void>;
@@ -31,7 +32,14 @@ export abstract class Plugin {
   public toJSON(roomId?: string) {
     return {
       id: this.id,
+      ui: this.ui,
       state: roomId ? this.getState(roomId) : undefined,
     };
+  }
+}
+
+export namespace Plugin {
+  export interface UI {
+    gridWidth: number;
   }
 }

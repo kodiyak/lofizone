@@ -10,6 +10,7 @@ const DEFAULT_POMODORO_STATE = {
 
 export class PomodoroPlugin extends Plugin {
   id = 'pomodoro-plugin';
+  ui: Plugin.UI = { gridWidth: 2 };
   bootstrap: Plugin['bootstrap'] = async () => {
     this.log('Initialized');
   };

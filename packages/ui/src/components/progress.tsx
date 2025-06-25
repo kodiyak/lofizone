@@ -28,4 +28,48 @@ function Progress({
   );
 }
 
-export { Progress };
+interface CircularProgressProps {
+  size: number;
+  fillColor: string;
+  total: number;
+  current: number;
+  className?: string;
+  strokeWidth?: number;
+}
+
+const CircularProgress = (props: CircularProgressProps) => {
+  const { size, fillColor, total, current, className, strokeWidth = 6 } = props;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const progress = (current / total) * circumference;
+  const halfSize = size / 2;
+
+  const commonParams = {
+    cx: halfSize,
+    cy: halfSize,
+    r: radius,
+    fill: 'none',
+    strokeWidth,
+  };
+
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox={`0 0 ${size} ${size}`}
+      className={className}
+    >
+      <circle {...commonParams} className="stroke-accent" />
+      <circle
+        {...commonParams}
+        stroke={fillColor}
+        strokeDasharray={circumference}
+        strokeDashoffset={circumference - progress}
+        transform={`rotate(-90 ${halfSize} ${halfSize})`}
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+};
+
+export { Progress, CircularProgress };

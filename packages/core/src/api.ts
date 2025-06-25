@@ -4,6 +4,13 @@ export namespace Api {
     playlistId: string | null;
     name: string;
     ownerId: string;
+    plugins: Plugin[];
+  }
+
+  export interface Plugin<T = any> {
+    id: string;
+    ui: { gridWidth: number };
+    state: T;
   }
 
   export interface RoomMember {
