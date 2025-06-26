@@ -1,40 +1,17 @@
-import { PluginProvider, usePluginsProvider } from '@plugins/core';
-import { Button } from '@workspace/ui/components/button';
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@workspace/ui/components/card';
+import { usePluginsProvider } from '@plugins/core';
 import React from 'react';
+import RoomInstallPluginCard from '../components/room-install-plugin-card';
 
 export default function RoomPluginsScreen() {
   const { plugins: contextPlugins } = usePluginsProvider();
   const plugins = Object.values(contextPlugins);
+
   return (
     <>
       <div className="flex flex-col px-4">
         <div className="grid grid-cols-4 max-w-full gap-4">
           {plugins.map((plugin) => (
-            <Card key={plugin.name}>
-              <div className="flex items-start gap-4 px-6">
-                <div className="size-12 rounded-xl border bg-background bg-gradient-to-br from-card/70 to-background flex items-center justify-center">
-                  <PluginProvider
-                    name={plugin.name}
-                    componentName={'Icon'}
-                    className={'size-8'}
-                  />
-                </div>
-                <CardHeader className="px-0 flex-1">
-                  <CardTitle>{plugin.title}</CardTitle>
-                  <CardDescription>{plugin.description}</CardDescription>
-                </CardHeader>
-              </div>
-              <CardFooter className="justify-end">
-                <Button size={'sm'}>Install Now</Button>
-              </CardFooter>
-            </Card>
+            <RoomInstallPluginCard plugin={plugin} />
           ))}
         </div>
       </div>
