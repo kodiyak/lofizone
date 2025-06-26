@@ -12,6 +12,8 @@ export default function PluginsGrid({ room }: PluginsGridProps) {
       {room.plugins.map((plugin) => (
         <div>
           <PluginProvider
+            name={plugin.name}
+            componentName={'Widget'}
             plugin={plugin}
             room={room}
             plugins={availablePlugins}

@@ -7,10 +7,11 @@ export namespace Api {
     plugins: Plugin[];
   }
 
-  export interface Plugin<T = any> {
+  export interface Plugin<TState = any> {
     id: string;
+    name: string;
     ui: { gridWidth: number };
-    state: T;
+    state: TState;
   }
 
   export interface RoomMember {

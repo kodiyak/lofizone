@@ -5,9 +5,12 @@ import {
   PomodoroPluginSettingsSchema,
   PomodoroPluginStateSchema,
 } from './types';
+import PomodoroIcon from './components/pomodoro-icon';
 
 const pomodoroPlugin = definePlugin({
   name: 'pomodoro-plugin',
+  title: 'Pomodoro Timer',
+  description: 'A Pomodoro timer to help you manage your focus sessions.',
   state: {
     schema: PomodoroPluginStateSchema,
     defaultValues: {
@@ -27,6 +30,7 @@ const pomodoroPlugin = definePlugin({
   },
   components: {
     Widget: PomodoroWidget,
+    Icon: PomodoroIcon,
   },
   controller: new PomodoroController(),
 });

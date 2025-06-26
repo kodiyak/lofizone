@@ -8,6 +8,10 @@ export interface PluginWidgetProps {
   plugin: Api.Plugin;
 }
 
+export interface PluginIconProps {
+  className?: string;
+}
+
 export interface InitializePluginProps<TSettings = any, TState = any> {
   state: TState;
   settings: TSettings;
@@ -19,6 +23,8 @@ export interface Plugin<
   TStateSchema extends ZodSchema<any>,
 > {
   name: string;
+  title: string;
+  description: string;
   state: {
     schema: TStateSchema;
     defaultValues: z.infer<TStateSchema>;
@@ -29,6 +35,7 @@ export interface Plugin<
   };
   controller: BasePlugin<z.infer<TSettingsSchema>, z.infer<TStateSchema>>;
   components: {
+    Icon: ComponentType<PluginIconProps>;
     Widget: ComponentType<PluginWidgetProps>;
   };
 }

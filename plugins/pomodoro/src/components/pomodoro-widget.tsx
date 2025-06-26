@@ -10,8 +10,9 @@ import { Button } from '@workspace/ui/components/button';
 import { PauseIcon, PlayIcon, StopIcon } from '@phosphor-icons/react';
 import PomodoroSettings from './pomodoro-settings';
 import { useDisclosure } from '@workspace/ui/hooks/use-disclosure';
+import type { PluginWidgetProps } from '@plugins/core';
 
-const Content = () => {
+export default function PomodoroWiddget({ plugin, room }: PluginWidgetProps) {
   const openSettings = useDisclosure();
   return (
     <>
@@ -74,6 +75,4 @@ const Content = () => {
       </Card>
     </>
   );
-};
-
-export default Content;
+}
