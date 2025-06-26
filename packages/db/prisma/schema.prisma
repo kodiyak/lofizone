@@ -114,17 +114,31 @@ model Artist {
 }
 
 model Room {
-  id         String    @id @default(uuid())
+  id         String       @id @default(uuid())
   name       String
   ownerId    String
-  owner      User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner      User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   metadata   Json
-  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
-  updatedAt  DateTime  @updatedAt @db.Timestamptz(3)
-  playlist   Playlist? @relation(fields: [playlistId], references: [id])
+  createdAt  DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime     @updatedAt @db.Timestamptz(3)
+  playlist   Playlist?    @relation(fields: [playlistId], references: [id])
   playlistId String?
+  plugins    RoomPlugin[]
 
   @@unique([name, ownerId])
+}
+
+model RoomPlugin {
+  id        String   @id @default(uuid())
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  pluginId  String // Plugin identifier (e.g., "pomodoro")
+  settings  Json
+  lastState Json?
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  @@unique([roomId, pluginId])
 }
 
 model Playlist {

@@ -96,6 +96,12 @@ importers:
       '@hono/zod-validator':
         specifier: ^0.7.0
         version: 0.7.0(hono@4.8.3)(zod@3.25.67)
+      '@plugins/core':
+        specifier: workspace:*
+        version: link:../../plugins/core
+      '@plugins/pomodoro':
+        specifier: workspace:*
+        version: link:../../plugins/pomodoro
       '@workspace/auth':
         specifier: workspace:*
         version: link:../../packages/auth

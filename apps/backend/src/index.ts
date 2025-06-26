@@ -7,9 +7,11 @@ import { createNodeWebSocket } from '@hono/node-ws';
 import { getVibesManagementRoutes } from './modules/vibes-management';
 import { getRoomsManagementRoutes, RoomsService } from './modules/rooms-management';
 import { authMiddleware, getAuthRoutes } from './modules/authentication';
+import { buildPluginsRegistry } from './modules/plugins';
 
 async function main() {
   await RoomsService.init(); // Initialize the RoomsService
+  buildPluginsRegistry(); // Initialize the PluginsRegistry
 
   const app = new OpenAPIHono();
   app.use(
