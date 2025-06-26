@@ -8,5 +8,6 @@ export interface RoomScreenProps {
 
 export interface RoomInstallPluginProps {
   plugin: Plugin<any, any>;
+  isInstalled?: boolean;
   roomId: string;
 }

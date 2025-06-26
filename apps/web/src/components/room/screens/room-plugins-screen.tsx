@@ -15,7 +15,11 @@ export default function RoomPluginsScreen() {
       <div className="flex flex-col px-4">
         <div className="grid grid-cols-4 max-w-full gap-4">
           {plugins.map((plugin) => (
-            <RoomInstallPluginCard roomId={room.roomId} plugin={plugin} />
+            <RoomInstallPluginCard
+              roomId={room.roomId}
+              plugin={plugin}
+              isInstalled={!!room?.plugins?.find((p) => p.name === plugin.name)}
+            />
           ))}
         </div>
       </div>
