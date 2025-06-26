@@ -1,0 +1,18 @@
+{
+  "name": "@plugins/core",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./server": {
+      "import": "./src/server/index.ts"
+    },
+    "./client": {
+      "import": "./src/client/index.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "nanoid": "^5.1.5"
+  }
+}
