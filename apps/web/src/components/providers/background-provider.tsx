@@ -2,8 +2,8 @@
 
 import { useUiStore } from '@/lib/store/use-ui-store';
 import { cn } from '@workspace/ui/lib/utils';
-import Image from 'next/image';
 import React from 'react';
+import UiBackground from '../ui-background';
 
 export default function BackgroundProvider() {
   const background = useUiStore((state) => state.background);
@@ -26,22 +26,7 @@ export default function BackgroundProvider() {
           )}
         ></div>
 
-        <div className={cn('absolute', background?.className)}>
-          {background?.gradients?.map((gradient, index) => (
-            <div
-              key={index}
-              className={cn('size-full absolute inset-0', gradient.className)}
-            ></div>
-          ))}
-          {background?.src && (
-            <Image
-              src={background?.src}
-              alt={'Background 01'}
-              width={1920}
-              height={1080}
-            />
-          )}
-        </div>
+        <UiBackground {...background} />
       </div>
     </>
   );

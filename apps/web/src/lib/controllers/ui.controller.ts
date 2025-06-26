@@ -4,6 +4,7 @@ export interface UiBackground {
   src?: string;
   style?: React.CSSProperties;
   className?: string;
+  imgClassName?: string;
   gradients?: { className?: string }[];
 }
 
@@ -13,6 +14,16 @@ export type UiBackgroundState =
   | 'loading'
   | 'success'
   | 'error';
+
+export interface UiTheme {
+  cssVars?: Record<string, string>;
+  mode: 'light' | 'dark';
+  background?: UiBackground;
+  backgroundState: UiBackgroundState;
+  membersBackground?: UiBackground;
+  bottomBarBackground?: UiBackground;
+  sidebarBackground?: UiBackground;
+}
 
 export class UiController {
   private static instance: UiController;
