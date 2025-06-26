@@ -1,5 +1,5 @@
-import { cn } from '@/lib/utils';
 import React, { type ReactNode } from 'react';
+import { cn } from '../lib/utils';
 
 const EmptyState = React.forwardRef<
   HTMLDivElement,
@@ -12,7 +12,7 @@ const EmptyState = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'flex flex-col bg-background gap-6 p-6 border rounded-lg shadow-sm items-center',
+      'flex flex-col bg-background/50 gap-6 p-6 border rounded-2xl shadow-sm items-center',
       className,
     )}
     {...props}
@@ -36,7 +36,7 @@ const EmptyIcon = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'size-14 rounded-xl flex items-center text-muted-foreground justify-center border bg-background',
+      'size-14 rounded-xl flex items-center text-muted-foreground justify-center border bg-muted/35',
       '[&>svg]:size-8',
       className,
     )}

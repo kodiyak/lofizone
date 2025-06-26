@@ -11,9 +11,10 @@ import React from 'react';
 import type { RoomInstallPluginProps } from '../types';
 import { useDisclosure } from '@workspace/ui/hooks/use-disclosure';
 import RoomInstallPluginModal from './room-install-plugin-modal';
+import { CheckIcon, PlusIcon } from '@phosphor-icons/react';
 
 export default function RoomInstallPluginCard(props: RoomInstallPluginProps) {
-  const { plugin } = props;
+  const { plugin, isInstalled } = props;
   const install = useDisclosure();
   return (
     <>
@@ -33,8 +34,9 @@ export default function RoomInstallPluginCard(props: RoomInstallPluginProps) {
           </CardHeader>
         </div>
         <CardFooter className="justify-end">
-          <Button size={'sm'} onClick={install.onOpen}>
-            Install Now
+          <Button size={'sm'} onClick={install.onOpen} disabled={isInstalled}>
+            {isInstalled ? <CheckIcon /> : <PlusIcon />}
+            {isInstalled ? 'Already Installed' : 'Install Now'}
           </Button>
         </CardFooter>
       </Card>
