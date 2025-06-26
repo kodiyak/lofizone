@@ -10,7 +10,7 @@ import { useRoomController } from '../store/use-room-controller';
 import { UiController } from './ui.controller';
 
 type RoomEventHandler<K extends keyof RoomTrackerEventsData> = (
-  data: RoomTrackerEventsData[K] & { roomId: string },
+  data: RoomTrackerEventsData[K] & { roomId: string; fromMe: boolean },
 ) => void | Promise<void>;
 
 type RoomEventHandlers = {
@@ -22,49 +22,40 @@ export class RoomController implements RoomEventHandlers {
   private static instance: RoomController;
 
   public readonly music: MusicStreamController;
-
-  private _members: Api.RoomMember[] = [];
-  private _room: Api.Room | null = null;
-  private _track: Api.Track | null = null;
-  private _isConnected = false;
   private memberId = generateMemberId();
 
   set track(track: Api.Track | null) {
-    this._track = track;
     this.store.setState(() => ({ track }));
   }
 
   get track() {
-    return this._track;
+    return this.state.track || null;
   }
 
   set isConnected(isConnected: boolean) {
-    this._isConnected = isConnected;
     this.store.setState(() => ({ isConnected }));
     this.ui.backgroundState = isConnected ? 'hidden' : 'loading';
     console.log(`[RoomController] Connection status changed: ${isConnected}`);
   }
 
   get isConnected() {
-    return this._isConnected;
+    return this.state.isConnected;
   }
 
   set members(members: Api.RoomMember[]) {
-    this._members = members;
     this.store.setState(() => ({ members }));
   }
 
   get members() {
-    return this._members;
+    return this.state.members;
   }
 
   set room(room: Api.Room | null) {
-    this._room = room;
     this.store.setState(() => ({ room }));
   }
 
   get room() {
-    return this._room;
+    return this.state.room;
   }
 
   get store() {
@@ -72,6 +63,10 @@ export class RoomController implements RoomEventHandlers {
       getState: useRoomController.getState,
       setState: useRoomController.setState,
     };
+  }
+
+  get state() {
+    return this.store.getState();
   }
 
   get ui() {
@@ -95,8 +90,23 @@ export class RoomController implements RoomEventHandlers {
     return RoomController.instance;
   }
 
-  async play(trackId: string) {
-    await this.send('track_changed', { trackId, memberId: this.memberId });
+  play(trackId: string) {
+    this.send('track_changed', { trackId, memberId: this.memberId });
+  }
+
+  seek(time: number) {
+    this.music.seek(time);
+    this.send('player_seeked', { time, memberId: this.memberId });
+  }
+
+  pause() {
+    this.music.pause();
+    this.send('player_paused', { memberId: this.memberId });
+  }
+
+  resume() {
+    this.music.play();
+    this.send('player_resumed', { memberId: this.memberId });
   }
 
   async connect(roomId: string) {
@@ -116,19 +126,17 @@ export class RoomController implements RoomEventHandlers {
       backendClient.getRoomWsUrl(roomId, this.memberId),
     );
 
-    console.log('Passaired');
-
     const onMessage = (event: MessageEvent) => {
       const payload = JSON.parse(event.data);
       const { event: eventName } = payload;
       // @ts-expect-error: Dynamic RoomTrackerEvents
       const data = RoomTrackerEvents.shape[eventName]?.safeParse(payload.data);
 
-      console.log(`[<<<][Controller][${eventName}]`, {
-        data,
-      });
+      // console.log(`[<<<][Controller][${eventName}]`, {
+      //   data,
+      // });
       if (!data.success) {
-        console.warn('Invalid data received:', data.error);
+        console.warn('Invalid data received:', { error: data.error, payload });
         return;
       }
 
@@ -138,7 +146,15 @@ export class RoomController implements RoomEventHandlers {
         console.warn('No handler for event:', eventName);
         return;
       }
-      handler({ ...data.data, roomId });
+      const handlerData = {
+        ...data.data,
+        roomId,
+        fromMe: data.data.memberId
+          ? this.memberId === data.data.memberId
+          : false,
+      };
+      console.log(`[<<<][Controller][${eventName}]`, handlerData);
+      handler(handlerData);
     };
     const onError = (event: Event) => {
       console.error('WebSocket error:', event);
@@ -167,13 +183,45 @@ export class RoomController implements RoomEventHandlers {
     }));
   };
 
+  member_left: RoomEventHandler<'member_left'> = async (data) => {
+    const { memberId } = data;
+    this.store.setState((state) => ({
+      members: state.members.filter((m) => m.memberId !== memberId),
+    }));
+    console.log(`Member left: ${memberId}`);
+  };
+
   track_changed: RoomEventHandler<'track_changed'> = async (data) => {
-    const { memberId, trackId } = data;
+    const { memberId, trackId, fromMe } = data;
     if (trackId === null) {
       this.music.stop();
       return;
     }
     await this.music.prepare(trackId);
+  };
+
+  player_paused: RoomEventHandler<'player_paused'> = async (data) => {
+    const { memberId, fromMe } = data;
+    if (!fromMe) {
+      this.music.pause();
+      console.log(`Player paused by member: ${memberId}`);
+    }
+  };
+
+  player_resumed: RoomEventHandler<'player_resumed'> = async (data) => {
+    const { memberId, fromMe } = data;
+    if (!fromMe) {
+      this.music.play();
+      console.log(`Player resumed by member: ${memberId}`);
+    }
+  };
+
+  player_seeked: RoomEventHandler<'player_seeked'> = async (data) => {
+    const { memberId, time, fromMe } = data;
+    if (!fromMe) {
+      this.music.seek(time);
+      console.log(`Player seeked by member: ${memberId} to ${time}`);
+    }
   };
 
   send<K extends keyof RoomTrackerEventsData>(

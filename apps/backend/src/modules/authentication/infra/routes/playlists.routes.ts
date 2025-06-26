@@ -263,14 +263,10 @@ export function getPlaylistsRoutes() {
         return c.json({ error: 'Playlist ID is required' }, 400);
       }
 
-      if (!userId) {
-        return c.json({ error: 'Unauthorized' }, 401);
-      }
-
       const playlist = await db.playlist.findFirst({
         where: {
           id: playlistId,
-          ownerId: userId,
+          ownerId: userId || undefined,
         },
         include: {
           tracks: true,

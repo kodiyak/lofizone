@@ -96,6 +96,7 @@ export class RoomsService {
 
     const send = (event: string) => {
       return (data: any) => {
+        console.log(`[WebSocket][>>>]${event}`, data);
         ws.send(JSON.stringify({ event, data }));
       };
     };
@@ -103,6 +104,9 @@ export class RoomsService {
       room.events.buildListener('track_changed', send('track_changed')),
       room.events.buildListener('member_joined', send('member_joined')),
       room.events.buildListener('member_left', send('member_left')),
+      room.events.buildListener('player_paused', send('player_paused')),
+      room.events.buildListener('player_resumed', send('player_resumed')),
+      room.events.buildListener('player_seeked', send('player_seeked')),
     ];
 
     const member = room.join(
@@ -114,12 +118,8 @@ export class RoomsService {
       }),
     );
     member.events.buildListener('member_left', ({ off: offMemberLeft }) => {
-      const client = this.wsClient.get(ws);
-      if (!client) {
-        console.warn('WebSocket client not found');
-        return;
-      }
-
+      console.log(`Member ${session.memberId} left room ${roomId}`);
+      if (this.wsClient.has(ws)) this.wsClient.delete(ws);
       pipes.forEach((pipe) => pipe.off());
       offMemberLeft();
     });
@@ -168,6 +168,5 @@ export class RoomsService {
     }
 
     member.leave();
-    this.wsClient.delete(ws);
   }
 }

@@ -88,7 +88,7 @@ export default function NavTrackPlayer() {
             onValueCommit={([v]) => {
               setDragging(false);
               const newTime = (v / 100) * duration;
-              controller.music.seek(newTime);
+              controller.seek(newTime);
             }}
           />
         </div>
@@ -101,9 +101,9 @@ export default function NavTrackPlayer() {
             variant={'ghost'}
             onClick={() => {
               if (isPlaying) {
-                controller.music.pause();
+                controller.pause();
               } else {
-                controller.music.play();
+                controller.resume();
               }
             }}
           >

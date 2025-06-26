@@ -8,6 +8,16 @@ export const RoomTrackerEvents = z.object({
   member_left: z.object({
     memberId: z.string(),
   }),
+  player_paused: z.object({
+    memberId: z.string(),
+  }),
+  player_resumed: z.object({
+    memberId: z.string(),
+  }),
+  player_seeked: z.object({
+    memberId: z.string(),
+    time: z.number(),
+  }),
   track_changed: z.object({
     memberId: z.string(),
     trackId: z.string().nullable(),

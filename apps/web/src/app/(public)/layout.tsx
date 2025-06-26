@@ -11,6 +11,8 @@ import NavTrackPlayer from './components/nav-track-player';
 
 /**
  * @todo Room Theme (Change Page Background, Sidebar Background) Only First.
+ * @todo Sync Room Members (Join/Leave, Play/Pause/Next/Previous, Volume, Seek) - 26.06 - 3h (2h)
+ * @todo Plugins (Add/Remove, Enable/Disable, Settings) - 26.06 - 5h (2h)
  * @todo Plugins is Client-Side Only! Refactor! (Remove from Backend)
  */
 
