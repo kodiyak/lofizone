@@ -8,6 +8,7 @@ import { AuthProvider } from '@/components/providers/auth-provider';
 import Sidebar from './components/sidebar';
 import BackgroundProvider from '@/components/providers/background-provider';
 import NavTrackPlayer from './components/nav-track-player';
+import PluginsProvider from '@/components/providers/plugins-provider';
 
 /**
  * @todo Room Theme (Change Page Background, Sidebar Background) Only First.
@@ -51,20 +52,22 @@ export default function RootLayout({
       >
         <QueryProvider>
           <AuthProvider>
-            <BackgroundProvider />
-            <div className="flex flex-col w-full h-screen overflow-hidden">
-              <div className="flex flex-1 relative items-stretch">
-                <Sidebar />
-                <div className="flex-1 relative overflow-hidden">
-                  {children}
+            <PluginsProvider>
+              <BackgroundProvider />
+              <div className="flex flex-col w-full h-screen overflow-hidden">
+                <div className="flex flex-1 relative items-stretch">
+                  <Sidebar />
+                  <div className="flex-1 relative overflow-hidden">
+                    {children}
+                  </div>
+                </div>
+                <div className="h-12 border-t bg-background flex items-center justify-center">
+                  <div className="w-[260]">
+                    <NavTrackPlayer />
+                  </div>
                 </div>
               </div>
-              <div className="h-12 border-t bg-background flex items-center justify-center">
-                <div className="w-[260]">
-                  <NavTrackPlayer />
-                </div>
-              </div>
-            </div>
+            </PluginsProvider>
           </AuthProvider>
         </QueryProvider>
       </body>

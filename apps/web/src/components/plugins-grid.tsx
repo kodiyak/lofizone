@@ -1,6 +1,5 @@
 import type { Api } from '@workspace/core';
 import { PluginProvider } from '@plugins/core';
-import { availablePlugins } from '@/lib/available-plugins';
 
 interface PluginsGridProps {
   room: Api.Room;
@@ -16,7 +15,6 @@ export default function PluginsGrid({ room }: PluginsGridProps) {
             componentName={'Widget'}
             plugin={plugin}
             room={room}
-            plugins={availablePlugins}
           />
         </div>
       ))}

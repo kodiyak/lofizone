@@ -9,12 +9,12 @@ import {
   type ComponentType,
   type PropsWithChildren,
 } from 'react';
+import { usePluginsProvider } from './plugins-provider';
 
 type ComponentName = keyof Plugin<any, any>['components'];
 type _EnumerateByComponentName<T extends keyof Plugin<any, any>['components']> =
   ComponentProps<Plugin<any, any>['components'][T]>;
 interface PluginProviderProps<TName extends ComponentName> {
-  plugins: Record<string, Plugin<any, any>>;
   name: string;
   componentName: TName;
 }
@@ -42,7 +42,8 @@ export function PluginProvider<TName extends ComponentName>(
   props: PropsWithChildren<PluginProviderProps<TName>> &
     _EnumerateByComponentName<TName>,
 ) {
-  const { plugins, name, componentName, ...rest } = props;
+  const { plugins } = usePluginsProvider();
+  const { name, componentName, ...rest } = props;
   const Component = useMemo(() => {
     try {
       return loadComponent(plugins[name], componentName);
@@ -61,7 +62,7 @@ export function PluginProvider<TName extends ComponentName>(
   }
 
   return (
-    <PluginContext.Provider value={{ plugins, name, componentName, ...rest }}>
+    <PluginContext.Provider value={{ name, componentName, ...rest }}>
       <Component key={`plugin.${name}`} {...props} />
     </PluginContext.Provider>
   );

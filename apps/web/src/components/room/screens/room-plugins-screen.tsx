@@ -1,5 +1,4 @@
-import { availablePlugins } from '@/lib/available-plugins';
-import { PluginProvider } from '@plugins/core';
+import { PluginProvider, usePluginsProvider } from '@plugins/core';
 import { Button } from '@workspace/ui/components/button';
 import {
   Card,
@@ -11,7 +10,8 @@ import {
 import React from 'react';
 
 export default function RoomPluginsScreen() {
-  const plugins = Object.values(availablePlugins);
+  const { plugins: contextPlugins } = usePluginsProvider();
+  const plugins = Object.values(contextPlugins);
   return (
     <>
       <div className="flex flex-col px-4">
@@ -23,7 +23,6 @@ export default function RoomPluginsScreen() {
                   <PluginProvider
                     name={plugin.name}
                     componentName={'Icon'}
-                    plugins={availablePlugins}
                     className={'size-8'}
                   />
                 </div>
