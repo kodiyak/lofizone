@@ -15,9 +15,10 @@ import RoomSidebar from './sidebars/room-sidebar';
 
 interface RoomPageProps {
   roomId: string;
+  page?: string;
 }
 
-export default function RoomPage({ roomId }: RoomPageProps) {
+export default function RoomPage({ roomId, page }: RoomPageProps) {
   const { data: room } = useBackendAPI<Api.Room>(`/rooms/${roomId}`);
   const isConnected = useRoomController((state) => state.isConnected);
   const currentRoom = useRoomController((state) => state.room);
@@ -34,7 +35,7 @@ export default function RoomPage({ roomId }: RoomPageProps) {
       >
         <ResizablePanel className="relative">
           {isConnected && currentRoom && currentRoom.roomId === room.roomId ? (
-            <RoomConnectedContent room={room} />
+            <RoomConnectedContent page={page} room={room} />
           ) : (
             <RoomDisconnectedContent room={room} />
           )}
