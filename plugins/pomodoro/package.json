@@ -1,0 +1,13 @@
+{
+  "name": "@plugins/pomodoro",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {},
+  "dependencies": {
+    "@plugins/core": "workspace:*",
+    "@workspace/ui": "workspace:*"
+  }
+}
