@@ -3,7 +3,6 @@ import { RoomMemberTracker, roomSchema, RoomsTracker } from '../../domain';
 import WebSocket from 'ws';
 import { db } from '@/shared/clients/db';
 import { parseArrayToSchema } from '@/shared/infra/parse-array-to-schema';
-import type { Plugin } from '@/modules/plugins';
 
 interface RoomSession {
   memberId: string;
@@ -13,8 +12,6 @@ interface RoomSession {
 export class RoomsService {
   private static instance: RoomsService;
   private wsClient = new Map<WSContext<WebSocket>, { session: RoomSession; roomId: string }>();
-
-  public globalPlugins: Plugin[] = [];
 
   private static get tracker() {
     return RoomsTracker.getInstance();
@@ -32,15 +29,34 @@ export class RoomsService {
   }
 
   static async init(): Promise<void> {
-    const rooms = parseArrayToSchema(await db.room.findMany({}), roomSchema);
+    const rooms = parseArrayToSchema(
+      await db.room.findMany({
+        include: {
+          plugins: true,
+        },
+      }),
+      roomSchema,
+    );
 
     rooms.forEach((roomData) => {
-      this.tracker.addRoom({
+      const room = this.tracker.addRoom({
         roomId: roomData.id,
         ownerId: roomData.ownerId,
         name: roomData.name || undefined,
         playlistId: roomData.playlistId || null,
         cover: roomData.metadata?.cover,
+      });
+      roomData.plugins?.forEach((plugin) => {
+        const parsedSettings = room.plugins
+          .getPluginRegistry(plugin.pluginId)
+          ?.settings.schema.parse(plugin.settings);
+
+        room.plugins.addPlugin({
+          id: plugin.id,
+          name: plugin.pluginId,
+          settings: parsedSettings,
+          installedAt: plugin.createdAt,
+        });
       });
     });
   }
@@ -49,35 +65,8 @@ export class RoomsService {
     return this.tracker.getAllRooms();
   }
 
-  getRoomMembers(roomId: string) {
-    return this.tracker.getRoom(roomId)?.getMembers() || [];
-  }
-
-  async addPlugin(plugin: Plugin) {
-    if (this.globalPlugins.some((p) => p.id === plugin.id)) {
-      console.warn(`Plugin ${plugin.id} is already registered globally`);
-      return;
-    }
-    this.globalPlugins.push(plugin);
-    await plugin.bootstrap();
-
-    for (const rooms of this.tracker.getAllRooms()) {
-      rooms.startPlugin(plugin);
-    }
-  }
-
-  addPluginToRoom(roomId: string, pluginId: string) {
-    const room = this.tracker.getRoom(roomId);
-    const plugin = this.globalPlugins.find((p) => p.id === pluginId);
-    if (!room) {
-      console.error(`Room ${roomId} not found`);
-      return;
-    }
-    if (!plugin) {
-      console.error(`Plugin ${pluginId} not found`);
-      return;
-    }
-    room.startPlugin(plugin);
+  getRoom(roomId: string) {
+    return this.tracker.getRoom(roomId);
   }
 
   handleJoin(ws: WSContext<WebSocket>, session: RoomSession, roomId: string) {

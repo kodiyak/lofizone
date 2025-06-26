@@ -151,7 +151,7 @@ export function getRoomsRoutes() {
       }
 
       const service = RoomsService.getInstance();
-      const room = service.tracker.getRoom(roomId);
+      const room = service.getRoom(roomId);
       if (!room) {
         return c.json({ error: 'Room not found' }, 404);
       }
@@ -209,7 +209,7 @@ export function getRoomsRoutes() {
       }
 
       const service = RoomsService.getInstance();
-      const room = service.tracker.getRoom(roomId);
+      const room = service.getRoom(roomId);
       if (!room) {
         return c.json({ error: 'Room not found' }, 404);
       }
@@ -260,7 +260,7 @@ export function getRoomsRoutes() {
       }
 
       const service = RoomsService.getInstance();
-      const members = service.getRoomMembers(roomId);
+      const members = service.getRoom(roomId)?.getMembers();
       if (!members) {
         return c.json({ error: 'Room not found' }, 404);
       }
@@ -312,7 +312,7 @@ export function getRoomsRoutes() {
       }
 
       const service = RoomsService.getInstance();
-      const room = service.tracker.getRoom(roomId);
+      const room = service.getRoom(roomId);
       if (!room) {
         return c.json({ error: 'Room not found' }, 404);
       }
@@ -384,7 +384,7 @@ export function getRoomsRoutes() {
         select: { id: true, playlistId: true },
       });
 
-      RoomsService.getInstance().tracker.getRoom(roomId)?.addTracks(tracksIds);
+      RoomsService.getInstance().getRoom(roomId)?.addTracks(tracksIds);
 
       return c.json(
         {

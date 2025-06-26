@@ -25,12 +25,6 @@
     "paths": {
       "@/*": [
         "./src/*"
-      ],
-      "@payload-config": [
-        "./payload.config.ts"
-      ],
-      "@workspace/ui/*": [
-        "../../packages/ui/src/*"
       ]
     }
   },

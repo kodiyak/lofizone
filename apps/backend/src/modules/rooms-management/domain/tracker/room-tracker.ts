@@ -1,8 +1,8 @@
 import { EventEmitter } from '@/shared/infra/event-emitter';
 import { RoomMemberTracker } from './room-member-tracker';
 import { MemberNotFoundError } from '../errors';
-import type { Plugin } from '@/modules/plugins';
 import { RoomTrackerEvents } from '@workspace/core';
+import { RoomPlugins } from './room-plugins';
 
 export interface RoomTrackerProps {
   roomId: string;
@@ -11,7 +11,13 @@ export interface RoomTrackerProps {
   trackId?: string | null;
   name?: string;
   cover?: string | null;
-  plugins?: Plugin[];
+  plugins?: RoomPlugin[];
+}
+
+interface RoomPlugin {
+  id: string;
+  name: string;
+  settings: any;
 }
 
 export class RoomTracker {
@@ -19,10 +25,12 @@ export class RoomTracker {
   private readonly tracksIds: string[] = []; // Assuming tracks are stored as an array of track IDs
 
   public readonly events = new EventEmitter(RoomTrackerEvents, 'RoomTracker');
-  private readonly plugins: Plugin[] = [];
+  // private readonly plugins: RoomPlugin[] = [];
+
+  public readonly plugins: RoomPlugins;
 
   constructor(private readonly props: RoomTrackerProps) {
-    this.plugins = props.plugins || [];
+    this.plugins = new RoomPlugins(this);
   }
 
   get roomId() {
@@ -92,57 +100,6 @@ export class RoomTracker {
     return this.members.some((member) => member.memberId === memberId);
   }
 
-  public async startPlugin(plugin: Plugin) {
-    if (this.plugins.some((p) => p.id === plugin.id)) {
-      console.warn(`Plugin with ID ${plugin.id} is already added to the room.`);
-      return;
-    }
-    this.plugins.push(plugin);
-    await plugin.onRoomStarted?.(this);
-    this.events.emit('plugin_started', {
-      pluginId: plugin.id,
-      roomId: this.roomId,
-    });
-
-    const pluginEvents = [
-      this.events.buildListener('member_joined', (data) => {
-        plugin.onMemberJoined?.(this, data.memberId);
-      }),
-      this.events.buildListener('member_left', (data) => {
-        plugin.onMemberLeft?.(this, data.memberId);
-      }),
-    ];
-
-    this.events.buildListener('plugin_stopped', ({ off: offPluginStopped }) => {
-      const pluginIndex = this.plugins.findIndex((p) => p.id === plugin.id);
-      if (pluginIndex === -1) {
-        console.warn(`Plugin with ID ${plugin.id} is not found in the room.`);
-        return;
-      }
-      this.plugins.splice(pluginIndex, 1);
-      offPluginStopped();
-      pluginEvents.forEach((e) => e.off());
-    });
-  }
-
-  public getPlugins(): Plugin[] {
-    return this.plugins;
-  }
-
-  public async stopPlugin(pluginId: string) {
-    const pluginIndex = this.plugins.findIndex((p) => p.id === pluginId);
-    if (pluginIndex === -1) {
-      console.warn(`Plugin with ID ${pluginId} is not found in the room.`);
-      return;
-    }
-    const plugin = this.plugins[pluginIndex];
-    await plugin.onRoomStopped?.(this);
-    this.events.emit('plugin_stopped', {
-      pluginId,
-      roomId: this.roomId,
-    });
-  }
-
   public addTracks(tracksIds: string[]) {
     if (tracksIds.length === 0) {
       console.warn('No tracks provided to add.');
@@ -202,7 +159,7 @@ export class RoomTracker {
       name: this.name,
       cover: this.cover,
       members: this.members,
-      plugins: this.plugins.map((plugin) => plugin.toJSON(this.roomId)),
+      plugins: this.plugins,
     };
   }
 }

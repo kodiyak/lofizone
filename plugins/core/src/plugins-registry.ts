@@ -1,3 +1,4 @@
+import type { ZodSchema } from 'zod';
 import type { Plugin } from './types';
 
 export class PluginsRegistry {
@@ -21,7 +22,7 @@ export class PluginsRegistry {
     this.plugins.set(plugin.name, plugin);
   }
 
-  getPlugin(name: string): Plugin<any, any> | undefined {
+  getPlugin(name: string): Plugin<ZodSchema<any>, ZodSchema<any>> | undefined {
     return this.plugins.get(name);
   }
 }

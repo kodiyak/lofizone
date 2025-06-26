@@ -26,9 +26,18 @@ export const roomMetadataSchema = z.object({
 });
 export type RoomMetadata = z.infer<typeof roomMetadataSchema>;
 
+export const roomPluginSchema = z.object({
+  id: z.string(),
+  pluginId: z.string(),
+  roomId: z.string(),
+  settings: z.any(),
+  createdAt: z.date(),
+});
+
 export const roomSchema = z.object({
   id: z.string(),
   name: z.string(),
+  plugins: roomPluginSchema.array().optional(),
   playlistId: z.string().nullish(),
   trackId: z.string().nullish(),
   ownerId: z.string(),

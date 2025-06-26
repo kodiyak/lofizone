@@ -8,10 +8,11 @@ import { getVibesManagementRoutes } from './modules/vibes-management';
 import { getRoomsManagementRoutes, RoomsService } from './modules/rooms-management';
 import { authMiddleware, getAuthRoutes } from './modules/authentication';
 import { buildPluginsRegistry, getPluginsRoutes } from './modules/plugins';
+import { createTimer } from './utils/timer';
 
 async function main() {
-  await RoomsService.init(); // Initialize the RoomsService
-  buildPluginsRegistry(); // Initialize the PluginsRegistry
+  await createTimer().exec('[PluginsRegistry]', buildPluginsRegistry);
+  await createTimer().exec('[RoomsService]', () => RoomsService.init()); // Initialize the RoomsService
 
   const app = new OpenAPIHono();
   app.use(
