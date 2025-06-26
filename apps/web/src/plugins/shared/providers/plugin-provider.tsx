@@ -9,6 +9,7 @@ import React, {
   type ComponentType,
   type PropsWithChildren,
 } from 'react';
+import pomodoroPlugin from '@plugins/pomodoro';
 
 interface PluginProviderProps {
   plugin: Api.Plugin;
@@ -21,12 +22,16 @@ const PluginContext = createContext<PluginContextProps>(
 );
 
 const dynamicComponents = new Map<string, ComponentType<any>>();
+const plugins = {
+  'pomodoro-plugin': pomodoroPlugin,
+};
 function loadComponent(pluginId: string): ComponentType<any> {
   if (dynamicComponents.has(pluginId)) {
     return dynamicComponents.get(pluginId) as ComponentType<any>;
   }
 
-  const Component = lazy(() => import(`./../../${pluginId}/content.tsx`));
+  // @ts-expect-error: Dynamic import of plugin components
+  const Component = plugins[pluginId]?.components.Widget;
   dynamicComponents.set(pluginId, Component);
   return Component;
 }

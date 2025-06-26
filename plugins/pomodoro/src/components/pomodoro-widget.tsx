@@ -8,7 +8,7 @@ import {
 import { CircularProgress } from '@workspace/ui/components/progress';
 import { Button } from '@workspace/ui/components/button';
 import { PauseIcon, PlayIcon, StopIcon } from '@phosphor-icons/react';
-import PomodoroSettings from './pomodoro-settings.js';
+import PomodoroSettings from './pomodoro-settings';
 import { useDisclosure } from '@workspace/ui/hooks/use-disclosure';
 
 const Content = () => {

@@ -2,7 +2,7 @@ import { definePlugin } from '@plugins/core';
 import { z } from 'zod';
 import PomodoroWidget from './components/pomodoro-widget';
 
-export const pomodoroPlugin = definePlugin({
+export default definePlugin({
   id: 'pomodoro-plugin',
   schema: z.object({
     focusSession: z.number(),

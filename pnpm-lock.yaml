@@ -160,9 +160,9 @@ importers:
 
   apps/web:
     dependencies:
-      '@phosphor-icons/react':
-        specifier: ^2.1.8
-        version: 2.1.10(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@plugins/pomodoro':
+        specifier: workspace:*
+        version: link:../../plugins/pomodoro
       '@tanstack/react-query':
         specifier: ^5.81.2
         version: 5.81.2(react@19.1.0)

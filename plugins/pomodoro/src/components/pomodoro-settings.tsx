@@ -9,7 +9,7 @@ import {
 } from '@workspace/ui/components/dialog';
 import type { UseDisclosure } from '@workspace/ui/hooks/use-disclosure';
 import React from 'react';
-import PomodoroTimerField from './pomodoro-timer-field.js';
+import PomodoroTimerField from './pomodoro-timer-field';
 import { useForm } from 'react-hook-form';
 import { Form, FormField } from '@workspace/ui/components/form';
 import { Button } from '@workspace/ui/components/button';
