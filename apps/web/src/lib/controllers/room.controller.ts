@@ -114,12 +114,6 @@ export class RoomController implements RoomEventHandlers {
     this.send('player_resumed', { memberId: this.memberId });
   }
 
-  getInstalledPlugins() {
-    return (this.room?.plugins || []).map((plugin) => {
-      return availablePlugins[plugin.id as keyof typeof availablePlugins];
-    });
-  }
-
   async connect(roomId: string) {
     if (this.socket) {
       console.warn('Already connected to a room. Disconnecting first.');
@@ -137,23 +131,25 @@ export class RoomController implements RoomEventHandlers {
       backendClient.getRoomWsUrl(roomId, this.memberId),
     );
 
-    const plugins = this.getInstalledPlugins().map((plugin) => {
-      const roomPlugin = room?.plugins?.find((p) => p.id === plugin.id);
-      const api = definePluginAPI({
-        send: this.send.bind(this),
-        on: this.on.bind(this),
-        getCurrentRoom: () => room,
-        getCurrentMember: () =>
-          this.members.find((m) => m.memberId === this.memberId)!,
-        getCurrentTrack: () => this.track,
-        getCurrentPlugin: () => roomPlugin!,
-      });
-      plugin.controller.initialize({
-        state: roomPlugin?.state,
-        api,
-      });
-      return plugin;
-    });
+    this.plugins.reset();
+    this.plugins.addPlugins(Object.values(availablePlugins));
+    // const plugins = this.getInstalledPlugins().forEach((plugin) => {
+    //   const roomPlugin = room?.plugins?.find((p) => p.id === plugin.id);
+    //   const api = definePluginAPI({
+    //     send: this.send.bind(this),
+    //     on: this.on.bind(this),
+    //     getCurrentRoom: () => room,
+    //     getCurrentMember: () =>
+    //       this.members.find((m) => m.memberId === this.memberId)!,
+    //     getCurrentTrack: () => this.track,
+    //     getCurrentPlugin: () => roomPlugin!,
+    //   });
+    //   plugin.controller.initialize({
+    //     state: roomPlugin?.state,
+    //     api,
+    //   });
+    //   return plugin;
+    // });
 
     const onMessage = (event: MessageEvent) => {
       const payload = JSON.parse(event.data);
@@ -189,6 +185,7 @@ export class RoomController implements RoomEventHandlers {
       this.socket?.removeEventListener('close', onClose);
       this.socket?.removeEventListener('open', onOpen);
       this.socket?.removeEventListener('error', onError);
+      this.plugins.destroyPlugins();
       this.socket = undefined;
     };
     const onOpen = () => {

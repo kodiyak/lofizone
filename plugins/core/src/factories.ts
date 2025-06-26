@@ -1,7 +1,10 @@
 import type { ZodSchema } from 'zod';
 import type { Plugin, PluginAPI } from './types';
 
-function definePlugin<T extends ZodSchema<any>>(plugin: Plugin<T>) {
+function definePlugin<
+  TSettingsSchema extends ZodSchema<any>,
+  TStateSchema extends ZodSchema<any>,
+>(plugin: Plugin<TSettingsSchema, TStateSchema>) {
   return plugin;
 }
 

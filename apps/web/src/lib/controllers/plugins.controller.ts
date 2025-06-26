@@ -6,6 +6,10 @@ export class PluginsController {
 
   constructor(private readonly room: RoomController) {}
 
+  reset() {
+    this.plugins.clear();
+  }
+
   addPlugins(plugin: Plugin<any>[]) {
     for (const p of plugin) {
       this.addPlugin(p);

@@ -5,17 +5,31 @@ import { PomodoroController } from './controller';
 
 const pomodoroPlugin = definePlugin({
   id: 'pomodoro-plugin',
-  schema: z.object({
-    focusSession: z.number(),
-    shortBreak: z.number(),
-    longBreak: z.number(),
-    longBreakAfter: z.number(),
-  }),
-  defaultValues: {
-    focusSession: 25,
-    shortBreak: 5,
-    longBreak: 15,
-    longBreakAfter: 4,
+  state: {
+    schema: z.object({
+      focusSession: z.number(),
+      shortBreak: z.number(),
+      longBreak: z.number(),
+      longBreakAfter: z.number(),
+    }),
+    defaultValues: {
+      focusSession: 25,
+      shortBreak: 5,
+      longBreak: 15,
+      longBreakAfter: 4,
+    },
+  },
+  settings: {
+    schema: z.object({
+      currentPhase: z.enum(['focus', 'break', 'longBreak', 'idle']),
+      timeRemaining: z.number(),
+      pomodorosCompleted: z.number(),
+    }),
+    defaultValues: {
+      currentPhase: 'idle',
+      timeRemaining: 0,
+      pomodorosCompleted: 0,
+    },
   },
   components: {
     Widget: PomodoroWidget,

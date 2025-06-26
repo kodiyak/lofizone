@@ -8,16 +8,26 @@ export interface PluginWidgetProps {
   plugin: Api.Plugin;
 }
 
-export interface InitializePluginProps<TState = any> {
+export interface InitializePluginProps<TSettings = any, TState = any> {
   state: TState;
+  settings: TSettings;
   api: PluginAPI;
 }
 
-export interface Plugin<TSchema extends ZodSchema<any>> {
+export interface Plugin<
+  TSettingsSchema extends ZodSchema<any>,
+  TStateSchema extends ZodSchema<any>,
+> {
   id: string;
-  schema: TSchema;
-  defaultValues: z.infer<TSchema>;
-  controller: BasePlugin<z.infer<TSchema>>;
+  state: {
+    schema: TStateSchema;
+    defaultValues: z.infer<TStateSchema>;
+  };
+  settings: {
+    schema: TSettingsSchema;
+    defaultValues: z.infer<TSettingsSchema>;
+  };
+  controller: BasePlugin<z.infer<TSettingsSchema>>;
   components: {
     Widget: ComponentType<PluginWidgetProps>;
   };

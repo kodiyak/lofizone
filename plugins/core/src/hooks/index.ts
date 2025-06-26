@@ -1,1 +1,1 @@
-export * from './use-plugin-api';
+export * from './use-plugin';

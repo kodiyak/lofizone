@@ -1,8 +1,9 @@
 import type { InitializePluginProps, PluginAPI } from './types.js';
 import type { Api } from '@workspace/core';
 
-export abstract class BasePlugin<T = any> {
-  private state: T = {} as T;
+export abstract class BasePlugin<TSettings = any, TState = any> {
+  private settings: TSettings = {} as TSettings;
+  private state: TState = {} as TState;
 
   protected pluginId!: string;
   protected api!: PluginAPI;
@@ -10,8 +11,9 @@ export abstract class BasePlugin<T = any> {
   protected plugin!: Api.Plugin;
   protected member!: Api.RoomMember;
 
-  initialize(data: InitializePluginProps<T>) {
+  initialize(data: InitializePluginProps<TSettings, TState>) {
     this.state = data.state;
+    this.settings = data.settings;
     this.api = data.api;
     this.onInit();
   }
@@ -24,7 +26,7 @@ export abstract class BasePlugin<T = any> {
     });
   }
 
-  setState(state: T) {
+  setState(state: TState) {
     this.state = state;
     this.api.send('plugin_state_updated', {
       roomId: this.api.getCurrentRoom().roomId,
@@ -33,11 +35,11 @@ export abstract class BasePlugin<T = any> {
     });
   }
 
-  getState(): T {
+  getState(): TState {
     return this.state;
   }
 
   protected abstract onInit(): void;
   protected abstract onDestroy(): void;
-  protected abstract onStateUpdate(state: T): void;
+  protected abstract onStateUpdate(state: TState): void;
 }
