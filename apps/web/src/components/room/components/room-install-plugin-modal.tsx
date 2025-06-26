@@ -10,6 +10,8 @@ import {
 } from '@workspace/ui/components/dialog';
 import { Button } from '@workspace/ui/components/button';
 import { PluginProvider } from '@plugins/core';
+import { useMutation } from '@tanstack/react-query';
+import { backendClient } from '@/lib/clients/backend';
 
 type RoomInstallPluginModalProps = RoomInstallPluginProps & UseDisclosure;
 
@@ -18,7 +20,19 @@ export default function RoomInstallPluginModal({
   isOpen,
   onOpenChange,
   onClose,
+  roomId,
 }: RoomInstallPluginModalProps) {
+  const onInstall = useMutation({
+    mutationFn: async () => {
+      await backendClient.installPlugin({
+        pluginId: plugin.name,
+        roomId,
+      });
+    },
+    onSuccess: () => {
+      onClose();
+    },
+  });
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -43,7 +57,12 @@ export default function RoomInstallPluginModal({
               </div>
             </div>
             <DialogFooter>
-              <Button>Confirm Installation</Button>
+              <Button
+                disabled={onInstall.isPending}
+                onClick={() => onInstall.mutate()}
+              >
+                Confirm Installation
+              </Button>
             </DialogFooter>
           </div>
         </DialogContent>

@@ -40,6 +40,10 @@ const validations = {
     roomId: z.string().min(1, 'Room ID is required'),
     tracksIds: z.array(z.string()).min(1, 'At least one track is required'),
   }),
+  installPlugin: z.object({
+    roomId: z.string(),
+    pluginId: z.string(),
+  }),
 };
 
 export type AddTracksToRoomRequest = z.infer<
@@ -48,6 +52,7 @@ export type AddTracksToRoomRequest = z.infer<
 export type CreateRoomRequest = z.infer<typeof validations.createRoom>;
 export type CreatePlaylistRequest = z.infer<typeof validations.createPlaylist>;
 export type UploadTrackRequest = z.infer<typeof validations.uploadTrack>;
+export type InstallPluginRequest = z.infer<typeof validations.installPlugin>;
 
 const backendClient = {
   getRoom: async (roomId: string) =>
@@ -83,6 +88,11 @@ const backendClient = {
       .post<Api.Track>('/tracks', toFormData(data), {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
+      .then((r) => r.data);
+  },
+  installPlugin: async ({ pluginId, roomId }: InstallPluginRequest) => {
+    return client
+      .post<Api.Plugin>(`/plugins/${pluginId}/install`, { roomId })
       .then((r) => r.data);
   },
   updateRoom: async (

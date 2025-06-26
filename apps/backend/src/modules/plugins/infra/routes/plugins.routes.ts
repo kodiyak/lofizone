@@ -9,7 +9,7 @@ export function getPluginsRoutes() {
   app.openapi(
     {
       method: 'post',
-      path: '/:pluginId/install',
+      path: '/plugins/:pluginId/install',
       responses: {
         200: {
           description: 'Plugin installed successfully',

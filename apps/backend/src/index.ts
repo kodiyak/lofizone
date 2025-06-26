@@ -7,7 +7,7 @@ import { createNodeWebSocket } from '@hono/node-ws';
 import { getVibesManagementRoutes } from './modules/vibes-management';
 import { getRoomsManagementRoutes, RoomsService } from './modules/rooms-management';
 import { authMiddleware, getAuthRoutes } from './modules/authentication';
-import { buildPluginsRegistry } from './modules/plugins';
+import { buildPluginsRegistry, getPluginsRoutes } from './modules/plugins';
 
 async function main() {
   await RoomsService.init(); // Initialize the RoomsService
@@ -31,6 +31,7 @@ async function main() {
   app.route('/', getVibesManagementRoutes());
   app.route('/', getRoomsManagementRoutes(ws));
   app.route('/', getAuthRoutes());
+  app.route('/', getPluginsRoutes());
   app.doc(`/doc`, {
     openapi: '3.0.0',
     info: {

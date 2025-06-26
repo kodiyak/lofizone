@@ -12,13 +12,12 @@ import type { RoomInstallPluginProps } from '../types';
 import { useDisclosure } from '@workspace/ui/hooks/use-disclosure';
 import RoomInstallPluginModal from './room-install-plugin-modal';
 
-export default function RoomInstallPluginCard({
-  plugin,
-}: RoomInstallPluginProps) {
+export default function RoomInstallPluginCard(props: RoomInstallPluginProps) {
+  const { plugin } = props;
   const install = useDisclosure();
   return (
     <>
-      <RoomInstallPluginModal {...install} plugin={plugin} />
+      <RoomInstallPluginModal {...install} {...props} />
       <Card key={plugin.name}>
         <div className="flex items-start gap-4 px-6">
           <div className="size-12 rounded-xl border bg-background bg-gradient-to-br from-card/70 to-background flex items-center justify-center">
