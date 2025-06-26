@@ -54,9 +54,11 @@ export class RoomPlugin {
     this.events.emit('plugin_installed', {
       roomId: this.roomId,
     });
+    this.start();
   }
 
   uninstall() {
+    this.stop();
     this.events.emit('plugin_uninstalled', {
       roomId: this.roomId,
     });

@@ -46,17 +46,18 @@ export class RoomsService {
         playlistId: roomData.playlistId || null,
         cover: roomData.metadata?.cover,
       });
-      roomData.plugins?.forEach((plugin) => {
+      roomData.plugins?.forEach((roomPlugin) => {
         const parsedSettings = room.plugins
-          .getPluginRegistry(plugin.pluginId)
-          ?.settings.schema.parse(plugin.settings);
+          .getPluginRegistry(roomPlugin.pluginId)
+          ?.settings.schema.parse(roomPlugin.settings);
 
-        room.plugins.addPlugin({
-          id: plugin.id,
-          name: plugin.pluginId,
+        const plugin = room.plugins.addPlugin({
+          id: roomPlugin.id,
+          name: roomPlugin.pluginId,
           settings: parsedSettings,
-          installedAt: plugin.createdAt,
+          installedAt: roomPlugin.createdAt,
         });
+        plugin?.start(); // Automatically start the plugin if it has a start method
       });
     });
   }

@@ -11,9 +11,6 @@ import { buildPluginsRegistry, getPluginsRoutes } from './modules/plugins';
 import { createTimer } from './utils/timer';
 
 async function main() {
-  await createTimer().exec('[PluginsRegistry]', buildPluginsRegistry);
-  await createTimer().exec('[RoomsService]', () => RoomsService.init()); // Initialize the RoomsService
-
   const app = new OpenAPIHono();
   app.use(
     '*',
@@ -46,10 +43,12 @@ async function main() {
       fetch: app.fetch,
       port: Number(env.port),
     },
-    ({ port }) => {
+    async ({ port }) => {
       console.log(`[http] Server is running on http://localhost:${port}`);
       console.log('[http] Press Ctrl+C to stop the server');
       console.log(env);
+      await createTimer().exec('[PluginsRegistry]', buildPluginsRegistry);
+      await createTimer().exec('[RoomsService]', () => RoomsService.init()); // Initialize the RoomsService
     },
   );
 
