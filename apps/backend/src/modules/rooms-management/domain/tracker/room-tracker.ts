@@ -18,8 +18,6 @@ export class RoomTracker {
   private readonly tracksIds: string[] = []; // Assuming tracks are stored as an array of track IDs
 
   public readonly events = new EventEmitter(RoomTrackerEvents, 'RoomTracker');
-  // private readonly plugins: RoomPlugin[] = [];
-
   public readonly plugins: RoomPlugins;
 
   constructor(private readonly props: RoomTrackerProps) {
