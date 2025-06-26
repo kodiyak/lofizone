@@ -1,5 +1,5 @@
 import React from 'react';
-import RoomContentPage from '../shared/room-content-page';
+import RoomContentPage from '../components/room-content-page';
 import RoomHomeScreen from '../screens/room-home-screen';
 import RoomPluginsScreen from '../screens/room-plugins-screen';
 import type { RoomScreenProps } from '../types';

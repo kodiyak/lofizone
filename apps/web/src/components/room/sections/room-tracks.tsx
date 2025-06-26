@@ -7,7 +7,7 @@ import {
 } from '@workspace/ui/components/command';
 import { MusicIcon } from 'lucide-react';
 import React from 'react';
-import AddRoomTracks from '../shared/add-room-tracks';
+import AddRoomTracks from '../components/add-room-tracks';
 import { useDisclosure } from '@workspace/ui/hooks/use-disclosure';
 import TracksCommand from '@/components/tracks-command';
 import { useBackendAPI } from '@/lib/hooks/useBackendAPI';

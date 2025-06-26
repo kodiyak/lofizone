@@ -15,7 +15,7 @@ import {
   CardTitle,
 } from '@workspace/ui/components/card';
 import React from 'react';
-import RoomContentPage from '../shared/room-content-page';
+import RoomContentPage from '../components/room-content-page';
 
 interface RoomDisconnectedContentProps {
   room: Api.Room;
