@@ -18,6 +18,12 @@ interface PomodoroSettingsProps extends UseDisclosure {
   onError?: (error: any) => void;
 }
 
+/**
+ * @todo Implement usePlugin hook to manage plugin state and settings.
+ * @todo Save the plugin settings to a persistent storage.
+ * @todo Implement validation for the form fields.
+ */
+
 export default function PomodoroSettings({
   isOpen,
   onOpenChange,

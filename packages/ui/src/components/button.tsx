@@ -19,17 +19,19 @@ const buttonVariants = cva(
         destructive:
           'bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
         outline:
-          'border bg-background text-muted-foreground hover:bg-muted/50 hover:text-foreground',
+          'border bg-background/50 text-muted-foreground hover:bg-muted/35 hover:text-foreground',
         secondary:
-          'border bg-background bg-gradient-to-b from-accent/10 to-background text-muted-foreground hover:text-foreground',
+          'border bg-background/50 bg-gradient-to-b from-accent/10 to-background text-muted-foreground hover:text-foreground',
         ghost:
           'text-muted-foreground hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/30',
         'ghost-purple':
           'text-purple-400 border border-purple-500/20 hover:bg-purple-500/10 hover:text-purple-500 hover:border-purple-500/40',
-        'ghost-destructive':
+        'destructive-ghost':
           'text-muted-foreground hover:bg-accent hover:text-destructive dark:hover:bg-accent/30',
-        'ghost-success':
-          'text-muted-foreground hover:bg-accent hover:text-green-500 dark:hover:bg-accent/30', // TODO: add success variant
+        'success-ghost':
+          'text-muted-foreground hover:bg-accent hover:text-success dark:hover:bg-accent/30',
+        'success-outline':
+          'border border-success/20 bg-background/50 text-success hover:bg-success/10 hover:text-success-foreground',
         link: 'text-muted-foreground underline-offset-4 hover:underline hover:text-foreground',
         command: cn(
           'border-input data-[placeholder]:text-muted-foreground',

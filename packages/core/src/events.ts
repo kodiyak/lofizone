@@ -30,6 +30,14 @@ export const RoomTrackerEvents = z.object({
     memberId: z.string(),
     trackId: z.string(),
   }),
+  plugin_installed: z.object({
+    pluginId: z.string(),
+    roomId: z.string(),
+  }),
+  plugin_uninstalled: z.object({
+    pluginId: z.string(),
+    roomId: z.string(),
+  }),
   plugin_started: z.object({
     pluginId: z.string(),
     roomId: z.string(),
@@ -39,6 +47,11 @@ export const RoomTrackerEvents = z.object({
     roomId: z.string(),
   }),
   plugin_state_updated: z.object({
+    pluginId: z.string(),
+    roomId: z.string(),
+    state: z.any(),
+  }),
+  plugin_settings_updated: z.object({
     pluginId: z.string(),
     roomId: z.string(),
     state: z.any(),
@@ -58,3 +71,27 @@ export const RoomMemberTrackerEvents = z.object({
 export type RoomMemberTrackerEventsData = z.infer<
   typeof RoomMemberTrackerEvents
 >;
+
+export const RoomPluginEvents = z.object({
+  plugin_installed: z.object({
+    roomId: z.string(),
+  }),
+  plugin_uninstalled: z.object({
+    roomId: z.string(),
+  }),
+  plugin_started: z.object({
+    roomId: z.string(),
+  }),
+  plugin_stopped: z.object({
+    roomId: z.string(),
+  }),
+  plugin_settings_updated: z.object({
+    roomId: z.string(),
+    settings: z.any(),
+  }),
+  plugin_state_updated: z.object({
+    roomId: z.string(),
+    state: z.any(),
+  }),
+});
+export type RoomPluginEventsData = z.infer<typeof RoomPluginEvents>;

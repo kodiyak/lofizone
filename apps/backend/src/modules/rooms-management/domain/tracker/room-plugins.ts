@@ -1,35 +1,71 @@
 import { PluginsRegistry } from '@plugins/core';
 import type { RoomTracker } from './room-tracker';
-
-interface RoomPlugin {
-  id: string;
-  name: string;
-  settings: any;
-  installedAt: Date;
-}
+import { RoomPlugin, RoomPluginProps } from './room-plugin';
 
 export class RoomPlugins {
   private plugins: RoomPlugin[] = [];
 
   constructor(private readonly room: RoomTracker) {}
 
-  public addPlugin(plugin: RoomPlugin) {
-    if (this.plugins.some((p) => p.name === plugin.name)) {
-      console.warn(`Plugin ${plugin.name} is already registered in the room.`);
+  public addPlugin(pluginProps: Omit<RoomPluginProps, 'roomId'>) {
+    if (this.plugins.some((p) => p.name === pluginProps.name)) {
+      console.warn(`Plugin ${pluginProps.name} is already registered in the room.`);
       return;
     }
 
+    const plugin = RoomPlugin.create({
+      ...pluginProps,
+      roomId: this.room.roomId,
+    });
     this.plugins.push(plugin);
-  }
 
-  public removePlugin(pluginName: string) {
-    const index = this.plugins.findIndex((p) => p.name === pluginName);
-    if (index === -1) {
-      console.warn(`Plugin ${pluginName} is not registered in the room.`);
-      return;
-    }
+    const tunnelEvents = [
+      plugin.events.buildListener('plugin_installed', ({ roomId }) => {
+        this.room.events.emit('plugin_installed', {
+          pluginId: plugin.id,
+          roomId,
+        });
+      }),
+      plugin.events.buildListener('plugin_uninstalled', ({ roomId }) => {
+        this.room.events.emit('plugin_uninstalled', {
+          pluginId: plugin.id,
+          roomId,
+        });
+      }),
+      plugin.events.buildListener('plugin_started', ({ roomId }) => {
+        this.room.events.emit('plugin_started', {
+          pluginId: plugin.id,
+          roomId,
+        });
+      }),
+      plugin.events.buildListener('plugin_stopped', ({ roomId }) => {
+        this.room.events.emit('plugin_stopped', {
+          pluginId: plugin.id,
+          roomId,
+        });
+      }),
+      plugin.events.buildListener('plugin_state_updated', ({ roomId, state }) => {
+        this.room.events.emit('plugin_state_updated', {
+          pluginId: plugin.id,
+          roomId,
+          state,
+        });
+      }),
+      plugin.events.buildListener('plugin_settings_updated', ({ roomId, settings }) => {
+        this.room.events.emit('plugin_settings_updated', {
+          pluginId: plugin.id,
+          roomId,
+          state: settings,
+        });
+      }),
+    ];
 
-    this.plugins.splice(index, 1);
+    this.room.events.buildListener('plugin_stopped', ({ off }) => {
+      tunnelEvents.forEach(({ off }) => off());
+      off();
+    });
+
+    return plugin;
   }
 
   public getPlugin(pluginName: string) {

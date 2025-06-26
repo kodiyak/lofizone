@@ -11,13 +11,6 @@ export interface RoomTrackerProps {
   trackId?: string | null;
   name?: string;
   cover?: string | null;
-  plugins?: RoomPlugin[];
-}
-
-interface RoomPlugin {
-  id: string;
-  name: string;
-  settings: any;
 }
 
 export class RoomTracker {
@@ -72,12 +65,6 @@ export class RoomTracker {
           trackId: data.trackId,
         });
       }),
-      // member.events.buildListener('playlist_changed', (data) => {
-      //   this.events.emit('playlist_changed', {
-      //     memberId: member.memberId,
-      //     playlistId: data.playlistId,
-      //   });
-      // }),
     ];
 
     member.events.buildListener('member_left', ({ off: offMemberLeft }) => {

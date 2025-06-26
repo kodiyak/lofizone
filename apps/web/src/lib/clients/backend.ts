@@ -95,6 +95,11 @@ const backendClient = {
       .post<Api.Plugin>(`/plugins/${pluginId}/install`, { roomId })
       .then((r) => r.data);
   },
+  uninstallPlugin: async ({ pluginId, roomId }: InstallPluginRequest) => {
+    return client
+      .post<Api.Plugin>(`/plugins/${pluginId}/uninstall`, { roomId })
+      .then((r) => r.data);
+  },
   updateRoom: async (
     roomId: string,
     data: Partial<{

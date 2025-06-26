@@ -89,13 +89,19 @@ export class RoomsService {
         ws.send(JSON.stringify({ event, data }));
       };
     };
-    const pipes = [
+    const tunnelEvents = [
       room.events.buildListener('track_changed', send('track_changed')),
       room.events.buildListener('member_joined', send('member_joined')),
       room.events.buildListener('member_left', send('member_left')),
       room.events.buildListener('player_paused', send('player_paused')),
       room.events.buildListener('player_resumed', send('player_resumed')),
       room.events.buildListener('player_seeked', send('player_seeked')),
+      room.events.buildListener('plugin_installed', send('plugin_installed')),
+      room.events.buildListener('plugin_uninstalled', send('plugin_uninstalled')),
+      room.events.buildListener('plugin_started', send('plugin_started')),
+      room.events.buildListener('plugin_stopped', send('plugin_stopped')),
+      room.events.buildListener('plugin_state_updated', send('plugin_state_updated')),
+      room.events.buildListener('plugin_settings_updated', send('plugin_settings_updated')),
     ];
 
     const member = room.join(
@@ -106,11 +112,11 @@ export class RoomsService {
         trackId: null,
       }),
     );
-    member.events.buildListener('member_left', ({ off: offMemberLeft }) => {
+    member.events.buildListener('member_left', ({ off }) => {
       console.log(`Member ${session.memberId} left room ${roomId}`);
       if (this.wsClient.has(ws)) this.wsClient.delete(ws);
-      pipes.forEach((pipe) => pipe.off());
-      offMemberLeft();
+      tunnelEvents.forEach(({ off }) => off());
+      off();
     });
   }
 

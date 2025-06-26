@@ -1,3 +1,4 @@
+import { RoomsService } from '@/modules/rooms-management';
 import { db } from '@/shared/clients/db';
 import { OpenAPIHono, z } from '@hono/zod-openapi';
 import { PluginsRegistry } from '@plugins/core';
@@ -16,7 +17,6 @@ export function getPluginsRoutes() {
           content: {
             'application/json': {
               schema: z.object({
-                success: z.boolean(),
                 message: z.string().optional(),
               }),
             },
@@ -34,6 +34,16 @@ export function getPluginsRoutes() {
         },
         400: {
           description: 'Plugin not found',
+          content: {
+            'application/json': {
+              schema: z.object({
+                message: z.string(),
+              }),
+            },
+          },
+        },
+        500: {
+          description: 'Internal server error',
           content: {
             'application/json': {
               schema: z.object({
@@ -63,8 +73,13 @@ export function getPluginsRoutes() {
       const { pluginId } = c.req.valid('param');
       const { roomId } = c.req.valid('json');
 
-      const plugin = PluginsRegistry.getInstance().getPlugin(pluginId);
-      if (!plugin) {
+      const room = RoomsService.getInstance().getRoom(roomId);
+      if (!room) {
+        return c.json({ message: `Room ${roomId} not found` }, 404);
+      }
+
+      const pluginRegistry = PluginsRegistry.getInstance().getPlugin(pluginId);
+      if (!pluginRegistry) {
         return c.json({ message: `Plugin ${pluginId} not found` }, 404);
       }
 
@@ -82,20 +97,99 @@ export function getPluginsRoutes() {
       }
 
       console.log(`Installing plugin: ${pluginId} for room: ${roomId}`);
-      console.log(plugin);
 
-      await db.roomPlugin.create({
+      const roomPlugin = await db.roomPlugin.create({
         data: {
           room: { connect: { id: roomId } },
           pluginId,
-          settings: plugin.settings.defaultValues,
+          settings: pluginRegistry.settings.defaultValues,
         },
       });
-      // Logic to install the plugin
-      // For example, you might call a service to handle the installation
-      // const result = await pluginService.install(pluginId);
 
-      return c.json({ success: true, message: `Plugin ${pluginId} installed successfully` }, 200);
+      const plugin = RoomsService.getInstance()
+        .getRoom(roomId)
+        ?.plugins.addPlugin({
+          id: roomPlugin.id,
+          name: pluginRegistry.name,
+          installedAt: new Date(),
+          settings: pluginRegistry.settings.schema.parse(roomPlugin.settings),
+        });
+      if (!plugin) {
+        return c.json({ message: `Failed to add plugin ${pluginId} to room ${roomId}` }, 500);
+      }
+
+      plugin.install();
+
+      return c.json({ message: `Plugin ${pluginId} installed successfully` }, 200);
+    },
+  );
+
+  app.openapi(
+    {
+      method: 'post',
+      path: '/plugins/:pluginId/uninstall',
+      responses: {
+        200: {
+          description: 'Plugin uninstalled successfully',
+          content: {
+            'application/json': {
+              schema: z.object({
+                message: z.string().optional(),
+              }),
+            },
+          },
+        },
+        404: {
+          description: 'Plugin or room not found',
+          content: {
+            'application/json': {
+              schema: z.object({
+                message: z.string(),
+              }),
+            },
+          },
+        },
+      },
+      request: {
+        params: z.object({
+          pluginId: z.string().describe('ID of the plugin to uninstall'),
+        }),
+        body: {
+          content: {
+            'application/json': {
+              schema: z.object({
+                roomId: z.string(),
+              }),
+            },
+          },
+        },
+      },
+      description: 'Uninstall a plugin from a room by its ID',
+    },
+    async (c) => {
+      const { pluginId } = c.req.valid('param');
+      const { roomId } = c.req.valid('json');
+
+      const room = RoomsService.getInstance().getRoom(roomId);
+      if (!room) {
+        return c.json({ message: `Room ${roomId} not found` }, 404);
+      }
+
+      const plugin = room.plugins.getPlugin(pluginId);
+      if (!plugin) {
+        return c.json({ message: `Plugin ${pluginId} not found in room ${roomId}` }, 404);
+      }
+
+      console.log(`Uninstalling plugin: ${pluginId} from room: ${roomId}`);
+
+      await db.roomPlugin.delete({
+        where: { roomId_pluginId: { roomId, pluginId } },
+      });
+      plugin.uninstall();
+
+      // plugin.RoomsService.getInstance().getRoom(roomId)?.plugins.removePlugin(pluginId);
+
+      return c.json({ message: `Plugin ${pluginId} uninstalled successfully` }, 200);
     },
   );
 
