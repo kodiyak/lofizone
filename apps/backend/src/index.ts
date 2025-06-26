@@ -7,11 +7,9 @@ import { createNodeWebSocket } from '@hono/node-ws';
 import { getVibesManagementRoutes } from './modules/vibes-management';
 import { getRoomsManagementRoutes, RoomsService } from './modules/rooms-management';
 import { authMiddleware, getAuthRoutes } from './modules/authentication';
-import { getPluginApi, PomodoroPlugin } from './modules/plugins';
 
 async function main() {
   await RoomsService.init(); // Initialize the RoomsService
-  await RoomsService.getInstance().addPlugin(new PomodoroPlugin(getPluginApi()));
 
   const app = new OpenAPIHono();
   app.use(

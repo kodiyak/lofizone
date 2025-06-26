@@ -1,34 +1,28 @@
 import { definePlugin } from '@plugins/core';
-import { z } from 'zod';
 import PomodoroWidget from './components/pomodoro-widget';
 import { PomodoroController } from './controller';
+import {
+  PomodoroPluginSettingsSchema,
+  PomodoroPluginStateSchema,
+} from './types';
 
 const pomodoroPlugin = definePlugin({
-  id: 'pomodoro-plugin',
+  name: 'pomodoro-plugin',
   state: {
-    schema: z.object({
-      focusSession: z.number(),
-      shortBreak: z.number(),
-      longBreak: z.number(),
-      longBreakAfter: z.number(),
-    }),
+    schema: PomodoroPluginStateSchema,
+    defaultValues: {
+      currentPhase: 'idle',
+      timeRemaining: 0,
+      pomodorosCompleted: 0,
+    },
+  },
+  settings: {
+    schema: PomodoroPluginSettingsSchema,
     defaultValues: {
       focusSession: 25,
       shortBreak: 5,
       longBreak: 15,
       longBreakAfter: 4,
-    },
-  },
-  settings: {
-    schema: z.object({
-      currentPhase: z.enum(['focus', 'break', 'longBreak', 'idle']),
-      timeRemaining: z.number(),
-      pomodorosCompleted: z.number(),
-    }),
-    defaultValues: {
-      currentPhase: 'idle',
-      timeRemaining: 0,
-      pomodorosCompleted: 0,
     },
   },
   components: {

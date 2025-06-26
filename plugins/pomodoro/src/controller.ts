@@ -1,6 +1,10 @@
 import { BasePlugin } from '@plugins/core/src/base-plugin';
+import type { PomodoroPluginSettings, PomodoroPluginState } from './types';
 
-export class PomodoroController extends BasePlugin {
+export class PomodoroController extends BasePlugin<
+  PomodoroPluginSettings,
+  PomodoroPluginState
+> {
   protected onInit(): void {
     console.log('PomodoroController initialized', this);
   }

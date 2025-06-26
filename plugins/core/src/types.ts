@@ -18,7 +18,7 @@ export interface Plugin<
   TSettingsSchema extends ZodSchema<any>,
   TStateSchema extends ZodSchema<any>,
 > {
-  id: string;
+  name: string;
   state: {
     schema: TStateSchema;
     defaultValues: z.infer<TStateSchema>;
@@ -27,7 +27,7 @@ export interface Plugin<
     schema: TSettingsSchema;
     defaultValues: z.infer<TSettingsSchema>;
   };
-  controller: BasePlugin<z.infer<TSettingsSchema>>;
+  controller: BasePlugin<z.infer<TSettingsSchema>, z.infer<TStateSchema>>;
   components: {
     Widget: ComponentType<PluginWidgetProps>;
   };
