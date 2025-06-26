@@ -38,6 +38,11 @@ export const RoomTrackerEvents = z.object({
     pluginId: z.string(),
     roomId: z.string(),
   }),
+  plugin_state_updated: z.object({
+    pluginId: z.string(),
+    roomId: z.string(),
+    state: z.any(),
+  }),
 });
 export type RoomTrackerEventsData = z.infer<typeof RoomTrackerEvents>;
 

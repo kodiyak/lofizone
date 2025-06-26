@@ -8,6 +8,9 @@ import { backendClient } from '../clients/backend';
 import { MusicStreamController } from './music-stream.controller';
 import { useRoomController } from '../store/use-room-controller';
 import { UiController } from './ui.controller';
+import { definePluginAPI } from '@plugins/core';
+import { PluginsController } from './plugins.controller';
+import { availablePlugins } from '../available-plugins';
 
 type RoomEventHandler<K extends keyof RoomTrackerEventsData> = (
   data: RoomTrackerEventsData[K] & { roomId: string; fromMe: boolean },
@@ -23,6 +26,7 @@ export class RoomController implements RoomEventHandlers {
 
   public readonly music: MusicStreamController;
   private memberId = generateMemberId();
+  private plugins: PluginsController;
 
   set track(track: Api.Track | null) {
     this.store.setState(() => ({ track }));
@@ -80,6 +84,7 @@ export class RoomController implements RoomEventHandlers {
   private constructor() {
     // Private constructor to enforce singleton pattern
     this.music = new MusicStreamController(this);
+    this.plugins = new PluginsController(this);
   }
 
   static getInstance(): RoomController {
@@ -109,6 +114,12 @@ export class RoomController implements RoomEventHandlers {
     this.send('player_resumed', { memberId: this.memberId });
   }
 
+  getInstalledPlugins() {
+    return (this.room?.plugins || []).map((plugin) => {
+      return availablePlugins[plugin.id as keyof typeof availablePlugins];
+    });
+  }
+
   async connect(roomId: string) {
     if (this.socket) {
       console.warn('Already connected to a room. Disconnecting first.');
@@ -126,15 +137,29 @@ export class RoomController implements RoomEventHandlers {
       backendClient.getRoomWsUrl(roomId, this.memberId),
     );
 
+    const plugins = this.getInstalledPlugins().map((plugin) => {
+      const roomPlugin = room?.plugins?.find((p) => p.id === plugin.id);
+      const api = definePluginAPI({
+        send: this.send.bind(this),
+        on: this.on.bind(this),
+        getCurrentRoom: () => room,
+        getCurrentMember: () =>
+          this.members.find((m) => m.memberId === this.memberId)!,
+        getCurrentTrack: () => this.track,
+        getCurrentPlugin: () => roomPlugin!,
+      });
+      plugin.controller.initialize({
+        state: roomPlugin?.state,
+        api,
+      });
+      return plugin;
+    });
+
     const onMessage = (event: MessageEvent) => {
       const payload = JSON.parse(event.data);
       const { event: eventName } = payload;
       // @ts-expect-error: Dynamic RoomTrackerEvents
       const data = RoomTrackerEvents.shape[eventName]?.safeParse(payload.data);
-
-      // console.log(`[<<<][Controller][${eventName}]`, {
-      //   data,
-      // });
       if (!data.success) {
         console.warn('Invalid data received:', { error: data.error, payload });
         return;
@@ -240,5 +265,31 @@ export class RoomController implements RoomEventHandlers {
 
     this.socket.send(JSON.stringify(payload));
     console.log(`[>>>][Controller][${event}]`, payload);
+  }
+
+  on<K extends keyof RoomTrackerEventsData>(
+    eventName: K,
+    handler: RoomEventHandler<K>,
+  ) {
+    const onHandler = (event: MessageEvent) => {
+      const payload = JSON.parse(event.data);
+      if (payload.event === eventName) {
+        handler({
+          ...payload.data,
+          roomId: this.store.getState().room?.roomId || '',
+          fromMe: payload.data.memberId
+            ? this.memberId === payload.data.memberId
+            : false,
+        });
+      }
+    };
+    this.socket?.addEventListener('message', onHandler);
+
+    const off = () => {
+      this.socket?.removeEventListener('message', onHandler);
+      console.log(`Removed handler for event: ${eventName}`);
+    };
+
+    return off;
   }
 }

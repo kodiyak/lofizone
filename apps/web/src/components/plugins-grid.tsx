@@ -1,7 +1,6 @@
 import type { Api } from '@workspace/core';
 import { PluginProvider } from '@plugins/core';
-import pomodoro from '@plugins/pomodoro';
-import React from 'react';
+import { availablePlugins } from '@/lib/available-plugins';
 
 interface PluginsGridProps {
   room: Api.Room;
@@ -15,9 +14,7 @@ export default function PluginsGrid({ room }: PluginsGridProps) {
           <PluginProvider
             plugin={plugin}
             room={room}
-            plugins={{
-              'pomodoro-plugin': pomodoro,
-            }}
+            plugins={availablePlugins}
           />
         </div>
       ))}
