@@ -14,6 +14,7 @@
     "@workspace/auth": "workspace:*",
     "@workspace/db": "workspace:*",
     "@workspace/ui": "workspace:*",
+    "@plugins/core": "workspace:*",
     "@plugins/pomodoro": "workspace:*",
     "add": "^2.0.6",
     "axios": "^1.10.0",

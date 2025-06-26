@@ -160,6 +160,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@plugins/core':
+        specifier: workspace:*
+        version: link:../../plugins/core
       '@plugins/pomodoro':
         specifier: workspace:*
         version: link:../../plugins/pomodoro

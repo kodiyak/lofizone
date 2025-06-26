@@ -1,11 +1,10 @@
+import type { Api } from '@workspace/core';
 import type { ComponentType } from 'react';
 import type { z, ZodSchema } from 'zod';
 
 export interface PluginWidgetProps {
-  pluginId: string;
-  roomId: string;
-  memberId: string;
-  userId?: string | null;
+  room: Api.Room;
+  plugin: Api.Plugin;
 }
 
 export interface Plugin<T extends ZodSchema<any>> {

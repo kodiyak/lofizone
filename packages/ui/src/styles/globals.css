@@ -6,6 +6,7 @@
 @source "../**/*.{ts,tsx}";
 @source "../../../../apps/frontend/**/*.{ts,tsx}";
 @source "../../../../apps/web/**/*.{ts,tsx}";
+@source "../../../../plugins/**/**/*.{ts,tsx}";
 
 @theme inline {
   --font-sans: Geist, ui-sans-serif, sans-serif;

@@ -10,7 +10,7 @@ import {
 } from '@workspace/ui/components/card';
 import { Avatar, AvatarFallback } from '@workspace/ui/components/avatar';
 import RoomTracks from '../sections/room-tracks';
-import PluginsGrid from '@/plugins/shared/components/plugins-grid';
+import PluginsGrid from '@/components/plugins-grid';
 import { Separator } from '@workspace/ui/components/separator';
 import RoomTrack from '../sections/room-track';
 
