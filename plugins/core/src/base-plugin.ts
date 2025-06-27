@@ -4,7 +4,7 @@ export abstract class BasePlugin<TSettings = any, TState = any> {
   private settings: TSettings = {} as TSettings;
   private state: TState = {} as TState;
 
-  protected api!: PluginAPI;
+  public api!: PluginAPI;
 
   protected get pluginId(): string {
     return this.api.getCurrentPlugin().id;

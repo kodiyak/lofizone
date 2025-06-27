@@ -9,7 +9,7 @@ export default function DebugProvider() {
   return (
     <>
       <div className="fixed z-50 h-screen top-0 right-0 flex py-4 px-16 flex-col">
-        {controller && <DebugEvents />}
+        {/* {controller && <DebugEvents />} */}
       </div>
     </>
   );
