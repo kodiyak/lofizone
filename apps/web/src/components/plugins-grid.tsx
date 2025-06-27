@@ -17,7 +17,7 @@ export default function PluginsGrid({ room }: PluginsGridProps) {
           componentName={'Widget'}
           plugin={plugin}
           room={room}
-          controller={controller.plugins.getPlugin(plugin.name)?.controller}
+          controller={controller.plugins.getPlugin(plugin.name)!.controller}
         />
       ))}
     </>
