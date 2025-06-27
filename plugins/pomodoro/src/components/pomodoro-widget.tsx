@@ -1,13 +1,12 @@
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@workspace/ui/components/card';
 import { CircularProgress } from '@workspace/ui/components/progress';
 import { Button } from '@workspace/ui/components/button';
-import { PauseIcon, StopIcon } from '@phosphor-icons/react';
+import { PlayIcon, StopIcon } from '@phosphor-icons/react';
 import { CogIcon } from 'lucide-react';
 import PomodoroSettings from './pomodoro-settings';
 import { useDisclosure } from '@workspace/ui/hooks/use-disclosure';
@@ -67,7 +66,7 @@ export default function PomodoroWidget({
       description: 'Loading...',
     };
   }, [state, settings]);
-  const { description, isLoading, label, value } = display;
+  const { description, label, value } = display;
 
   return (
     <>
@@ -77,9 +76,6 @@ export default function PomodoroWidget({
           <CardTitle className="text-center">Pomodoro</CardTitle>
         </CardHeader>
         <CardContent className="items-center">
-          {/* <pre className="text-xs font-mono">
-            {JSON.stringify({ state, settings, display }, null, 2)}
-          </pre> */}
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
               <CircularProgress
@@ -118,7 +114,7 @@ export default function PomodoroWidget({
                   controller.start();
                 }}
               >
-                <PauseIcon />
+                <PlayIcon />
               </Button>
               <Button
                 variant={'outline'}

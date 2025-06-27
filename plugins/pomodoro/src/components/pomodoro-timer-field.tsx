@@ -9,8 +9,7 @@ import { cn } from '@workspace/ui/lib/utils';
 
 type LabelValue = (value: number) => [string, string] | string[];
 const defaultLabelValue: LabelValue = (value) => {
-  const minutes = Math.floor(value / 60);
-  return [minutes.toString(), 'min'];
+  return [value.toString(), 'min'];
 };
 
 interface PomodoroTimerFieldProps {
@@ -31,12 +30,12 @@ export default function PomodoroTimerField({
   labelValue = defaultLabelValue,
   value: valueInput,
   onChange,
-  step = 60, // Default step is 60 seconds (1 minute)
-  min = 0, // Default minimum is 0 seconds
-  max = 3600, // Default maximum is 3600 seconds (60 minutes)
+  step = 1,
+  min = 0,
+  max = 59,
   disabled = false,
 }: PomodoroTimerFieldProps) {
-  const value = valueInput ?? 25 * 60; // Default to 25 minutes in seconds
+  const value = valueInput ?? 5;
   const [label, sufix] = labelValue(value);
   const isAddDisabled = value + step > max;
   const isSubtractDisabled = value - step < min;
