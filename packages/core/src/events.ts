@@ -41,75 +41,92 @@ export const RoomPluginEvents = z.object({
 export type RoomPluginEventsData = z.infer<typeof RoomPluginEvents>;
 
 export const RoomTrackerEvents = z.object({
-  member_joined: z.object({
-    memberId: z.string(),
-    host: z.boolean(),
-  }),
-  member_left: z.object({
-    memberId: z.string(),
-  }),
-  player_paused: z.object({
-    memberId: z.string(),
-  }),
-  player_resumed: z.object({
-    memberId: z.string(),
-  }),
-  player_seeked: z.object({
-    memberId: z.string(),
-    time: z.number(),
-  }),
-  track_changed: z.object({
-    memberId: z.string(),
-    trackId: z.string().nullable(),
-  }),
-  track_added: z.object({
-    memberId: z.string(),
-    trackId: z.string(),
-  }),
-  track_removed: z.object({
-    memberId: z.string(),
-    trackId: z.string(),
-  }),
-  plugin_installed: z.object({
-    pluginId: z.string(),
-    roomId: z.string(),
-  }),
-  plugin_uninstalled: z.object({
-    pluginId: z.string(),
-    roomId: z.string(),
-  }),
-  // plugin_started: z.object({
-  //   pluginId: z.string(),
-  //   roomId: z.string(),
-  //   name: z.string(),
-  //   settings: z.any().optional(),
-  //   state: z.any().optional(),
-  // }),
-  plugin_started: RoomPluginEvents.shape.plugin_started.extend({
-    pluginId: z.string(),
-  }),
-  plugin_stopped: z.object({
-    pluginId: z.string(),
-    roomId: z.string(),
-  }),
-  plugin_state_updated: z.object({
-    pluginId: z.string(),
-    roomId: z.string(),
-    state: z.any(),
-  }),
-  plugin_settings_updated:
-    RoomPluginEvents.shape.plugin_settings_updated.extend({
-      pluginId: z.string(),
-    }),
-  plugin_event: z.object({
-    event: z.string(),
-    data: z.object({
+  member_joined: z
+    .object({
       memberId: z.string(),
-      roomId: z.string(),
+      host: z.boolean(),
+    })
+    .passthrough(),
+  member_left: z
+    .object({
+      memberId: z.string(),
+    })
+    .passthrough(),
+  player_paused: z
+    .object({
+      memberId: z.string(),
+    })
+    .passthrough(),
+  player_resumed: z
+    .object({
+      memberId: z.string(),
+    })
+    .passthrough(),
+  player_seeked: z
+    .object({
+      memberId: z.string(),
+      time: z.number(),
+    })
+    .passthrough(),
+  track_changed: z
+    .object({
+      memberId: z.string(),
+      trackId: z.string().nullable(),
+    })
+    .passthrough(),
+  track_added: z
+    .object({
+      memberId: z.string(),
+      trackId: z.string(),
+    })
+    .passthrough(),
+  track_removed: z
+    .object({
+      memberId: z.string(),
+      trackId: z.string(),
+    })
+    .passthrough(),
+  plugin_installed: RoomPluginEvents.shape.plugin_installed
+    .extend({
       pluginId: z.string(),
-      name: z.string(),
-      data: z.any(),
-    }),
-  }),
+    })
+    .passthrough(),
+  plugin_uninstalled: RoomPluginEvents.shape.plugin_uninstalled
+    .extend({
+      pluginId: z.string(),
+    })
+    .passthrough(),
+  plugin_started: RoomPluginEvents.shape.plugin_started
+    .extend({
+      pluginId: z.string(),
+    })
+    .passthrough(),
+  plugin_stopped: RoomPluginEvents.shape.plugin_stopped
+    .extend({
+      pluginId: z.string(),
+    })
+    .passthrough(),
+  plugin_state_updated: RoomPluginEvents.shape.plugin_state_updated
+    .extend({
+      pluginId: z.string(),
+    })
+    .passthrough(),
+  plugin_settings_updated: RoomPluginEvents.shape.plugin_settings_updated
+    .extend({
+      pluginId: z.string(),
+    })
+    .passthrough(),
+  plugin_event: z
+    .object({
+      event: z.string(),
+      data: z.object({
+        memberId: z.string(),
+        roomId: z.string(),
+        pluginId: z.string(),
+        name: z.string(),
+        data: z.any(),
+      }),
+    })
+    .passthrough(),
 });
 export type RoomTrackerEventsData = z.infer<typeof RoomTrackerEvents>;

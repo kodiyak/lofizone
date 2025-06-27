@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { RoomController } from '../controllers/room.controller';
 import type { Api } from '@workspace/core';
-import type { PluginRoomEntity } from '../controllers/entities/plugin-room.entity';
 
 interface PluginState {
   id: string;

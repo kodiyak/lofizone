@@ -9,6 +9,7 @@ import Sidebar from './components/sidebar';
 import BackgroundProvider from '@/components/providers/background-provider';
 import NavTrackPlayer from './components/nav-track-player';
 import PluginsProvider from '@/components/providers/plugins-provider';
+import DebugProvider from '@/components/providers/debug-provider';
 
 /**
  * @todo Room Theme (Change Page Background, Sidebar Background) Only First.
@@ -58,6 +59,7 @@ export default function RootLayout({
                 <div className="flex flex-1 relative items-stretch">
                   <Sidebar />
                   <div className="flex-1 relative overflow-hidden">
+                    <DebugProvider />
                     {children}
                   </div>
                 </div>

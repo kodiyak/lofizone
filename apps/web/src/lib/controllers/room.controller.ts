@@ -11,6 +11,7 @@ import { UiController } from './ui.controller';
 import { PluginsController } from './plugins.controller';
 import { PluginsRegistry } from '@plugins/core';
 import { pomodoroPlugin } from '@plugins/pomodoro';
+import { EventEmitter } from 'eventemitter3';
 
 type RoomEventHandler<K extends keyof RoomTrackerEventsData> = (
   data: RoomTrackerEventsData[K] & {
@@ -31,6 +32,7 @@ export class RoomController implements _EnumerateEventHandlers {
   public readonly memberId = generateMemberId();
   public readonly music: MusicStreamController;
   public readonly plugins: PluginsController;
+  public readonly events = new EventEmitter();
 
   set track(track: Api.Track | null) {
     this.store.setState(() => ({ track }));
@@ -181,13 +183,13 @@ export class RoomController implements _EnumerateEventHandlers {
       }
       const handlerData = {
         ...data.data,
-        roomId,
         fromMe: data.data.memberId
           ? this.memberId === data.data.memberId
           : false,
       };
       console.log(`[<<<][RoomController][${eventName}]`, handlerData);
       handler(handlerData);
+      this.events.emit(eventName, handlerData);
     };
     const onError = (event: Event) => {
       console.error('WebSocket error:', event);
@@ -313,17 +315,15 @@ export class RoomController implements _EnumerateEventHandlers {
 
     const payload = {
       event,
-      data: { ...data, roomId: this.store.getState().room?.roomId },
+      data: {
+        ...data,
+        roomId: this.store.getState().room?.roomId, // Ensure roomId is included
+        memberId: this.memberId, // Include memberId in the data
+        timestamp: Date.now(),
+      },
     };
 
-    this.socket.send(
-      JSON.stringify({
-        ...payload,
-        memberId: this.memberId, // Include memberId in the payload
-        timestamp: new Date().toISOString(), // Add a timestamp for better tracking
-        roomId: this.store.getState().room?.roomId, // Ensure roomId is included
-      }),
-    );
+    this.socket.send(JSON.stringify(payload));
     console.log(`[>>>][RoomController][${event}]`, payload);
   }
 
@@ -331,21 +331,13 @@ export class RoomController implements _EnumerateEventHandlers {
     eventName: K,
     handler: RoomEventHandler<K>,
   ) {
-    const onHandler = (event: MessageEvent) => {
-      const payload = JSON.parse(event.data);
-      if (payload.event === eventName) {
-        handler({
-          ...payload.data,
-          fromMe: payload.data.memberId
-            ? this.memberId === payload.data.memberId
-            : false,
-        });
-      }
+    const onHandler = (data: any) => {
+      handler(data);
     };
-    this.socket?.addEventListener('message', onHandler);
+    this.events.on(eventName, onHandler);
 
     const off = () => {
-      this.socket?.removeEventListener('message', onHandler);
+      this.events.off(eventName, onHandler);
       console.log(`Removed handler for event: ${eventName}`);
     };
 
