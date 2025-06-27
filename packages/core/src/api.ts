@@ -7,9 +7,11 @@ export namespace Api {
     plugins: Plugin[];
   }
 
-  export interface Plugin<TState = any> {
+  export interface Plugin<TSettings = any, TState = any> {
     id: string;
     name: string;
+    installedAt: number;
+    settings: TSettings;
     ui: { gridWidth: number };
     state: TState;
   }

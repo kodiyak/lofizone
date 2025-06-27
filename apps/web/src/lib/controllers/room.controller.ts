@@ -10,6 +10,8 @@ import { useRoomController } from '../store/use-room-controller';
 import { UiController } from './ui.controller';
 import { PluginsController } from './plugins.controller';
 import { availablePlugins } from '../available-plugins';
+import { PluginsRegistry } from '@plugins/core';
+import { pomodoroPlugin } from '@plugins/pomodoro';
 
 type RoomEventHandler<K extends keyof RoomTrackerEventsData> = (
   data: RoomTrackerEventsData[K] & { roomId: string; fromMe: boolean },
@@ -84,6 +86,8 @@ export class RoomController implements RoomEventHandlers {
     // Private constructor to enforce singleton pattern
     this.music = new MusicStreamController(this);
     this.plugins = new PluginsController(this);
+    // Setup Plugins
+    PluginsRegistry.getInstance().register(pomodoroPlugin);
   }
 
   static getInstance(): RoomController {
@@ -130,8 +134,10 @@ export class RoomController implements RoomEventHandlers {
       backendClient.getRoomWsUrl(roomId, this.memberId),
     );
 
-    this.plugins.reset();
-    this.plugins.addPlugins(Object.values(availablePlugins));
+    console.log({ room });
+
+    // this.plugins.reset();
+    // this.plugins.addPlugins(Object.values(availablePlugins));
     // const plugins = this.getInstalledPlugins().forEach((plugin) => {
     //   const roomPlugin = room?.plugins?.find((p) => p.id === plugin.id);
     //   const api = definePluginAPI({
@@ -184,7 +190,7 @@ export class RoomController implements RoomEventHandlers {
       this.socket?.removeEventListener('close', onClose);
       this.socket?.removeEventListener('open', onOpen);
       this.socket?.removeEventListener('error', onError);
-      this.plugins.destroyPlugins();
+      // this.plugins.destroyPlugins();
       this.socket = undefined;
     };
     const onOpen = () => {

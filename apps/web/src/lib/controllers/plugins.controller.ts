@@ -1,44 +1,27 @@
-import type { Plugin } from '@plugins/core';
 import type { RoomController } from './room.controller';
+import type { Api } from '@workspace/core';
+import { PluginRoomEntity } from './entities/plugin-room.entity';
 
 export class PluginsController {
-  private plugins = new Map<string, Plugin<any>>();
+  private plugins: PluginRoomEntity[] = [];
 
   constructor(private readonly room: RoomController) {}
 
-  reset() {
-    this.plugins.clear();
-  }
-
-  addPlugins(plugin: Plugin<any>[]) {
-    for (const p of plugin) {
-      this.addPlugin(p);
-    }
-    return this;
-  }
-
-  addPlugin(plugin: Plugin<any>) {
-    if (this.plugins.has(plugin.id)) {
-      throw new Error(`Plugin with id ${plugin.id} already exists.`);
-    }
-    this.plugins.set(plugin.id, plugin);
-  }
-
-  destroyPlugins(ids?: string[]) {
-    if (!ids || ids.length === 0) {
-      this.plugins.forEach((plugin) => plugin.controller.destroy());
-      this.plugins.clear();
+  public addPlugin(plugin: Api.Plugin) {
+    if (this.plugins.some((p) => p.name === plugin.name)) {
+      console.warn(
+        `[PluginsController] Plugin ${plugin.name} is already added.`,
+      );
       return;
     }
+    this.plugins.push(PluginRoomEntity.create(plugin));
+  }
 
-    for (const id of ids) {
-      const plugin = this.plugins.get(id);
-      if (plugin) {
-        plugin.controller.destroy();
-        this.plugins.delete(id);
-      } else {
-        console.warn(`Plugin with id ${id} not found.`);
-      }
-    }
+  public getPlugins() {
+    return this.plugins;
+  }
+
+  public getPlugin(name: string) {
+    return this.plugins.find((p) => p.name === name);
   }
 }
