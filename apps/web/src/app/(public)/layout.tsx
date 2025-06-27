@@ -60,11 +60,11 @@ export default function RootLayout({
                   <Sidebar />
                   <div className="flex-1 relative overflow-hidden">
                     <DebugProvider />
-                    {children}
+                    <div className="size-full inset-0 absolute">{children}</div>
                   </div>
                 </div>
-                <div className="h-12 border-t bg-background flex items-center justify-center">
-                  <div className="w-[260]">
+                <div className="h-12 shrink-0 border-t bg-background flex items-center justify-center">
+                  <div className="w-[360]">
                     <NavTrackPlayer />
                   </div>
                 </div>
