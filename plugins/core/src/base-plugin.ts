@@ -14,6 +14,18 @@ export abstract class BasePlugin<TSettings = any, TState = any> {
     this.state = data.state;
     this.settings = data.settings;
     this.api = data.api;
+
+    const off = this.api.room.on('plugin_state_updated', (data) => {
+      if (data.pluginId !== this.pluginId) return;
+      this.state = data.state;
+      this.onStateUpdate(data.state);
+    });
+
+    this.api.room.on('plugin_stopped', (data) => {
+      if (data.pluginId !== this.pluginId) return;
+      off();
+    });
+
     this.onInit();
   }
 
@@ -25,13 +37,15 @@ export abstract class BasePlugin<TSettings = any, TState = any> {
     });
   }
 
-  setState(state: TState) {
-    this.state = state;
-    this.api.send('plugin_state_updated', {
-      roomId: this.api.getCurrentRoom().roomId,
-      pluginId: this.pluginId,
-      state,
-    });
+  setState(callback: (state: TState) => TState, emitToBackend = true) {
+    this.state = callback(this.state);
+    if (emitToBackend) {
+      this.api.send('plugin_state_updated', {
+        roomId: this.api.getCurrentRoom().roomId,
+        pluginId: this.pluginId,
+        state: this.state,
+      });
+    }
   }
 
   getState(): TState {

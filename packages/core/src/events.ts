@@ -101,5 +101,15 @@ export const RoomTrackerEvents = z.object({
     RoomPluginEvents.shape.plugin_settings_updated.extend({
       pluginId: z.string(),
     }),
+  plugin_event: z.object({
+    event: z.string(),
+    data: z.object({
+      memberId: z.string(),
+      roomId: z.string(),
+      pluginId: z.string(),
+      name: z.string(),
+      data: z.any(),
+    }),
+  }),
 });
 export type RoomTrackerEventsData = z.infer<typeof RoomTrackerEvents>;

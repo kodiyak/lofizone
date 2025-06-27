@@ -28,7 +28,7 @@ export class PluginRoomEntity {
 
   private constructor(
     private readonly plugin: Api.Plugin,
-    private readonly api: PluginAPI,
+    api: PluginAPI,
   ) {
     this._controller = this.registry.buildController();
     this._controller.initialize({
@@ -36,8 +36,6 @@ export class PluginRoomEntity {
       state: this.plugin.lastState,
       settings: this.plugin.settings,
     });
-
-    console.log(this);
   }
 
   static create(plugin: Api.Plugin, api: PluginAPI) {

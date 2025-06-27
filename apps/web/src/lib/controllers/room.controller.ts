@@ -266,7 +266,7 @@ export class RoomController implements RoomEventHandlers {
     data,
   ) => {
     console.log(`Plugin State Updated`, data);
-    this.store.setState((state) => {
+    this.plugins.store.setState((state) => {
       const plugin = state.plugins.find((p) => p.id === data.pluginId);
       if (!plugin) {
         console.warn(`Plugin not found: ${data.pluginId}`);
@@ -284,7 +284,7 @@ export class RoomController implements RoomEventHandlers {
     data,
   ) => {
     console.log(`Plugin Settings Updated`, data);
-    this.store.setState((state) => {
+    this.plugins.store.setState((state) => {
       const plugin = state.plugins.find((p) => p.id === data.pluginId);
       if (!plugin) {
         console.warn(`Plugin not found: ${data.pluginId}`);

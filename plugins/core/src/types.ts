@@ -52,14 +52,28 @@ type RoomTrackerEventPayload<TKey extends keyof RoomTrackerEventsData> =
     roomId: string;
     fromMe?: boolean;
   };
+interface BasePluginEvent<T = any> {
+  memberId: string;
+  roomId: string;
+  pluginId: string;
+  name: string;
+  data?: T;
+}
 export interface PluginAPI {
-  send<TKey extends keyof RoomTrackerEventsData>(
-    event: TKey,
-    data: RoomTrackerEventPayload<TKey>,
-  ): void;
-  on<TKey extends keyof RoomTrackerEventsData>(
-    event: TKey,
-    handler: (data: RoomTrackerEventPayload<TKey>) => void | Promise<void>,
+  room: {
+    send<TKey extends keyof RoomTrackerEventsData>(
+      event: TKey,
+      data: RoomTrackerEventPayload<TKey>,
+    ): void;
+    on<TKey extends keyof RoomTrackerEventsData>(
+      event: TKey,
+      handler: (data: RoomTrackerEventPayload<TKey>) => void | Promise<void>,
+    ): Unsubscribe;
+  };
+  send(event: string, data: Record<string, any>): void;
+  on(
+    event: string,
+    handler: (data: BasePluginEvent) => void | Promise<void>,
   ): Unsubscribe;
   getCurrentRoom(): Api.Room;
   getCurrentMember(): Api.RoomMember;

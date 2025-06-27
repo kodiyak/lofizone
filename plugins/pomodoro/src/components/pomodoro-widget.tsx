@@ -10,13 +10,19 @@ import { PauseIcon, StopIcon } from '@phosphor-icons/react';
 import { CogIcon } from 'lucide-react';
 import PomodoroSettings from './pomodoro-settings';
 import { useDisclosure } from '@workspace/ui/hooks/use-disclosure';
-import type { PluginWidgetProps } from '@plugins/core';
+import {
+  usePluginSettings,
+  usePluginState,
+  type PluginWidgetProps,
+} from '@plugins/core';
 import type { PomodoroController } from '../controller';
 
-export default function PomodoroWiddget({
+export default function PomodoroWidget({
   controller,
 }: PluginWidgetProps<PomodoroController>) {
   const openSettings = useDisclosure();
+  const state = usePluginState();
+  const settings = usePluginSettings();
 
   const { start, stop, reset } = controller;
 
@@ -28,7 +34,9 @@ export default function PomodoroWiddget({
           <CardTitle className="text-center">Pomodoro</CardTitle>
         </CardHeader>
         <CardContent className="items-center">
-          <pre className="text-xs font-mono"></pre>
+          <pre className="text-xs font-mono">
+            {JSON.stringify({ state, settings }, null, 2)}
+          </pre>
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
               <CircularProgress

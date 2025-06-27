@@ -7,6 +7,11 @@ export class PomodoroController extends BasePlugin<
 > {
   protected onInit(): void {
     console.log('PomodoroController initialized', this);
+    this.setState((state) => ({
+      currentPhase: 'idle',
+      pomodorosCompleted: 0,
+      timeRemaining: 0,
+    }));
   }
   protected onDestroy(): void {
     console.log('PomodoroController destroyed');
@@ -21,6 +26,12 @@ export class PomodoroController extends BasePlugin<
 
   stop() {
     console.log('Pomodoro stopped');
+
+    this.setState((state) => ({
+      ...state,
+      currentPhase: 'idle',
+      pomodorosCompleted: this.getState().pomodorosCompleted + 1,
+    }));
   }
 
   reset() {
