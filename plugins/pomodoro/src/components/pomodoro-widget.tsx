@@ -15,16 +15,14 @@ import {
   usePluginState,
   type PluginWidgetProps,
 } from '@plugins/core';
-import type { PomodoroController } from '../controller';
+import { PomodoroController } from '../controller';
 
 export default function PomodoroWidget({
   controller,
 }: PluginWidgetProps<PomodoroController>) {
   const openSettings = useDisclosure();
-  const state = usePluginState();
-  const settings = usePluginSettings();
-
-  const { start, stop, reset } = controller;
+  const state = usePluginState<PomodoroController>();
+  const settings = usePluginSettings<PomodoroController>();
 
   return (
     <>
@@ -56,8 +54,9 @@ export default function PomodoroWidget({
                 variant={'outline'}
                 size={'icon-sm'}
                 className="rounded-full"
+                disabled={!state?.isRunning}
                 onClick={() => {
-                  stop();
+                  controller.stop();
                 }}
               >
                 <StopIcon weight="fill" />
@@ -67,8 +66,9 @@ export default function PomodoroWidget({
                 variant={'outline'}
                 size={'icon'}
                 className="rounded-full"
+                disabled={state?.isRunning}
                 onClick={() => {
-                  reset();
+                  controller.start();
                 }}
               >
                 <PauseIcon />

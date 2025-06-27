@@ -31,7 +31,7 @@ export abstract class BasePlugin<TSettings = any, TState = any> {
 
   destroy() {
     this.onDestroy();
-    this.api.send('plugin_stopped', {
+    this.api.room.send('plugin_stopped', {
       roomId: this.api.getCurrentRoom().roomId,
       pluginId: this.pluginId,
     });
@@ -40,7 +40,7 @@ export abstract class BasePlugin<TSettings = any, TState = any> {
   setState(callback: (state: TState) => TState, emitToBackend = true) {
     this.state = callback(this.state);
     if (emitToBackend) {
-      this.api.send('plugin_state_updated', {
+      this.api.room.send('plugin_state_updated', {
         roomId: this.api.getCurrentRoom().roomId,
         pluginId: this.pluginId,
         state: this.state,
@@ -54,7 +54,7 @@ export abstract class BasePlugin<TSettings = any, TState = any> {
 
   setSettings(settings: TSettings) {
     this.settings = settings;
-    this.api.send('plugin_settings_updated', {
+    this.api.room.send('plugin_settings_updated', {
       roomId: this.api.getCurrentRoom().roomId,
       pluginId: this.pluginId,
       settings,

@@ -47,8 +47,13 @@ export class PluginsController {
         });
       },
       getCurrentRoom: () => this.room.room!,
-      getCurrentMember: () =>
-        this.room.members.find((m) => m.memberId === this.room.memberId)!,
+      getCurrentMember: () => {
+        return this.room.members.find(
+          (m) => m.memberId === this.room.memberId,
+        )!;
+      },
+      isHost: () =>
+        this.room.memberId === this.room.members.find((m) => m.host)?.memberId,
       getCurrentTrack: () => this.room.track,
       getCurrentPlugin: () => plugin,
     });

@@ -12,6 +12,7 @@ export type PomodoroPluginSettings = z.infer<
 
 export const PomodoroPluginStateSchema = z.object({
   currentPhase: z.enum(['focus', 'break', 'longBreak', 'idle']),
+  isRunning: z.boolean(),
   timeRemaining: z.number(),
   pomodorosCompleted: z.number(),
 });

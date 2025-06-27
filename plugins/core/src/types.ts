@@ -75,6 +75,7 @@ export interface PluginAPI {
     event: string,
     handler: (data: BasePluginEvent) => void | Promise<void>,
   ): Unsubscribe;
+  isHost(): boolean;
   getCurrentRoom(): Api.Room;
   getCurrentMember(): Api.RoomMember;
   getCurrentPlugin(): Api.Plugin;

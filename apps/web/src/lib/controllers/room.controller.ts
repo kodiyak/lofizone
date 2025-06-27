@@ -13,14 +13,18 @@ import { PluginsRegistry } from '@plugins/core';
 import { pomodoroPlugin } from '@plugins/pomodoro';
 
 type RoomEventHandler<K extends keyof RoomTrackerEventsData> = (
-  data: RoomTrackerEventsData[K] & { roomId: string; fromMe: boolean },
+  data: RoomTrackerEventsData[K] & {
+    roomId: string;
+    memberId: string;
+    fromMe: boolean;
+  },
 ) => void | Promise<void>;
 
-type RoomEventHandlers = {
+type _EnumerateEventHandlers = {
   [K in keyof RoomTrackerEventsData]?: RoomEventHandler<K>;
 };
 
-export class RoomController implements RoomEventHandlers {
+export class RoomController implements _EnumerateEventHandlers {
   private socket?: WebSocket;
   private static instance: RoomController;
 
@@ -182,7 +186,7 @@ export class RoomController implements RoomEventHandlers {
           ? this.memberId === data.data.memberId
           : false,
       };
-      console.log(`[<<<][Controller][${eventName}]`, handlerData);
+      console.log(`[<<<][RoomController][${eventName}]`, handlerData);
       handler(handlerData);
     };
     const onError = (event: Event) => {
@@ -265,7 +269,7 @@ export class RoomController implements RoomEventHandlers {
   plugin_state_updated: RoomEventHandler<'plugin_state_updated'> = async (
     data,
   ) => {
-    console.log(`Plugin State Updated`, data);
+    /** Syncronize plugin state with the store */
     this.plugins.store.setState((state) => {
       const plugin = state.plugins.find((p) => p.id === data.pluginId);
       if (!plugin) {
@@ -283,7 +287,7 @@ export class RoomController implements RoomEventHandlers {
   plugin_settings_updated: RoomEventHandler<'plugin_settings_updated'> = async (
     data,
   ) => {
-    console.log(`Plugin Settings Updated`, data);
+    /** Syncronize plugin settings with the store */
     this.plugins.store.setState((state) => {
       const plugin = state.plugins.find((p) => p.id === data.pluginId);
       if (!plugin) {
@@ -312,8 +316,15 @@ export class RoomController implements RoomEventHandlers {
       data: { ...data, roomId: this.store.getState().room?.roomId },
     };
 
-    this.socket.send(JSON.stringify(payload));
-    console.log(`[>>>][Controller][${event}]`, payload);
+    this.socket.send(
+      JSON.stringify({
+        ...payload,
+        memberId: this.memberId, // Include memberId in the payload
+        timestamp: new Date().toISOString(), // Add a timestamp for better tracking
+        roomId: this.store.getState().room?.roomId, // Ensure roomId is included
+      }),
+    );
+    console.log(`[>>>][RoomController][${event}]`, payload);
   }
 
   on<K extends keyof RoomTrackerEventsData>(
@@ -325,7 +336,6 @@ export class RoomController implements RoomEventHandlers {
       if (payload.event === eventName) {
         handler({
           ...payload.data,
-          roomId: this.store.getState().room?.roomId || '',
           fromMe: payload.data.memberId
             ? this.memberId === payload.data.memberId
             : false,
