@@ -4,6 +4,7 @@ import { RoomPluginEvents } from '@workspace/core';
 export interface RoomPluginProps {
   id: string;
   name: string;
+  state: any | null;
   settings: any;
   installedAt: Date;
   roomId: string;
@@ -15,6 +16,7 @@ export class RoomPlugin {
   private readonly _id: string;
   private readonly _name: string;
   private _settings: any;
+  private _state: any;
   private readonly _installedAt: Date;
   private readonly _roomId: string;
 
@@ -30,6 +32,10 @@ export class RoomPlugin {
     return this._settings;
   }
 
+  get state() {
+    return this._state;
+  }
+
   get installedAt() {
     return this._installedAt;
   }
@@ -42,6 +48,7 @@ export class RoomPlugin {
     this._id = props.id;
     this._name = props.name;
     this._settings = props.settings;
+    this._state = props.state;
     this._installedAt = props.installedAt;
     this._roomId = props.roomId;
   }
@@ -67,6 +74,9 @@ export class RoomPlugin {
   start() {
     this.events.emit('plugin_started', {
       roomId: this.roomId,
+      name: this.name,
+      settings: this.settings,
+      state: this.state,
     });
   }
 

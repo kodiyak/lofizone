@@ -56,6 +56,7 @@ export class RoomsService {
           name: roomPlugin.pluginId,
           settings: parsedSettings,
           installedAt: roomPlugin.createdAt,
+          state: roomPlugin.lastState,
         });
         plugin?.start(); // Automatically start the plugin if it has a start method
       });

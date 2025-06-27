@@ -31,6 +31,7 @@ export const roomPluginSchema = z.object({
   pluginId: z.string(),
   roomId: z.string(),
   settings: z.any(),
+  lastState: z.any().nullish(),
   createdAt: z.date(),
 });
 

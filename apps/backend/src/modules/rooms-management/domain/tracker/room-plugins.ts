@@ -20,42 +20,40 @@ export class RoomPlugins {
     this.plugins.push(plugin);
 
     const tunnelEvents = [
-      plugin.events.buildListener('plugin_installed', ({ roomId }) => {
+      plugin.events.buildListener('plugin_installed', ({ off, ...rest }) => {
         this.room.events.emit('plugin_installed', {
           pluginId: plugin.id,
-          roomId,
+          ...rest,
         });
       }),
-      plugin.events.buildListener('plugin_uninstalled', ({ roomId }) => {
+      plugin.events.buildListener('plugin_uninstalled', ({ off, ...rest }) => {
         this.room.events.emit('plugin_uninstalled', {
           pluginId: plugin.id,
-          roomId,
+          ...rest,
         });
       }),
-      plugin.events.buildListener('plugin_started', ({ roomId }) => {
+      plugin.events.buildListener('plugin_started', ({ off, ...rest }) => {
         this.room.events.emit('plugin_started', {
           pluginId: plugin.id,
-          roomId,
+          ...rest,
         });
       }),
-      plugin.events.buildListener('plugin_stopped', ({ roomId }) => {
+      plugin.events.buildListener('plugin_stopped', ({ off, ...rest }) => {
         this.room.events.emit('plugin_stopped', {
           pluginId: plugin.id,
-          roomId,
+          ...rest,
         });
       }),
-      plugin.events.buildListener('plugin_state_updated', ({ roomId, state }) => {
+      plugin.events.buildListener('plugin_state_updated', ({ off, ...rest }) => {
         this.room.events.emit('plugin_state_updated', {
           pluginId: plugin.id,
-          roomId,
-          state,
+          ...rest,
         });
       }),
-      plugin.events.buildListener('plugin_settings_updated', ({ roomId, settings }) => {
+      plugin.events.buildListener('plugin_settings_updated', ({ off, ...rest }) => {
         this.room.events.emit('plugin_settings_updated', {
           pluginId: plugin.id,
-          roomId,
-          state: settings,
+          ...rest,
         });
       }),
     ];

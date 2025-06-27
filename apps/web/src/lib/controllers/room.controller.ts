@@ -8,7 +8,6 @@ import { backendClient } from '../clients/backend';
 import { MusicStreamController } from './music-stream.controller';
 import { useRoomController } from '../store/use-room-controller';
 import { UiController } from './ui.controller';
-import { definePluginAPI } from '@plugins/core';
 import { PluginsController } from './plugins.controller';
 import { availablePlugins } from '../available-plugins';
 
@@ -244,6 +243,14 @@ export class RoomController implements RoomEventHandlers {
       this.music.seek(time);
       console.log(`Player seeked by member: ${memberId} to ${time}`);
     }
+  };
+
+  plugin_started: RoomEventHandler<'plugin_started'> = async (data) => {
+    console.log(`Plugin Started`, data);
+  };
+
+  plugin_stopped: RoomEventHandler<'plugin_stopped'> = async (data) => {
+    console.log(`Plugin Stopped`, data);
   };
 
   send<K extends keyof RoomTrackerEventsData>(
