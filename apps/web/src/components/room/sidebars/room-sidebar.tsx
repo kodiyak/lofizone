@@ -9,12 +9,12 @@ export default function RoomSidebar() {
   return (
     <>
       <div className="size-full overflow-hidden p-4 relative z-10">
-        <div className="size-full flex flex-col gap-4 rounded-2xl bg-background/50 border backdrop-blur-xs p-4 relative">
+        <div className="size-full flex flex-col gap-4 rounded-2xl overflow-hidden border backdrop-blur-xs p-4 relative">
           <UiBackground
             {...membersBackground}
             className={cn(
               membersBackground?.className,
-              'rounded-2xl overflow-hidden opacity-50 blur-xs',
+              // 'rounded-2xl overflow-hidden opacity-20 blur-xs',
             )}
           />
           <div className="flex flex-col gap-2 relative z-20">

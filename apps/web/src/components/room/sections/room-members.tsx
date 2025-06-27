@@ -17,7 +17,7 @@ export default function RoomMembers() {
     <>
       {members.map((member, i) => (
         <div
-          className="flex items-center gap-2 p-2 rounded-xl pr-5 bg-background/50 border"
+          className="flex items-center gap-2 p-2 rounded-xl pr-5 bg-background/50 backdrop-blur-xs border"
           key={member.memberId}
         >
           <div className="flex justify-between items-center">

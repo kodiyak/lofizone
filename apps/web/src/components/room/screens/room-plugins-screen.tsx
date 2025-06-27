@@ -12,7 +12,7 @@ export default function RoomPluginsScreen() {
 
   return (
     <>
-      <div className="flex flex-col px-4">
+      <div className="flex flex-col">
         <div className="grid grid-cols-4 max-w-full gap-4">
           {plugins.map((plugin) => (
             <RoomInstallPluginCard

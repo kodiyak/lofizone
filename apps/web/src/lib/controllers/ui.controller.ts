@@ -16,6 +16,8 @@ export type UiBackgroundState =
   | 'error';
 
 export interface UiTheme {
+  title: string;
+  description: string;
   cssVars?: Record<string, string>;
   mode: 'light' | 'dark';
   background?: UiBackground;

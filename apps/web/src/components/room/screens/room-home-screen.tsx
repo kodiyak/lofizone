@@ -22,7 +22,7 @@ import { ZapOffIcon } from 'lucide-react';
 export default function RoomHomeScreen({ room, page }: RoomScreenProps) {
   return (
     <>
-      <div className="flex flex-col px-4">
+      <div className="flex flex-col">
         <div className="flex gap-6 h-[50vh] items-stretch">
           <div className="flex-1">
             <div className="flex items-center gap-4 px-6">

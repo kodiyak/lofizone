@@ -6,6 +6,7 @@ import type { RoomScreenProps } from '../types';
 import { Button } from '@workspace/ui/components/button';
 import Link from 'next/link';
 import { useRoomController } from '@/lib/store/use-room-controller';
+import RoomThemesScreen from '../screens/room-themes-screen';
 
 export default function RoomConnectedContent({ page }: RoomScreenProps) {
   const room = useRoomController((state) => state.room);
@@ -13,6 +14,7 @@ export default function RoomConnectedContent({ page }: RoomScreenProps) {
     '': RoomHomeScreen,
     home: RoomHomeScreen,
     plugins: RoomPluginsScreen,
+    themes: RoomThemesScreen,
   };
   const Screen = page ? screens[page as keyof typeof screens] : RoomHomeScreen;
 
@@ -30,6 +32,10 @@ export default function RoomConnectedContent({ page }: RoomScreenProps) {
           {
             label: 'Plugins',
             href: `/r/${room.roomId}/plugins`,
+          },
+          {
+            label: 'Themes',
+            href: `/r/${room.roomId}/themes`,
           },
         ].map((action) => (
           <Button

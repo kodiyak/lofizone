@@ -8,16 +8,14 @@ import {
 import { themes } from '../themes';
 
 interface UiStore extends UiTheme {
+  controller: UiController;
   setBackground: (background: UiBackground) => void;
   setBackgroundState: (state: UiBackgroundState) => void;
 }
 
 export const useUiStore = create<UiStore>((set) => ({
+  ...themes[0],
   controller: UiController.getInstance(),
-  backgroundState: 'hidden',
-  mode: 'dark',
-  background: themes[0].background,
-  membersBackground: themes[0].membersBackground,
   setBackground: (background) => set({ background }),
   setBackgroundState: (state) => set({ backgroundState: state }),
 }));
