@@ -13,7 +13,7 @@ export namespace Api {
     installedAt: number;
     settings: TSettings;
     ui: { gridWidth: number };
-    state: TState;
+    lastState: TState;
   }
 
   export interface RoomMember {

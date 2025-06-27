@@ -1,9 +1,8 @@
-import { PluginsRegistry } from '@plugins/core';
+import { PluginsRegistry, type PluginAPI } from '@plugins/core';
 import type { Api } from '@workspace/core';
+import { BasePlugin } from '@plugins/core';
 
 export class PluginRoomEntity {
-  private constructor(private readonly plugin: Api.Plugin) {}
-
   get id() {
     return this.plugin.id;
   }
@@ -13,10 +12,31 @@ export class PluginRoomEntity {
   }
 
   get registry() {
-    return PluginsRegistry.getInstance().getPlugin(this.plugin.name);
+    const registry = PluginsRegistry.getInstance().getPlugin(this.plugin.name);
+    if (!registry) {
+      throw new Error(`Plugin ${this.plugin.name} is not registered.`);
+    }
+
+    return registry;
   }
 
-  static create(plugin: Api.Plugin) {
-    return new PluginRoomEntity(plugin);
+  private readonly _controller: BasePlugin;
+
+  private constructor(
+    private readonly plugin: Api.Plugin,
+    private readonly api: PluginAPI,
+  ) {
+    this._controller = this.registry.buildController();
+    this._controller.initialize({
+      api,
+      state: this.plugin.lastState,
+      settings: this.plugin.settings,
+    });
+
+    console.log(this);
+  }
+
+  static create(plugin: Api.Plugin, api: PluginAPI) {
+    return new PluginRoomEntity(plugin, api);
   }
 }

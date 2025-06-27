@@ -11,6 +11,7 @@ const pomodoroPlugin = definePlugin({
   name: 'pomodoro-plugin',
   title: 'Pomodoro Timer',
   description: 'A Pomodoro timer to help you manage your focus sessions.',
+  buildController: () => new PomodoroController(),
   state: {
     schema: PomodoroPluginStateSchema,
     defaultValues: {
@@ -32,7 +33,6 @@ const pomodoroPlugin = definePlugin({
     Widget: PomodoroWidget,
     Icon: PomodoroIcon,
   },
-  controller: new PomodoroController(),
 });
 
 export { pomodoroPlugin };

@@ -33,7 +33,10 @@ export interface Plugin<
     schema: TSettingsSchema;
     defaultValues: z.infer<TSettingsSchema>;
   };
-  controller: BasePlugin<z.infer<TSettingsSchema>, z.infer<TStateSchema>>;
+  buildController: () => BasePlugin<
+    z.infer<TSettingsSchema>,
+    z.infer<TStateSchema>
+  >;
   components: {
     Icon: ComponentType<PluginIconProps>;
     Widget: ComponentType<PluginWidgetProps>;

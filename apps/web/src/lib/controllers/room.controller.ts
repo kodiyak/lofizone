@@ -26,7 +26,7 @@ export class RoomController implements RoomEventHandlers {
   private static instance: RoomController;
 
   public readonly music: MusicStreamController;
-  private memberId = generateMemberId();
+  public memberId = generateMemberId();
   private plugins: PluginsController;
 
   set track(track: Api.Track | null) {
@@ -135,6 +135,10 @@ export class RoomController implements RoomEventHandlers {
     );
 
     console.log({ room });
+
+    room.plugins.forEach((plugin) => {
+      this.plugins.addPlugin(plugin);
+    });
 
     // this.plugins.reset();
     // this.plugins.addPlugins(Object.values(availablePlugins));

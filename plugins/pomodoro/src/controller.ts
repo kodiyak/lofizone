@@ -1,4 +1,4 @@
-import { BasePlugin } from '@plugins/core/src/base-plugin';
+import { BasePlugin } from '@plugins/core';
 import type { PomodoroPluginSettings, PomodoroPluginState } from './types';
 
 export class PomodoroController extends BasePlugin<
