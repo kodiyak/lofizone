@@ -22,6 +22,10 @@ export class PluginRoomEntity {
 
   private readonly _controller: BasePlugin;
 
+  get controller() {
+    return this._controller;
+  }
+
   private constructor(
     private readonly plugin: Api.Plugin,
     private readonly api: PluginAPI,

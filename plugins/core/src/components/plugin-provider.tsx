@@ -10,13 +10,18 @@ import {
   type PropsWithChildren,
 } from 'react';
 import { usePluginsProvider } from './plugins-provider';
+import type { BasePlugin } from '../base-plugin';
 
 type ComponentName = keyof Plugin<any, any>['components'];
 type _EnumerateByComponentName<T extends keyof Plugin<any, any>['components']> =
   ComponentProps<Plugin<any, any>['components'][T]>;
-interface PluginProviderProps<TName extends ComponentName> {
+interface PluginProviderProps<
+  TName extends ComponentName,
+  TController extends BasePlugin = BasePlugin,
+> {
   name: string;
   componentName: TName;
+  controller?: TController;
 }
 interface PluginContextProps<TName extends ComponentName = ComponentName>
   extends PluginProviderProps<TName> {
@@ -43,7 +48,7 @@ export function PluginProvider<TName extends ComponentName>(
     _EnumerateByComponentName<TName>,
 ) {
   const { plugins } = usePluginsProvider();
-  const { name, componentName, ...rest } = props;
+  const { name, componentName, controller, ...rest } = props;
   const Component = useMemo(() => {
     try {
       return loadComponent(plugins[name], componentName);
@@ -62,12 +67,14 @@ export function PluginProvider<TName extends ComponentName>(
   }
 
   return (
-    <PluginContext.Provider value={{ name, componentName, ...rest }}>
+    <PluginContext.Provider
+      value={{ name, componentName, controller, ...rest }}
+    >
       <Component key={`plugin.${name}`} {...props} />
     </PluginContext.Provider>
   );
 }
 
-export const usePluginContext = () => {
+export const usePluginProvider = () => {
   return useContext(PluginContext);
 };

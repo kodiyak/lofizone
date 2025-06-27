@@ -1,11 +1,10 @@
 import { definePlugin } from '@plugins/core';
-import PomodoroWidget from './components/pomodoro-widget';
 import { PomodoroController } from './controller';
 import {
   PomodoroPluginSettingsSchema,
   PomodoroPluginStateSchema,
 } from './types';
-import PomodoroIcon from './components/pomodoro-icon';
+import { lazy } from 'react';
 
 const pomodoroPlugin = definePlugin({
   name: 'pomodoro-plugin',
@@ -30,8 +29,8 @@ const pomodoroPlugin = definePlugin({
     },
   },
   components: {
-    Widget: PomodoroWidget,
-    Icon: PomodoroIcon,
+    Widget: lazy(() => import('./components/pomodoro-widget')),
+    Icon: lazy(() => import('./components/pomodoro-icon')),
   },
 });
 

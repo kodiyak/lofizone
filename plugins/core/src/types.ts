@@ -3,9 +3,12 @@ import type { ComponentType } from 'react';
 import type { z, ZodSchema } from 'zod';
 import type { BasePlugin } from './base-plugin';
 
-export interface PluginWidgetProps {
+export interface PluginWidgetProps<
+  TController extends BasePlugin<any, any> = BasePlugin<any, any>,
+> {
   room: Api.Room;
   plugin: Api.Plugin;
+  controller: TController;
 }
 
 export interface PluginIconProps {

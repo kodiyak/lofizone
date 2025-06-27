@@ -13,6 +13,7 @@ import PomodoroTimerField from './pomodoro-timer-field';
 import { useForm } from 'react-hook-form';
 import { Form, FormField } from '@workspace/ui/components/form';
 import { Button } from '@workspace/ui/components/button';
+import { usePluginController } from '@plugins/core';
 
 interface PomodoroSettingsProps extends UseDisclosure {
   onError?: (error: any) => void;
@@ -29,6 +30,7 @@ export default function PomodoroSettings({
   onOpenChange,
   onError,
 }: PomodoroSettingsProps) {
+  const controller = usePluginController();
   const form = useForm({
     defaultValues: {
       focusSession: 25,
@@ -39,7 +41,9 @@ export default function PomodoroSettings({
   });
   const { isSubmitting, isValid, isDirty } = form.formState;
   const onSubmit = (data: any) => {
-    console.log('Form submitted with data:', data);
+    console.log('Form submitted with data:', { data, controller });
+
+    controller?.setSettings(data);
   };
 
   return (

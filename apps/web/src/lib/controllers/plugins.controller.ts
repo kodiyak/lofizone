@@ -6,6 +6,14 @@ import { definePluginAPI } from '@plugins/core';
 export class PluginsController {
   private plugins: PluginRoomEntity[] = [];
 
+  // get plugins() {
+  //   return this.room.store.getState().plugins;
+  // }
+
+  // set plugins(plugins: PluginRoomEntity[]) {
+  //   this.room.store.setState(() => ({ plugins }));
+  // }
+
   constructor(private readonly room: RoomController) {}
 
   public addPlugin(plugin: Api.Plugin) {

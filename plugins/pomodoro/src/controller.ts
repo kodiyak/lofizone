@@ -14,4 +14,16 @@ export class PomodoroController extends BasePlugin<
   protected onStateUpdate(state: any): void {
     console.log('State updated:', state);
   }
+
+  start() {
+    console.log('Pomodoro started');
+  }
+
+  stop() {
+    console.log('Pomodoro stopped');
+  }
+
+  reset() {
+    console.log('Pomodoro reset');
+  }
 }

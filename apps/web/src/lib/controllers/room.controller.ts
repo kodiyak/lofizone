@@ -9,7 +9,6 @@ import { MusicStreamController } from './music-stream.controller';
 import { useRoomController } from '../store/use-room-controller';
 import { UiController } from './ui.controller';
 import { PluginsController } from './plugins.controller';
-import { availablePlugins } from '../available-plugins';
 import { PluginsRegistry } from '@plugins/core';
 import { pomodoroPlugin } from '@plugins/pomodoro';
 
@@ -25,9 +24,9 @@ export class RoomController implements RoomEventHandlers {
   private socket?: WebSocket;
   private static instance: RoomController;
 
+  public readonly memberId = generateMemberId();
   public readonly music: MusicStreamController;
-  public memberId = generateMemberId();
-  private plugins: PluginsController;
+  public readonly plugins: PluginsController;
 
   set track(track: Api.Track | null) {
     this.store.setState(() => ({ track }));
@@ -261,6 +260,42 @@ export class RoomController implements RoomEventHandlers {
 
   plugin_stopped: RoomEventHandler<'plugin_stopped'> = async (data) => {
     console.log(`Plugin Stopped`, data);
+  };
+
+  plugin_state_updated: RoomEventHandler<'plugin_state_updated'> = async (
+    data,
+  ) => {
+    console.log(`Plugin State Updated`, data);
+    this.store.setState((state) => {
+      const plugin = state.plugins.find((p) => p.id === data.pluginId);
+      if (!plugin) {
+        console.warn(`Plugin not found: ${data.pluginId}`);
+        return state;
+      }
+      return {
+        plugins: state.plugins.map((p) =>
+          p.id === data.pluginId ? { ...p, state: data.state } : p,
+        ),
+      };
+    });
+  };
+
+  plugin_settings_updated: RoomEventHandler<'plugin_settings_updated'> = async (
+    data,
+  ) => {
+    console.log(`Plugin Settings Updated`, data);
+    this.store.setState((state) => {
+      const plugin = state.plugins.find((p) => p.id === data.pluginId);
+      if (!plugin) {
+        console.warn(`Plugin not found: ${data.pluginId}`);
+        return state;
+      }
+      return {
+        plugins: state.plugins.map((p) =>
+          p.id === data.pluginId ? { ...p, settings: data.settings } : p,
+        ),
+      };
+    });
   };
 
   send<K extends keyof RoomTrackerEventsData>(

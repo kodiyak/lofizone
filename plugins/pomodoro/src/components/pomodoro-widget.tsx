@@ -1,19 +1,25 @@
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@workspace/ui/components/card';
 import { CircularProgress } from '@workspace/ui/components/progress';
 import { Button } from '@workspace/ui/components/button';
-import { PauseIcon, PlayIcon, StopIcon } from '@phosphor-icons/react';
+import { PauseIcon, StopIcon } from '@phosphor-icons/react';
+import { CogIcon } from 'lucide-react';
 import PomodoroSettings from './pomodoro-settings';
 import { useDisclosure } from '@workspace/ui/hooks/use-disclosure';
 import type { PluginWidgetProps } from '@plugins/core';
+import type { PomodoroController } from '../controller';
 
-export default function PomodoroWiddget({ plugin, room }: PluginWidgetProps) {
+export default function PomodoroWiddget({
+  controller,
+}: PluginWidgetProps<PomodoroController>) {
   const openSettings = useDisclosure();
+
+  const { start, stop, reset } = controller;
+
   return (
     <>
       <PomodoroSettings {...openSettings} />
@@ -22,6 +28,7 @@ export default function PomodoroWiddget({ plugin, room }: PluginWidgetProps) {
           <CardTitle className="text-center">Pomodoro</CardTitle>
         </CardHeader>
         <CardContent className="items-center">
+          <pre className="text-xs font-mono"></pre>
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
               <CircularProgress
@@ -41,6 +48,9 @@ export default function PomodoroWiddget({ plugin, room }: PluginWidgetProps) {
                 variant={'outline'}
                 size={'icon-sm'}
                 className="rounded-full"
+                onClick={() => {
+                  stop();
+                }}
               >
                 <StopIcon weight="fill" />
               </Button>
@@ -49,6 +59,9 @@ export default function PomodoroWiddget({ plugin, room }: PluginWidgetProps) {
                 variant={'outline'}
                 size={'icon'}
                 className="rounded-full"
+                onClick={() => {
+                  reset();
+                }}
               >
                 <PauseIcon />
               </Button>
@@ -56,22 +69,13 @@ export default function PomodoroWiddget({ plugin, room }: PluginWidgetProps) {
                 variant={'outline'}
                 size={'icon-sm'}
                 className="rounded-full"
-                disabled
+                onClick={openSettings.onOpen}
               >
-                <PlayIcon />
+                <CogIcon className="size-5" />
               </Button>
             </div>
           </div>
         </CardContent>
-        <CardFooter>
-          <Button
-            variant={'outline'}
-            className="w-full"
-            onClick={openSettings.onOpen}
-          >
-            Settings
-          </Button>
-        </CardFooter>
       </Card>
     </>
   );

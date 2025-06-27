@@ -1,9 +1,18 @@
 import { create } from 'zustand';
 import { RoomController } from '../controllers/room.controller';
 import type { Api } from '@workspace/core';
+import type { PluginRoomEntity } from '../controllers/entities/plugin-room.entity';
+
+interface PluginState {
+  id: string;
+  name: string;
+  state: any;
+  settings: any;
+}
 
 interface RoomControllerStore {
   controller: RoomController;
+  plugins: PluginState[];
   isConnected: boolean;
   track?: Api.Track | null;
   room: Api.Room | null;
@@ -22,6 +31,7 @@ export const useRoomController = create<RoomControllerStore>((set, get) => ({
   room: null,
   members: [],
   controller: RoomController.getInstance(),
+  plugins: [],
   tracks: [],
   audioState: {
     isPlaying: false,
