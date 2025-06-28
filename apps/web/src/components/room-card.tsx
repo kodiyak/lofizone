@@ -1,8 +1,6 @@
 'use client';
 
-import Image from 'next/image';
 import React from 'react';
-import Wallpaper from '@/assets/images/wallpaper-2.webp';
 import { Button } from '@workspace/ui/components/button';
 import { ArrowRightIcon } from '@phosphor-icons/react';
 import { Badge } from '@workspace/ui/components/badge';
@@ -20,7 +18,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@workspace/ui/components/avatar';
-import { BoxesIcon, TimerIcon } from 'lucide-react';
+import { TimerIcon } from 'lucide-react';
 import { cn } from '@workspace/ui/lib/utils';
 
 interface RoomCardProps {
