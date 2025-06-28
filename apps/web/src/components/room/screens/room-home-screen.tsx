@@ -1,7 +1,6 @@
 import PluginsGrid from '@/components/plugins-grid';
 import React from 'react';
 import RoomTrack from '../sections/room-track';
-import { Avatar, AvatarFallback } from '@workspace/ui/components/avatar';
 import {
   Card,
   CardHeader,
@@ -11,7 +10,6 @@ import {
   CardAction,
 } from '@workspace/ui/components/card';
 import { Separator } from '@workspace/ui/components/separator';
-import RoomTracks from '../sections/room-tracks';
 import type { RoomScreenProps } from '../types';
 import { Button } from '@workspace/ui/components/button';
 import { LayoutGridIcon } from 'lucide-react';
