@@ -8,6 +8,20 @@ import { ArrowRightIcon } from '@phosphor-icons/react';
 import { Badge } from '@workspace/ui/components/badge';
 import Link from 'next/link';
 import type { Api } from '@workspace/core';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@workspace/ui/components/card';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@workspace/ui/components/avatar';
+import { BoxesIcon, TimerIcon } from 'lucide-react';
+import { cn } from '@workspace/ui/lib/utils';
 
 interface RoomCardProps {
   room: Api.Room;
@@ -16,33 +30,62 @@ interface RoomCardProps {
 export default function RoomCard({ room }: RoomCardProps) {
   return (
     <>
-      <div className="flex flex-col rounded-xl border relative">
-        <Image
-          src={Wallpaper}
-          alt={'Lofi'}
-          width={280}
-          className="w-full aspect-[12/8] rounded-xl border-b object-cover"
-        />
-        <div className="absolute left-0 top-0 size-full bg-gradient-to-br from-transparent to-background z-20 rounded-xl flex flex-col">
-          <div className="flex justify-between text-sm py-2 px-4">
-            <span className="font-semibold">{room.name}</span>
-            <span className="text-muted-foreground ml-2">
-              <Badge variant={'muted'} className="px-0.5">
-                <span className="px-1 py-0.5 bg-background rounded-sm">2</span>5
-              </Badge>
-            </span>
+      <Card className="group">
+        <CardHeader>
+          <CardTitle>{room.name}</CardTitle>
+          <CardDescription>12 members online</CardDescription>
+        </CardHeader>
+        <CardContent className="gap-4">
+          <div className="flex gap-4 items-center">
+            <Avatar className="size-20 rounded-3xl">
+              <AvatarImage />
+              <AvatarFallback className="rounded-3xl" />
+            </Avatar>
+            <div className="flex flex-col flex-1 gap-1 overflow-hidden">
+              <span className="font-medium truncate">Shinobi's Lofi Room</span>
+              <div className="flex items-center gap-1 flex-wrap">
+                <Badge variant={'muted'}>
+                  <TimerIcon />
+                  <span>Pomodoro</span>
+                </Badge>
+              </div>
+            </div>
           </div>
-          <div className="flex-1"></div>
-          <div className="flex justify-end">
-            <Button variant={'link'} asChild>
-              <Link href={`/r/${room.roomId}`}>
-                <span>Join Room</span>
-                <ArrowRightIcon />
-              </Link>
-            </Button>
+          <Button variant={'outline'} asChild>
+            <Link
+              href={`/r/${room.roomId}`}
+              className="flex items-center gap-2"
+            >
+              <span
+                className={cn(
+                  'transition-all duration-300 ease-in-out translate-x-4',
+                  'group-hover:translate-x-0',
+                )}
+              >
+                Join Room
+              </span>
+              <ArrowRightIcon
+                className={cn(
+                  'opacity-0 -translate-x-4 transition-all duration-300 ease-in-out',
+                  'group-hover:opacity-100 group-hover:translate-x-0',
+                )}
+              />
+            </Link>
+          </Button>
+          <div className="flex items-center justify-end">
+            <Badge variant={'muted'} className="p-0.5 pr-2">
+              <Avatar className="size-5">
+                <AvatarImage
+                  src="https://avatars.githubusercontent.com/u/000?v=4"
+                  alt="User Avatar"
+                />
+                <AvatarFallback className="" />
+              </Avatar>
+              <span>Owner Name</span>
+            </Badge>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </>
   );
 }

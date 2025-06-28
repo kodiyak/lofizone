@@ -12,9 +12,9 @@ const Page: NextPage = () => {
 
   return (
     <>
-      <div className="flex flex-col pt-32">
-        <div className="container mx-auto min-h-screen backdrop-blur-lg z-30 rounded-t-2xl border">
-          <div className="grid grid-cols-5 gap-4 p-8">
+      <div className="flex flex-col py-4">
+        <div className="container mx-auto min-h-screen">
+          <div className="grid grid-cols-5 gap-4">
             {rooms.map((room, i) => (
               <RoomCard room={room} key={`card.${i}`} />
             ))}

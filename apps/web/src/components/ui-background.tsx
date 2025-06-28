@@ -12,7 +12,7 @@ export default function UiBackground({
 }: UiBackgroundProps) {
   return (
     <>
-      <div className={cn('absolute', className)}>
+      <div className={cn('absolute inset-0', className)} style={style}>
         {gradients?.map((gradient, index) => (
           <div
             key={index}
