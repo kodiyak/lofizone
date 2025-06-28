@@ -19,7 +19,7 @@ import Link from 'next/link';
 import { EmptyState, EmptyIcon } from '@workspace/ui/components/empty';
 import { ZapOffIcon } from 'lucide-react';
 
-export default function RoomHomeScreen({ room, page }: RoomScreenProps) {
+export default function RoomHomeScreen({ room }: RoomScreenProps) {
   return (
     <>
       <div className="flex flex-col">
@@ -30,7 +30,7 @@ export default function RoomHomeScreen({ room, page }: RoomScreenProps) {
                 <AvatarFallback className="rounded-xl" />
               </Avatar>
               <CardHeader className="flex-1 px-0">
-                <CardTitle>Playlist - {page}</CardTitle>
+                <CardTitle>Playlist</CardTitle>
                 <CardDescription>{room.name} playlist.</CardDescription>
               </CardHeader>
             </div>
