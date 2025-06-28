@@ -28,8 +28,8 @@ const mono = Font_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Create Next App',
-  description: 'App',
+  title: 'lofi.surf',
+  description: 'Lo-fi Surf - Your Lofi Music Experience',
 };
 
 export default function RootLayout({
