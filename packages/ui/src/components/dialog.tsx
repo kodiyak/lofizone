@@ -65,7 +65,7 @@ function DialogContent({
           className={cn(
             'fixed z-50',
             'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
-            'relative bg-background/70 backdrop-blur-xl z-50 grid w-full max-w-[calc(100%-2rem)] gap-4 rounded-3xl p-6 duration-200 sm:max-w-lg',
+            'relative bg-background/70 backdrop-blur-xl z-50 flex flex-col w-full max-w-[calc(100%-2rem)] gap-4 rounded-3xl p-6 duration-200 sm:max-w-lg',
             'will-change-[transform,opacity]',
             className,
           )}

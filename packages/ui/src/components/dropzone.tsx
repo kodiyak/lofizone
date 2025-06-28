@@ -4,7 +4,7 @@ import { ImagesIcon, MousePointerClickIcon, TrashIcon } from 'lucide-react';
 import { Badge } from './badge';
 import { Button } from './button';
 import type { ReactNode } from 'react';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface DropzoneProps {
   value?: File | null;
@@ -80,7 +80,7 @@ function Dropzone({
                   <Badge variant={'muted'}>{value.type}</Badge>
                   <Button
                     size={'icon'}
-                    variant={'ghost-destructive'}
+                    variant={'destructive-ghost'}
                     onClick={() => {
                       onChange?.(null);
                     }}
@@ -221,7 +221,7 @@ function DropzoneImage({
               <Button
                 type="button"
                 size={'icon-xs'}
-                variant={'ghost-destructive'}
+                variant={'destructive-ghost'}
                 onClick={(e) => {
                   onChange?.(null);
                 }}
@@ -243,4 +243,4 @@ function DropzoneImage({
   );
 }
 
-export { Dropzone, DropzoneImage };
+export { Dropzone, DropzoneImage, useDropzone };

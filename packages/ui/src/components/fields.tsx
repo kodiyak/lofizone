@@ -18,6 +18,8 @@ import {
 import type { ButtonProps } from './button';
 import type { SelectContentProps } from '@radix-ui/react-select';
 import { cn } from '../lib/utils';
+import { Checkbox } from './checkbox';
+import { Switch } from './switch';
 
 export type IFieldOptionValue = string;
 export interface IFieldOption {
@@ -54,7 +56,7 @@ const FieldWrap = React.forwardRef<HTMLDivElement, FieldWrapProps>(
           ref={ref}
           className={cn(
             '',
-            orientation === 'horizontal' && 'flex items-center gap-0.5',
+            orientation === 'horizontal' && 'flex items-start gap-1',
             orientation === 'vertical' && '',
             className,
           )}
@@ -63,17 +65,22 @@ const FieldWrap = React.forwardRef<HTMLDivElement, FieldWrapProps>(
           {(!!label || !!description) && (
             <FormLabel
               className={cn(
-                'flex select-none items-center gap-1',
+                'flex select-none',
                 orientation === 'horizontal' && 'flex-1',
                 orientation === 'vertical' && '',
               )}
             >
               {left}
-              <div className="flex flex-1 flex-col gap-0.5">
+              <div className="flex flex-1 flex-col">
                 {label && (
-                  <span className="text-[11px] uppercase text-muted-foreground font-normal tracking-widest">
+                  <span className="text-[11px] uppercase text-foreground font-medium tracking-widest">
                     {label}
                   </span>
+                )}
+                {description && orientation === 'horizontal' && (
+                  <FormDescription className="text-xs mt-1.5 font-normal leading-3">
+                    {description}
+                  </FormDescription>
                 )}
               </div>
               {actions}
@@ -237,4 +244,60 @@ const TextareaField = forwardRef<HTMLTextAreaElement, TextareaFieldProps>(
 );
 TextareaField.displayName = 'TextareaField';
 
-export { FieldWrap, InputField, TextareaField, SelectField };
+interface CheckboxFieldProps {
+  id?: string;
+  value?: boolean;
+  onChange?: (value: boolean) => void;
+  className?: string;
+  disabled?: boolean;
+}
+function CheckboxField({
+  id,
+  className,
+  disabled,
+  onChange,
+  value,
+}: CheckboxFieldProps) {
+  return (
+    <>
+      <Checkbox
+        id={id}
+        className={cn('', className)}
+        checked={value}
+        onCheckedChange={(checked) =>
+          onChange?.(checked === 'indeterminate' ? false : checked)
+        }
+        disabled={disabled}
+      />
+    </>
+  );
+}
+
+function SwitchField({
+  id,
+  className,
+  disabled,
+  onChange,
+  value,
+}: CheckboxFieldProps) {
+  return (
+    <>
+      <Switch
+        id={id}
+        className={cn('', className)}
+        checked={value}
+        onCheckedChange={onChange}
+        disabled={disabled}
+      />
+    </>
+  );
+}
+
+export {
+  FieldWrap,
+  InputField,
+  TextareaField,
+  SelectField,
+  CheckboxField,
+  SwitchField,
+};
