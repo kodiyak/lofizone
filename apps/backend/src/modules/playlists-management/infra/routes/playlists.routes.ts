@@ -144,6 +144,8 @@ export function getPlaylistsRoutes() {
             'application/json': {
               schema: z.object({
                 name: z.string().min(1, 'Playlist name is required'),
+                description: z.string().nullish(),
+                isPublic: z.boolean().optional(),
               }),
             },
           },
@@ -182,14 +184,10 @@ export function getPlaylistsRoutes() {
     }),
     async (c) => {
       const userId = c.get('userId');
-      const body = c.req.valid('json');
+      const { name, isPublic, description } = c.req.valid('json');
 
       if (!userId) {
         return c.json({ error: 'Unauthorized' }, 401);
-      }
-
-      if (!body || !body.name) {
-        return c.json({ error: 'Playlist name is required' }, 400);
       }
 
       const playlistId = generatePlaylistId();
@@ -197,7 +195,9 @@ export function getPlaylistsRoutes() {
         data: {
           id: playlistId,
           slug: playlistId,
-          name: body.name,
+          name,
+          description,
+          isPublic,
           metadata: { cover: null },
           owner: { connect: { id: userId } },
         },
