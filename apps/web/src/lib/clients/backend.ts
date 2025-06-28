@@ -19,6 +19,16 @@ const validations = {
   }),
   createPlaylist: z.object({
     name: z.string().min(1, 'Playlist name is required'),
+    isPublic: z.boolean(),
+    description: z.string().nullish(),
+    tracks: z
+      .array(
+        z.object({
+          title: z.string().min(1, 'Track title is required'),
+          cover: z.instanceof(File),
+        }),
+      )
+      .optional(),
   }),
   uploadTrack: z.object({
     title: z.string().min(1, 'Track title is required'),

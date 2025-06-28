@@ -146,7 +146,9 @@ model Playlist {
   name        String
   description String?
   slug        String       @unique
+  cover       String?
   ownerId     String
+  isPublic    Boolean      @default(false)
   owner       User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   tracks      Track[]
   metadata    Json

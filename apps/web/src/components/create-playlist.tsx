@@ -15,8 +15,14 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { FieldWrap, InputField } from '@workspace/ui/components/fields';
+import {
+  CheckboxField,
+  FieldWrap,
+  InputField,
+  TextareaField,
+} from '@workspace/ui/components/fields';
 import { Button } from '@workspace/ui/components/button';
+import AddPlaylistTracksForm from './add-playlist-tracks-form';
 
 interface CreatePlaylistProps extends UseDisclosure {
   onCreate?: (playlist: Api.Playlist) => void | Promise<void>;
@@ -59,7 +65,7 @@ export default function CreatePlaylist({
     <>
       <Form {...form}>
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-          <DialogContent>
+          <DialogContent className="sm:max-w-7xl h-[90vh]">
             <DialogHeader>
               <DialogTitle>Create Playlist</DialogTitle>
               <DialogDescription>
@@ -71,29 +77,65 @@ export default function CreatePlaylist({
                 (v) => onCreate.mutateAsync(v),
                 onError,
               )}
-              className="flex flex-col"
+              className="flex items-stretch flex-1"
             >
-              <FormField
-                name={'name'}
-                control={form.control}
-                render={({ field }) => (
-                  <FieldWrap
-                    label="Playlist Title"
-                    description="Enter a title for your new playlist."
+              <div className="flex flex-col gap-6 w-[380] pr-6">
+                <FormField
+                  name={'name'}
+                  control={form.control}
+                  render={({ field }) => (
+                    <FieldWrap
+                      label="Playlist Title"
+                      description="Enter a title for your new playlist."
+                    >
+                      <InputField {...field} placeholder="My Playlist" />
+                    </FieldWrap>
+                  )}
+                />
+                <FormField
+                  name={'description'}
+                  control={form.control}
+                  render={({ field }) => (
+                    <FieldWrap
+                      label="Playlist Description"
+                      description="Add a brief description for your playlist."
+                    >
+                      <TextareaField
+                        {...field}
+                        placeholder={'A collection of my favorite tracks...'}
+                      />
+                    </FieldWrap>
+                  )}
+                />
+                <FormField
+                  name={'isPublic'}
+                  control={form.control}
+                  render={({ field }) => (
+                    <FieldWrap
+                      label="Is Public"
+                      description="Make this playlist public so others can discover it."
+                      orientation="horizontal"
+                      className="flex-row-reverse gap-3"
+                    >
+                      <CheckboxField {...field} />
+                    </FieldWrap>
+                  )}
+                />
+              </div>
+              <div className="flex flex-col flex-1">
+                <div className="flex-1 flex flex-col pb-6">
+                  <AddPlaylistTracksForm />
+                </div>
+                <DialogFooter className="mt-auto justify-end">
+                  <Button
+                    type={'submit'}
+                    variant={'outline'}
+                    disabled={isSubmitting || !isValid}
                   >
-                    <InputField {...field} placeholder="My Playlist" />
-                  </FieldWrap>
-                )}
-              />
-              <DialogFooter>
-                <Button
-                  type={'submit'}
-                  variant={'secondary'}
-                  disabled={isSubmitting || !isValid}
-                >
-                  {onCreate.isPending ? 'Creating...' : 'Create Playlist'}
-                </Button>
-              </DialogFooter>
+                    {onCreate.isPending ? 'Creating...' : 'Create Playlist'}
+                  </Button>
+                </DialogFooter>
+              </div>
             </form>
           </DialogContent>
         </Dialog>
