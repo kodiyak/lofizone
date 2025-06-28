@@ -1,6 +1,5 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
 import { db } from '@/shared/clients/db';
-import { authMiddleware } from '../middlewares';
 import { parseArrayToSchema } from '@/shared/infra/parse-array-to-schema';
 import { playlistSchema, playlistTypesSchema } from '../../domain';
 import { trackSchema } from '@/modules/vibes-management';
@@ -9,7 +8,6 @@ import type { Prisma } from '@workspace/db';
 
 export function getPlaylistsRoutes() {
   const app = new OpenAPIHono<{ Variables: { userId: string } }>();
-  app.use('*', authMiddleware);
 
   app.openapi(
     createRoute({

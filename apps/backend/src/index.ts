@@ -4,11 +4,13 @@ import { cors } from 'hono/cors';
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { createNodeWebSocket } from '@hono/node-ws';
 
+import { authMiddleware } from './modules/authentication';
 import { getVibesManagementRoutes } from './modules/vibes-management';
 import { getRoomsManagementRoutes, RoomsService } from './modules/rooms-management';
-import { authMiddleware, getAuthRoutes } from './modules/authentication';
 import { buildPluginsRegistry, getPluginsRoutes } from './modules/plugins';
+import { getPlaylistsRoutes } from './modules/playlists-management';
 import { createTimer } from './utils/timer';
+import { getAuthRoutes } from './modules/authentication/infra/routes/auth.routes';
 
 async function main() {
   const app = new OpenAPIHono();
@@ -28,7 +30,8 @@ async function main() {
   app.use('*', authMiddleware);
   app.route('/', getVibesManagementRoutes());
   app.route('/', getRoomsManagementRoutes(ws));
-  app.route('/', getAuthRoutes());
+  app.route('/oauth', getAuthRoutes());
+  app.route('/playlists', getPlaylistsRoutes());
   app.route('/', getPluginsRoutes());
   app.doc(`/doc`, {
     openapi: '3.0.0',
