@@ -13,6 +13,22 @@ const client = axios.create({
   },
 });
 
+const uploadTrackSchema = z.object({
+  title: z.string().min(1, 'Track title is required'),
+  track: z.instanceof(File).refine((file) => file.size > 0, {
+    message: 'Track file is required',
+  }),
+  cover: z
+    .instanceof(File)
+    .optional()
+    .refine((file) => !file || file.size > 0, {
+      message: 'Cover image must be a valid file or empty',
+    }),
+  playlistId: z.string().optional(),
+  albumId: z.string().optional(),
+  artistId: z.string().optional(),
+});
+
 const validations = {
   createRoom: z.object({
     name: z.string().min(1, 'Room name is required'),
@@ -21,27 +37,9 @@ const validations = {
     name: z.string().min(1, 'Playlist name is required'),
     isPublic: z.boolean(),
     description: z.string().nullish(),
-    tracks: z
-      .array(
-        z.object({
-          title: z.string().min(1, 'Track title is required'),
-          cover: z.instanceof(File),
-        }),
-      )
-      .optional(),
+    tracks: uploadTrackSchema.array().optional(),
   }),
-  uploadTrack: z.object({
-    title: z.string().min(1, 'Track title is required'),
-    track: z.instanceof(File).refine((file) => file.size > 0, {
-      message: 'Track file is required',
-    }),
-    cover: z
-      .instanceof(File)
-      .optional()
-      .refine((file) => !file || file.size > 0, {
-        message: 'Cover image must be a valid file or empty',
-      }),
-  }),
+  uploadTrack: uploadTrackSchema,
   updateRoom: z.object({
     playlistId: z.string().nullable(),
     name: z.string().nullish(),

@@ -1,5 +1,5 @@
-import { PlusIcon } from '@phosphor-icons/react';
-import { Button } from '@workspace/ui/components/button';
+import { PlusIcon, TrashIcon } from '@phosphor-icons/react';
+import { Button, ButtonsIcons } from '@workspace/ui/components/button';
 import {
   Dropzone,
   DropzoneImage,
@@ -30,10 +30,10 @@ export default function AddPlaylistTracksForm() {
     multiple: true,
     noDrag: true,
     onDrop: (files) => {
-      files.forEach((file) => {
+      files.forEach((track) => {
         addTrack({
-          title: file.name,
-          file,
+          title: track.name,
+          track,
         });
       });
     },
@@ -94,6 +94,18 @@ export default function AddPlaylistTracksForm() {
                               )}
                             />
                           </div>
+                        </div>
+                        <div className="flex justify-end">
+                          <ButtonsIcons
+                            items={[
+                              {
+                                label: 'Remove Track',
+                                icon: <TrashIcon />,
+                                onClick: () => removeTrack(i),
+                                variant: 'destructive-ghost',
+                              },
+                            ]}
+                          />
                         </div>
                       </div>
                     </FieldWrap>

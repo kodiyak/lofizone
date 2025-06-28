@@ -57,6 +57,7 @@ export function addTracksRoutes() {
                 title: z.string().nonempty(),
                 albumId: z.string().optional(),
                 artistId: z.string().optional(),
+                playlistId: z.string().optional(),
                 cover: z.instanceof(File).describe('Background file'),
                 track: z.instanceof(File).describe('Audio file'),
               }),
@@ -100,7 +101,7 @@ export function addTracksRoutes() {
     async (c) => {
       const trackId = generateId('track');
       const userId = c.get('userId');
-      const { albumId, cover, track, title } = c.req.valid('form');
+      const { albumId, artistId, playlistId, cover, track, title } = c.req.valid('form');
       const backgroundPath = `${env.s3.bucket}/${albumId}/${trackId}/background.${cover.name.split('.').pop()}`;
       const audioPath = `${env.s3.bucket}/${albumId}/${trackId}/audio.${track.name.split('.').pop()}`;
 
@@ -119,6 +120,17 @@ export function addTracksRoutes() {
         return c.json({ error: 'No playlist found for uploaded tracks' }, 404);
       }
 
+      const playlistIds = [playlist.id];
+      if (playlistId && playlistId !== playlist.id) {
+        const existingPlaylist = await db.playlist.findUnique({
+          where: { id: playlistId },
+        });
+        if (!existingPlaylist) {
+          return c.json({ error: 'Playlist not found' }, 404);
+        }
+        playlistIds.push(existingPlaylist.id);
+      }
+
       const coverUrl = await s3Client
         .putObject(backgroundPath, await fileToBuffer(cover), cover.type)
         .then((res) => res.url);
@@ -126,7 +138,8 @@ export function addTracksRoutes() {
         data: {
           id: trackId,
           title,
-          playlists: { connect: { id: playlist.id } },
+          artists: artistId ? { connect: { id: artistId } } : undefined,
+          playlists: { connect: playlistIds.map((id) => ({ id })) },
           uploadedBy: { connect: { id: c.get('userId') } },
           album: albumId
             ? { connect: { id: albumId } }
