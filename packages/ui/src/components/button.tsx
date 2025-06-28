@@ -3,6 +3,12 @@ import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '@workspace/ui/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './tooltip';
 
 const buttonVariants = cva(
   cn(
@@ -91,4 +97,53 @@ function Button({
   );
 }
 
-export { Button, buttonVariants };
+export interface ButtonsIconsProps {
+  variant?: ButtonProps['variant'];
+  size?: ButtonProps['size'];
+  items: {
+    label: string;
+    icon: React.ReactNode;
+    onClick?: () => void;
+    disabled?: boolean;
+    variant?: ButtonProps['variant'];
+    size?: ButtonProps['size'];
+    description?: React.ReactNode;
+    hidden?: boolean;
+  }[];
+}
+function ButtonsIcons({
+  items,
+  variant = 'ghost',
+  size = 'icon',
+}: ButtonsIconsProps) {
+  return (
+    <>
+      {items
+        .filter((i) => !i.hidden)
+        .map((item, index) => (
+          <Tooltip key={index}>
+            <TooltipProvider delayDuration={0}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={item.variant ?? variant}
+                    size={item.size ?? size}
+                    onClick={item.onClick}
+                    disabled={item.disabled}
+                    className={cn('')}
+                  >
+                    {item.icon}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{item.label}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </Tooltip>
+        ))}
+    </>
+  );
+}
+
+export { Button, buttonVariants, ButtonsIcons };
