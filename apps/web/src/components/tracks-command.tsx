@@ -75,10 +75,12 @@ export default function TracksCommand({
                     <AvatarFallback className="rounded-sm bg-muted animate-pulse" />
                   </Avatar>
                 )}
-                <div className="flex-1 flex flex-col">
-                  <span className="flex-1 text-left">{track.title}</span>
+                <div className="flex-1 flex flex-col overflow-hidden">
+                  <span className="flex-1 text-left truncate">
+                    {track.title}
+                  </span>
                   <span className="text-xs text-muted-foreground">
-                    {'Shinobu - Lofi Beats'}
+                    {['Shinobu', 'Lofi Beats'].join(' - ')}
                   </span>
                 </div>
                 <div className="opacity-50 fill-muted-foreground text-muted-foreground">
