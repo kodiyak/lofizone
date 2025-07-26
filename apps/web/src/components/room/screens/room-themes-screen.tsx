@@ -13,7 +13,7 @@ import React from 'react';
 export default function RoomThemesScreen() {
   return (
     <div className="flex flex-col">
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-3 gap-2">
         {themes.map((theme) => (
           <Card key={theme.title} className="w-full aspect-square relative">
             <UiBackground
