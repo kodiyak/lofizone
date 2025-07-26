@@ -80,7 +80,7 @@ Whether you’re coding, designing, or just vibing — the music adapts to your 
 
 Created by [@kodiyak](https://github.com/kodiyak)  
 Explore my other open-source tools:  
-[shadcn.cloud](https://github.com/kodiyak/shadcn.cloud) · [modpack](https://github.com/kodiyak/modpack)
+[shadcn.cloud](https://github.com/kodiyak/shadcn-cloud) · [modpack](https://github.com/kodiyak/modpack)
 
 ---
 
